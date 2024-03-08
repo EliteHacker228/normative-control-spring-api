@@ -63,7 +63,7 @@ public class AccountController {
         JwtToken refreshToken = tokens[1];
         User user = accessToken.getUser();
         AuthResponse authResponse = new AuthResponse(user, accessToken, refreshToken);
-        String authResponseJson = new ObjectMapper().writeValueAsString(authResponse);
+        String authResponseJson = authResponse.getAsJsonString();
 
         return ResponseEntity
                 .ok()
