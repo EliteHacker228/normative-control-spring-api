@@ -65,22 +65,6 @@ public class AccountController {
         AuthResponse authResponse = new AuthResponse(user, accessToken, refreshToken);
         String authResponseJson = new ObjectMapper().writeValueAsString(authResponse);
 
-//        boolean isCredentialsVerified = user.getIsVerified();
-//        List<Role> roles = user.getRoles();
-//        final String tokenType = "Bearer";
-//
-//        AuthResponse authResponse = new AuthResponse();
-//        authResponse.setAccessToken(accessToken.getCompactToken());
-//        LinkedHashMap<String, String> refreshTokenMap = new LinkedHashMap<>();
-//        refreshTokenMap.put("refreshToken", refreshToken.getCompactToken());
-//        refreshTokenMap.put("createdAt", DateUtils.dateToIsoFormattedString(refreshToken.getJws().getPayload().getIssuedAt()));
-//        refreshTokenMap.put("expiresAt", DateUtils.dateToIsoFormattedString(refreshToken.getJws().getPayload().getExpiration()));
-//        authResponse.setRefreshToken(refreshTokenMap);
-//        authResponse.setCredentialsVerified(isCredentialsVerified);
-//        authResponse.setRoles(roles);
-//        authResponse.setTokenType(tokenType);
-
-//        String responseJson = new ObjectMapper().writeValueAsString(authResponse);
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON)
