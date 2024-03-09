@@ -1,6 +1,7 @@
 package ru.maeasoftoworks.normativecontrol.api.controllers;
 
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,21 +21,9 @@ import ru.maeasoftoworks.normativecontrol.api.utils.JwtUtils;
 
 @RestController
 @RequestMapping("/account")
+@AllArgsConstructor
 public class AccountController {
 
-    @Autowired
-    private UsersRepository usersRepository;
-
-    @Autowired
-    private AccessTokensRepository accessTokensRepository;
-
-    @Autowired
-    private RefreshTokensRepository refreshTokensRepository;
-
-    @Autowired
-    private JwtUtils jwtUtils;
-
-    @Autowired
     private AccountService accountService;
 
     @PostMapping("/login")
@@ -79,6 +68,7 @@ public class AccountController {
 
     @PatchMapping("/token")
     private ResponseEntity<String> token(@RequestBody PatchTokenRequest patchTokenRequest) {
+        // Throws unchecked exceptions
         JwtToken newAccessToken = accountService.updateAccessTokenByRefreshToken(patchTokenRequest.getRefreshToken());
         PatchTokenResponse patchTokenResponse = new PatchTokenResponse(newAccessToken.getCompactToken());
 

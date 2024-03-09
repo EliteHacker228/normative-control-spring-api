@@ -1,4 +1,4 @@
-package ru.maeasoftoworks.normativecontrol.api.validators;
+package ru.maeasoftoworks.normativecontrol.api.validation.universityEmailValidation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

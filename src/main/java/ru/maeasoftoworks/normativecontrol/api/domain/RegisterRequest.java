@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.maeasoftoworks.normativecontrol.api.validators.UniversityEmail;
+import ru.maeasoftoworks.normativecontrol.api.validation.universityEmailValidation.UniversityEmail;
 
 @AllArgsConstructor
 @NoArgsConstructor
