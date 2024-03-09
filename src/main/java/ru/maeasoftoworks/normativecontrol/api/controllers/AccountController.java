@@ -15,8 +15,7 @@ import ru.maeasoftoworks.normativecontrol.api.exceptions.UserAlreadyExistsExcept
 import ru.maeasoftoworks.normativecontrol.api.repositories.AccessTokensRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.RefreshTokensRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.UsersRepository;
-import ru.maeasoftoworks.normativecontrol.api.services.LoginService;
-import ru.maeasoftoworks.normativecontrol.api.services.RegistrationService;
+import ru.maeasoftoworks.normativecontrol.api.services.AccountService;
 import ru.maeasoftoworks.normativecontrol.api.utils.JwtUtils;
 
 @RestController
@@ -36,10 +35,7 @@ public class AccountController {
     private JwtUtils jwtUtils;
 
     @Autowired
-    private LoginService loginService;
-
-    @Autowired
-    private RegistrationService registrationService;
+    private AccountService accountService;
 
     //TODO: Add validation as in /register controller
     @SneakyThrows
@@ -48,7 +44,7 @@ public class AccountController {
         String email = authRequest.getEmail();
         String plainTextPassword = authRequest.getPassword();
 
-        JwtToken[] tokens = loginService.loginUserByCreds(email, plainTextPassword);
+        JwtToken[] tokens = accountService.loginUserByCreds(email, plainTextPassword);
 
         if (tokens.length == 0) {
             JSONObject jsonObject = new JSONObject();
@@ -77,7 +73,7 @@ public class AccountController {
         String email = registerRequest.getEmail();
         String plainTextPassword = registerRequest.getPassword();
 
-        JwtToken[] tokens = registrationService.registrateUserByCreds(email, plainTextPassword);
+        JwtToken[] tokens = accountService.registrateUserByCreds(email, plainTextPassword);
 
         JwtToken accessToken = tokens[0];
         JwtToken refreshToken = tokens[1];
