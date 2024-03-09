@@ -37,7 +37,6 @@ public class AccountController {
     @Autowired
     private AccountService accountService;
 
-    //TODO: Add validation as in /register controller
     @PostMapping("/login")
     private ResponseEntity<String> login(@Valid @RequestBody AuthRequest authRequest) {
         String email = authRequest.getEmail();
@@ -79,8 +78,14 @@ public class AccountController {
     }
 
     @PatchMapping("/token")
-    private String token(@RequestParam(name = "refreshToken") String jwtRefreshToken) {
-        return "/token";
+    private ResponseEntity<String> token(@RequestBody PatchTokenRequest patchTokenRequest) {
+        JwtToken newAccessToken = accountService.updateAccessTokenByRefreshToken(patchTokenRequest.getRefreshToken());
+        PatchTokenResponse patchTokenResponse = new PatchTokenResponse(newAccessToken.getCompactToken());
+
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(patchTokenResponse.getAsJsonString());
     }
 
     @PatchMapping("/password")
@@ -116,10 +121,10 @@ public class AccountController {
 
         switch (exception.getClass().getSimpleName()) {
             case "MethodArgumentNotValidException":
-                MethodArgumentNotValidException currException = (MethodArgumentNotValidException)exception;
+                MethodArgumentNotValidException currException = (MethodArgumentNotValidException) exception;
                 StringBuilder resultMessage = new StringBuilder();
                 resultMessage.append("Auth is failed: ");
-                for(FieldError fieldError: currException.getFieldErrors()){
+                for (FieldError fieldError : currException.getFieldErrors()) {
                     resultMessage.append(fieldError.getDefaultMessage()).append(". ");
                 }
                 jsonObject.put("message", resultMessage.toString());
@@ -137,6 +142,13 @@ public class AccountController {
                 break;
             case "WrongCredentialsException":
                 jsonObject.put("message", "You're trying to log-in or register with wrong credentials");
+                responseEntity = ResponseEntity
+                        .badRequest()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(jsonObject.toJSONString());
+                break;
+            case "AccessTokenRefreshFailedException":
+                jsonObject.put("message", exception.getMessage());
                 responseEntity = ResponseEntity
                         .badRequest()
                         .contentType(MediaType.APPLICATION_JSON)

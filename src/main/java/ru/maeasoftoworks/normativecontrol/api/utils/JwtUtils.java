@@ -1,9 +1,6 @@
 package ru.maeasoftoworks.normativecontrol.api.utils;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -20,16 +17,16 @@ import java.util.Date;
 public class JwtUtils {
 
     private final String ACCESS_TOKEN_KEY;
-    private final  long ACCESS_TOKEN_LIFETIME;
-    private final  String REFRESH_TOKEN_KEY;
-    private final  long REFRESH_TOKEN_LIFETIME;
+    private final long ACCESS_TOKEN_LIFETIME;
+    private final String REFRESH_TOKEN_KEY;
+    private final long REFRESH_TOKEN_LIFETIME;
     private final String NORMATIVE_CONTROL_API_DOMAIN;
 
     private JwtUtils(@Value("${jwt.accessToken.key}") String ACCESS_TOKEN_KEY,
                      @Value("${jwt.accessToken.lifetimeInSeconds}") long ACCESS_TOKEN_LIFETIME,
                      @Value("${jwt.refreshToken.key}") String REFRESH_TOKEN_KEY,
                      @Value("${jwt.refreshToken.lifetimeInSeconds}") long REFRESH_TOKEN_LIFETIME,
-                     @Value("${normativeControl.api.domain}") String NORMATIVE_CONTROL_API_DOMAIN){
+                     @Value("${normativeControl.api.domain}") String NORMATIVE_CONTROL_API_DOMAIN) {
         this.ACCESS_TOKEN_KEY = ACCESS_TOKEN_KEY;
         this.ACCESS_TOKEN_LIFETIME = ACCESS_TOKEN_LIFETIME;
         this.REFRESH_TOKEN_KEY = REFRESH_TOKEN_KEY;
@@ -67,21 +64,56 @@ public class JwtUtils {
         return JwtToken.getJwtTokenFromString(jwt.compact(), key, user);
     }
 
-    public boolean isAccessTokenValid(String jwt) {
+    public boolean isAccessTokenValid(String jwt){
         return isTokenValid(jwt, ACCESS_TOKEN_KEY);
     }
 
-    public boolean isRefreshTokenValid(String jwt) {
+    public boolean isRefreshTokenValid(String jwt){
         return isTokenValid(jwt, REFRESH_TOKEN_KEY);
     }
 
-    private boolean isTokenValid(String jwt, String key) {
+    private boolean isTokenValid(String jwt, String key){
+        return isTokenReadable(jwt, key) && !isTokenExpired(jwt, key);
+    }
+
+    public boolean isAccessTokenReadable(String jwt) {
+        return isTokenReadable(jwt, ACCESS_TOKEN_KEY);
+    }
+
+    public boolean isRefreshTokenReadable(String jwt) {
+        return isTokenReadable(jwt, REFRESH_TOKEN_KEY);
+    }
+
+    private boolean isTokenReadable(String jwt, String key) {
         var signatureKey = Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
         try {
-            Jws<Claims> parsedJwt = Jwts.parser().verifyWith(signatureKey).build().parseSignedClaims(jwt);
+            Jwts.parser().verifyWith(signatureKey).build().parseSignedClaims(jwt);
+            return true;
+        } catch (ExpiredJwtException e) {
             return true;
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public boolean isRefreshTokenExpired(String jwt) {
+        return isTokenExpired(jwt, REFRESH_TOKEN_KEY);
+    }
+
+    public boolean isAccessTokenExpired(String jwt) {
+        return isTokenExpired(jwt, ACCESS_TOKEN_KEY);
+    }
+
+    private boolean isTokenExpired(String jwt, String key) {
+        var signatureKey = Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
+        try {
+            Jwts.parser().verifyWith(signatureKey).build().parseSignedClaims(jwt);
+        } catch (ExpiredJwtException e) {
+            return true;
+        } catch (Exception e) {
+            throw e;
+        }
+
+        return false;
     }
 }
