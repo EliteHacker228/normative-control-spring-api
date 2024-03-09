@@ -7,11 +7,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import ru.maeasoftoworks.normativecontrol.api.domain.JwtToken;
 import ru.maeasoftoworks.normativecontrol.api.domain.Role;
-import ru.maeasoftoworks.normativecontrol.api.entities.AccessToken;
 import ru.maeasoftoworks.normativecontrol.api.entities.Document;
 import ru.maeasoftoworks.normativecontrol.api.entities.RefreshToken;
 import ru.maeasoftoworks.normativecontrol.api.entities.User;
-import ru.maeasoftoworks.normativecontrol.api.repositories.AccessTokensRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.DocumentsRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.RefreshTokensRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.UsersRepository;
@@ -25,9 +23,6 @@ import java.util.List;
 public class DbTests {
     @Autowired
     private UsersRepository usersRepository;
-
-    @Autowired
-    private AccessTokensRepository accessTokensRepository;
 
     @Autowired
     private RefreshTokensRepository refreshTokensRepository;
@@ -70,13 +65,6 @@ public class DbTests {
 
         User user = new User("Kuznetsov.Mikhail@urfu.me", "Кузнецов М.А.", "misha.kuznetsov", "ilovepuppies2548", List.of(Role.STUDENT), "UrFU");
 
-        JwtToken jwtAccessToken = jwtUtils.generateAccessTokenForUser(user);
-        AccessToken accessToken = new AccessToken(user,
-                jwtAccessToken.getCompactToken(),
-                jwtAccessToken.getJws().getPayload().getIssuedAt(),
-                jwtAccessToken.getJws().getPayload().getExpiration());
-        accessToken.setUser(user);
-
         JwtToken jwtRefreshToken = jwtUtils.generateRefreshTokenForUser(user);
         RefreshToken refreshToken = new RefreshToken(user,
                 jwtRefreshToken.getCompactToken(),
@@ -85,14 +73,10 @@ public class DbTests {
         refreshToken.setUser(user);
 
         usersRepository.save(user);
-        accessTokensRepository.save(accessToken);
         refreshTokensRepository.save(refreshToken);
 
         for(User usr: usersRepository.findAll())
             System.out.println(usr);
-
-        for(AccessToken acsTkn: accessTokensRepository.findAll())
-            System.out.println(acsTkn);
 
         for(RefreshToken rfrshToken: refreshTokensRepository.findAll())
             System.out.println(rfrshToken);
