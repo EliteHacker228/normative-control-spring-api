@@ -12,7 +12,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import ru.maeasoftoworks.normativecontrol.api.domain.*;
 import ru.maeasoftoworks.normativecontrol.api.entities.User;
+import ru.maeasoftoworks.normativecontrol.api.exceptions.AccessTokenRefreshFailedException;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.UserAlreadyExistsException;
+import ru.maeasoftoworks.normativecontrol.api.exceptions.WrongCredentialsException;
 import ru.maeasoftoworks.normativecontrol.api.repositories.AccessTokensRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.RefreshTokensRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.UsersRepository;
@@ -109,48 +111,42 @@ public class AccountController {
         JSONObject jsonObject = new JSONObject();
         ResponseEntity<String> responseEntity;
 
-        switch (exception.getClass().getSimpleName()) {
-            case "MethodArgumentNotValidException":
-                MethodArgumentNotValidException currException = (MethodArgumentNotValidException) exception;
-                StringBuilder resultMessage = new StringBuilder();
-                resultMessage.append("Auth is failed: ");
-                for (FieldError fieldError : currException.getFieldErrors()) {
-                    resultMessage.append(fieldError.getDefaultMessage()).append(". ");
-                }
-                jsonObject.put("message", resultMessage.toString());
-                responseEntity = ResponseEntity
-                        .badRequest()
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(jsonObject.toJSONString());
-                break;
-            case "UserAlreadyExistsException":
-                jsonObject.put("message", "User with such email or login already exists");
-                responseEntity = ResponseEntity
-                        .badRequest()
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(jsonObject.toJSONString());
-                break;
-            case "WrongCredentialsException":
-                jsonObject.put("message", "You're trying to log-in or register with wrong credentials");
-                responseEntity = ResponseEntity
-                        .badRequest()
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(jsonObject.toJSONString());
-                break;
-            case "AccessTokenRefreshFailedException":
-                jsonObject.put("message", exception.getMessage());
-                responseEntity = ResponseEntity
-                        .badRequest()
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(jsonObject.toJSONString());
-                break;
-            default:
-                jsonObject.put("message", "Something went wrong on server side. Try to contact back-end developing team to get help");
-                responseEntity = ResponseEntity
-                        .internalServerError()
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(jsonObject.toJSONString());
-                break;
+        if (exception instanceof MethodArgumentNotValidException) {
+            MethodArgumentNotValidException currException = (MethodArgumentNotValidException) exception;
+            StringBuilder resultMessage = new StringBuilder();
+            resultMessage.append("Auth is failed: ");
+            for (FieldError fieldError : currException.getFieldErrors()) {
+                resultMessage.append(fieldError.getDefaultMessage()).append(". ");
+            }
+            jsonObject.put("message", resultMessage.toString());
+            responseEntity = ResponseEntity
+                    .badRequest()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(jsonObject.toJSONString());
+        } else if (exception instanceof UserAlreadyExistsException) {
+            jsonObject.put("message", "User with such email or login already exists");
+            responseEntity = ResponseEntity
+                    .badRequest()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(jsonObject.toJSONString());
+        } else if (exception instanceof WrongCredentialsException) {
+            jsonObject.put("message", "You're trying to log-in or register with wrong credentials");
+            responseEntity = ResponseEntity
+                    .badRequest()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(jsonObject.toJSONString());
+        } else if (exception instanceof AccessTokenRefreshFailedException) {
+            jsonObject.put("message", exception.getMessage());
+            responseEntity = ResponseEntity
+                    .badRequest()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(jsonObject.toJSONString());
+        } else {
+            jsonObject.put("message", "Something went wrong on server side. Try to contact back-end developing team to get help");
+            responseEntity = ResponseEntity
+                    .internalServerError()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(jsonObject.toJSONString());
         }
 
         return responseEntity;

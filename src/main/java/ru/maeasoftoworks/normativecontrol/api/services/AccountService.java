@@ -1,6 +1,7 @@
 package ru.maeasoftoworks.normativecontrol.api.services;
 
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,17 +22,11 @@ import ru.maeasoftoworks.normativecontrol.api.utils.JwtUtils;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class AccountService {
-    @Autowired
     private UsersRepository usersRepository;
-
-    @Autowired
     private AccessTokensRepository accessTokensRepository;
-
-    @Autowired
     private RefreshTokensRepository refreshTokensRepository;
-
-    @Autowired
     private JwtUtils jwtUtils;
 
     @Transactional
@@ -122,7 +117,7 @@ public class AccountService {
 
                     return jwtAccessToken;
                 } else {
-                    throw new AccessTokenRefreshFailedException("Refresh does not exists");
+                    throw new AccessTokenRefreshFailedException("Refresh token does not exists");
                 }
             } else {
                 if (refreshTokensRepository.existsRefreshTokenByToken(compactRefreshToken)) {
@@ -130,7 +125,7 @@ public class AccountService {
                     throw new AccessTokenRefreshFailedException("Refresh token expired. Please, log-in again");
                 } else {
                     // Возвращаем 400
-                    throw new AccessTokenRefreshFailedException("Refresh does not exists");
+                    throw new AccessTokenRefreshFailedException("Refresh token does not exists");
                 }
             }
         } else {

@@ -1,6 +1,7 @@
 package ru.maeasoftoworks.normativecontrol.api;
 
 import jakarta.annotation.PostConstruct;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import ru.maeasoftoworks.normativecontrol.api.repositories.UsersRepository;
 import java.util.List;
 
 @SpringBootApplication(exclude = org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class)
+@AllArgsConstructor
 public class NormativeControlApiApplication {
 
 	private static final Logger log = LoggerFactory.getLogger(NormativeControlApiApplication.class);
@@ -28,7 +30,6 @@ public class NormativeControlApiApplication {
 		SpringApplication.run(NormativeControlApiApplication.class, args);
 	}
 
-	@Autowired
 	private UsersRepository usersRepository;
 
 	@PostConstruct
