@@ -7,11 +7,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ru.maeasoftoworks.normativecontrol.api.validators.UniversityEmail;
 
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegisterRequest {
     @Email(message = "Email is incorrect")
+    @UniversityEmail
     @NotNull(message = "Email is null")
     @NotBlank(message = "Email is empty")
     @Getter
