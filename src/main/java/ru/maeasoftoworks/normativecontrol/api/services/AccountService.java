@@ -10,6 +10,7 @@ import ru.maeasoftoworks.normativecontrol.api.entities.AccessToken;
 import ru.maeasoftoworks.normativecontrol.api.entities.RefreshToken;
 import ru.maeasoftoworks.normativecontrol.api.entities.User;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.UserAlreadyExistsException;
+import ru.maeasoftoworks.normativecontrol.api.exceptions.WrongCredentialsException;
 import ru.maeasoftoworks.normativecontrol.api.repositories.AccessTokensRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.RefreshTokensRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.UsersRepository;
@@ -38,7 +39,7 @@ public class AccountService {
         User foundUser = usersRepository.findByEmail(email);
 
         if (foundUser == null || !foundUser.getPassword().equals(userHashedPassword))
-            return new JwtToken[]{};
+            throw new WrongCredentialsException();
 
         JwtToken jwtAccessToken = jwtUtils.generateAccessTokenForUser(foundUser);
         JwtToken jwtRefreshToken = jwtUtils.generateRefreshTokenForUser(foundUser);
@@ -69,7 +70,7 @@ public class AccountService {
     }
 
     @Transactional
-    public JwtToken[] registrateUserByCreds(String email, String plainTextPassword) throws UserAlreadyExistsException {
+    public JwtToken[] registrateUserByCreds(String email, String plainTextPassword) {
 
         if (usersRepository.existsByEmail(email))
             throw new UserAlreadyExistsException();

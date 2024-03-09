@@ -38,23 +38,13 @@ public class AccountController {
     private AccountService accountService;
 
     //TODO: Add validation as in /register controller
-    @SneakyThrows
     @PostMapping("/login")
-    private ResponseEntity<String> login(@RequestBody AuthRequest authRequest) {
+    private ResponseEntity<String> login(@Valid @RequestBody AuthRequest authRequest) {
         String email = authRequest.getEmail();
         String plainTextPassword = authRequest.getPassword();
 
+        // Throws unchecked WrongCredentialsException handled by @ExceptionHadler
         JwtToken[] tokens = accountService.loginUserByCreds(email, plainTextPassword);
-
-        if (tokens.length == 0) {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("message", "Login is failed due to wrong data");
-
-            return ResponseEntity
-                    .badRequest()
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(jsonObject.toJSONString());
-        }
 
         JwtToken accessToken = tokens[0];
         JwtToken refreshToken = tokens[1];
@@ -69,10 +59,11 @@ public class AccountController {
     }
 
     @PostMapping("/register")
-    private ResponseEntity<String> register(@Valid @RequestBody RegisterRequest registerRequest) throws UserAlreadyExistsException {
+    private ResponseEntity<String> register(@Valid @RequestBody RegisterRequest registerRequest) {
         String email = registerRequest.getEmail();
         String plainTextPassword = registerRequest.getPassword();
 
+        // Throws unchecked UserAlreadyExistsException handled by @ExceptionHadler
         JwtToken[] tokens = accountService.registrateUserByCreds(email, plainTextPassword);
 
         JwtToken accessToken = tokens[0];
