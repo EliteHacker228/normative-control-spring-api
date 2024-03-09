@@ -43,7 +43,7 @@ public class AccountController {
         String email = authRequest.getEmail();
         String plainTextPassword = authRequest.getPassword();
 
-        // Throws unchecked WrongCredentialsException handled by @ExceptionHadler
+        // Throws unchecked WrongCredentialsException handled by @ExceptionHandler
         JwtToken[] tokens = accountService.loginUserByCreds(email, plainTextPassword);
 
         JwtToken accessToken = tokens[0];
@@ -63,7 +63,7 @@ public class AccountController {
         String email = registerRequest.getEmail();
         String plainTextPassword = registerRequest.getPassword();
 
-        // Throws unchecked UserAlreadyExistsException handled by @ExceptionHadler
+        // Throws unchecked UserAlreadyExistsException handled by @ExceptionHandler
         JwtToken[] tokens = accountService.registrateUserByCreds(email, plainTextPassword);
 
         JwtToken accessToken = tokens[0];
