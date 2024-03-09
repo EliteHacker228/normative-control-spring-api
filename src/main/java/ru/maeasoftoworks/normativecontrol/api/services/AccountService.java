@@ -9,6 +9,7 @@ import ru.maeasoftoworks.normativecontrol.api.domain.Role;
 import ru.maeasoftoworks.normativecontrol.api.entities.AccessToken;
 import ru.maeasoftoworks.normativecontrol.api.entities.RefreshToken;
 import ru.maeasoftoworks.normativecontrol.api.entities.User;
+import ru.maeasoftoworks.normativecontrol.api.exceptions.AccessTokenRefreshFailedException;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.UserAlreadyExistsException;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.WrongCredentialsException;
 import ru.maeasoftoworks.normativecontrol.api.repositories.AccessTokensRepository;
@@ -99,5 +100,42 @@ public class AccountService {
 
 
         return new JwtToken[]{jwtAccessToken, jwtRefreshToken};
+    }
+
+    @Transactional
+    public JwtToken updateAccessTokenByRefreshToken(String compactRefreshToken) {
+        if (jwtUtils.isRefreshTokenReadable(compactRefreshToken)) {
+            if (!jwtUtils.isRefreshTokenExpired(compactRefreshToken)) {
+                if (refreshTokensRepository.existsRefreshTokenByToken(compactRefreshToken)) {
+                    //Генерируем новый аксес токен и возвращаем его
+                    RefreshToken refreshToken = refreshTokensRepository.findRefreshTokenByToken(compactRefreshToken);
+                    User user = refreshToken.getUser();
+
+                    JwtToken jwtAccessToken = jwtUtils.generateAccessTokenForUser(user);
+
+                    AccessToken accessToken = accessTokensRepository.findAccessTokensByUserId(user.getId());
+                    accessToken.setToken(jwtAccessToken.getCompactToken());
+                    accessToken.setCreatedAt(jwtAccessToken.getJws().getPayload().getIssuedAt());
+                    accessToken.setExpiresAt(jwtAccessToken.getJws().getPayload().getExpiration());
+
+                    accessTokensRepository.save(accessToken);
+
+                    return jwtAccessToken;
+                } else {
+                    throw new AccessTokenRefreshFailedException("Refresh does not exists 1");
+                }
+            } else {
+                if (refreshTokensRepository.existsRefreshTokenByToken(compactRefreshToken)) {
+                    // Аксес и рефреш токены не валидны, пользователь должен будет войти заново, возвращаем 403
+                    throw new AccessTokenRefreshFailedException("Refresh token expired. Please, log-in again");
+                } else {
+                    // Возвращаем 400
+                    throw new AccessTokenRefreshFailedException("Refresh does not exists 2");
+                }
+            }
+        } else {
+            // Возвращаем 400
+            throw new AccessTokenRefreshFailedException("Refresh is incorrect");
+        }
     }
 }

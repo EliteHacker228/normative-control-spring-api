@@ -8,4 +8,6 @@ public interface RefreshTokensRepository extends JpaRepository<RefreshToken, Lon
     RefreshToken findRefreshTokensByUserId(long userId);
 
     boolean existsRefreshTokensByUserId(long userId);
+    boolean existsRefreshTokenByToken(String token);
+    RefreshToken findRefreshTokenByToken(String token);
 }
