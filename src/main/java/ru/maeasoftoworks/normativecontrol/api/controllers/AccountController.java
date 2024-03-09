@@ -2,9 +2,7 @@ package ru.maeasoftoworks.normativecontrol.api.controllers;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
 import net.minidev.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -15,11 +13,13 @@ import ru.maeasoftoworks.normativecontrol.api.entities.User;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.AccessTokenRefreshFailedException;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.UserAlreadyExistsException;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.WrongCredentialsException;
-import ru.maeasoftoworks.normativecontrol.api.repositories.AccessTokensRepository;
-import ru.maeasoftoworks.normativecontrol.api.repositories.RefreshTokensRepository;
-import ru.maeasoftoworks.normativecontrol.api.repositories.UsersRepository;
+import ru.maeasoftoworks.normativecontrol.api.requests.login.LoginRequest;
+import ru.maeasoftoworks.normativecontrol.api.requests.login.LoginResponse;
+import ru.maeasoftoworks.normativecontrol.api.requests.register.RegisterRequest;
+import ru.maeasoftoworks.normativecontrol.api.requests.register.RegisterResponse;
+import ru.maeasoftoworks.normativecontrol.api.requests.token.TokenRequest;
+import ru.maeasoftoworks.normativecontrol.api.requests.token.TokenResponse;
 import ru.maeasoftoworks.normativecontrol.api.services.AccountService;
-import ru.maeasoftoworks.normativecontrol.api.utils.JwtUtils;
 
 @RestController
 @RequestMapping("/account")
@@ -29,9 +29,9 @@ public class AccountController {
     private AccountService accountService;
 
     @PostMapping("/login")
-    private ResponseEntity<String> login(@Valid @RequestBody AuthRequest authRequest) {
-        String email = authRequest.getEmail();
-        String plainTextPassword = authRequest.getPassword();
+    private ResponseEntity<String> login(@Valid @RequestBody LoginRequest loginRequest) {
+        String email = loginRequest.getEmail();
+        String plainTextPassword = loginRequest.getPassword();
 
         // Throws unchecked WrongCredentialsException handled by @ExceptionHandler
         JwtToken[] tokens = accountService.loginUserByCreds(email, plainTextPassword);
@@ -39,8 +39,8 @@ public class AccountController {
         JwtToken accessToken = tokens[0];
         JwtToken refreshToken = tokens[1];
         User user = accessToken.getUser();
-        AuthResponse authResponse = new AuthResponse(user, accessToken, refreshToken);
-        String authResponseJson = authResponse.getAsJsonString();
+        LoginResponse loginResponse = new LoginResponse(user, accessToken, refreshToken);
+        String authResponseJson = loginResponse.getAsJsonString();
 
         return ResponseEntity
                 .ok()
@@ -59,8 +59,8 @@ public class AccountController {
         JwtToken accessToken = tokens[0];
         JwtToken refreshToken = tokens[1];
         User user = accessToken.getUser();
-        AuthResponse authResponse = new AuthResponse(user, accessToken, refreshToken);
-        String authResponseJson = authResponse.getAsJsonString();
+        RegisterResponse registerResponse = new RegisterResponse(user, accessToken, refreshToken);
+        String authResponseJson = registerResponse.getAsJsonString();
 
         return ResponseEntity
                 .ok()
@@ -69,15 +69,15 @@ public class AccountController {
     }
 
     @PatchMapping("/token")
-    private ResponseEntity<String> token(@RequestBody PatchTokenRequest patchTokenRequest) {
+    private ResponseEntity<String> token(@RequestBody TokenRequest tokenRequest) {
         // Throws unchecked exceptions
-        JwtToken newAccessToken = accountService.updateAccessTokenByRefreshToken(patchTokenRequest.getRefreshToken());
-        PatchTokenResponse patchTokenResponse = new PatchTokenResponse(newAccessToken.getCompactToken());
+        JwtToken newAccessToken = accountService.updateAccessTokenByRefreshToken(tokenRequest.getRefreshToken());
+        TokenResponse tokenResponse = new TokenResponse(newAccessToken.getCompactToken());
 
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(patchTokenResponse.getAsJsonString());
+                .body(tokenResponse.getAsJsonString());
     }
 
     @PatchMapping("/password")

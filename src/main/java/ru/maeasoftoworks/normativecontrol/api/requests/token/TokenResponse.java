@@ -1,4 +1,4 @@
-package ru.maeasoftoworks.normativecontrol.api.domain;
+package ru.maeasoftoworks.normativecontrol.api.requests.token;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -6,7 +6,7 @@ import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
-public class PatchTokenResponse {
+public class TokenResponse {
     @Getter
     @Setter
     private String accessToken;

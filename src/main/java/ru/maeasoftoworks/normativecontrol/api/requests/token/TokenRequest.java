@@ -1,4 +1,4 @@
-package ru.maeasoftoworks.normativecontrol.api.domain;
+package ru.maeasoftoworks.normativecontrol.api.requests.token;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @NoArgsConstructor
 @AllArgsConstructor
-public class PatchTokenRequest {
+public class TokenRequest {
     @Getter
     @Setter
     private String refreshToken;

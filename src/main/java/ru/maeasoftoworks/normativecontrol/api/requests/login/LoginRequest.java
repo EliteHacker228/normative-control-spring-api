@@ -1,4 +1,4 @@
-package ru.maeasoftoworks.normativecontrol.api.domain;
+package ru.maeasoftoworks.normativecontrol.api.requests.login;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,9 +9,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.maeasoftoworks.normativecontrol.api.validation.universityEmailValidation.UniversityEmail;
 
-@AllArgsConstructor
+
 @NoArgsConstructor
-public class RegisterRequest {
+@AllArgsConstructor
+public class LoginRequest {
     @Email(message = "Email is incorrect")
     @UniversityEmail
     @NotNull(message = "Email is null")

@@ -1,16 +1,17 @@
-package ru.maeasoftoworks.normativecontrol.api.domain;
+package ru.maeasoftoworks.normativecontrol.api.requests.login;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.*;
+import ru.maeasoftoworks.normativecontrol.api.domain.JwtToken;
+import ru.maeasoftoworks.normativecontrol.api.domain.Role;
 import ru.maeasoftoworks.normativecontrol.api.entities.User;
 import ru.maeasoftoworks.normativecontrol.api.utils.DateUtils;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class AuthResponse {
+public class LoginResponse {
     @Getter
     @Setter
     private String accessToken;
@@ -27,11 +28,11 @@ public class AuthResponse {
     @Setter
     private String tokenType;
 
-    public AuthResponse() {
+    public LoginResponse() {
 
     }
 
-    public AuthResponse(User user, JwtToken accessToken, JwtToken refreshToken) {
+    public LoginResponse(User user, JwtToken accessToken, JwtToken refreshToken) {
         boolean isCredentialsVerified = user.getIsVerified();
         List<Role> roles = user.getRoles();
         final String tokenType = "Bearer";
