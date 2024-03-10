@@ -21,6 +21,7 @@ import ru.maeasoftoworks.normativecontrol.api.repositories.UsersRepository;
 import java.util.List;
 
 @SpringBootApplication(exclude = org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class)
+//@SpringBootApplication
 @AllArgsConstructor
 public class NormativeControlApiApplication {
 
