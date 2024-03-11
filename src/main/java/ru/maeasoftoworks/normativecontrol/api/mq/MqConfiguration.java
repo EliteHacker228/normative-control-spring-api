@@ -30,8 +30,7 @@ public class MqConfiguration {
     private Connection connection;
     private Channel channel;
 
-    @PostConstruct
-    public void initMqConnectionsAndChannels() throws URISyntaxException, NoSuchAlgorithmException, KeyManagementException, IOException, TimeoutException {
+    public MqConfiguration() throws URISyntaxException, NoSuchAlgorithmException, KeyManagementException, IOException, TimeoutException {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setUri(URI);
         factory.setUsername(USERNAME);

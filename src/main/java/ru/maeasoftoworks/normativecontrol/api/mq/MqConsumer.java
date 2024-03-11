@@ -19,6 +19,7 @@ public class MqConsumer extends DefaultConsumer {
     @Override
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
         log.info("Message received:");
-        log.info(consumerTag, new String(body));
+        log.info(consumerTag);
+        log.info(new String(body));
     }
 }
