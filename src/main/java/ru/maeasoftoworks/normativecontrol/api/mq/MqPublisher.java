@@ -2,25 +2,26 @@ package ru.maeasoftoworks.normativecontrol.api.mq;
 
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class MqPublisher {
+    @Value("${amqp.senderQueueName}")
+    private String senderQueueName;
 
-    private Channel channel;
+    private final Channel channel;
 
     @SneakyThrows
-    public void publishToVerify(String body, String correlationId){
-        String queueName = "to_be_verified";
-
+    public void publishToVerify(String body, String correlationId) {
         channel.basicPublish("",
-                queueName,
+                senderQueueName,
                 new AMQP.BasicProperties.Builder().correlationId(correlationId).build(),
-                body.getBytes(Charset.forName("UTF-8")));
+                body.getBytes(StandardCharsets.UTF_8));
     }
 }

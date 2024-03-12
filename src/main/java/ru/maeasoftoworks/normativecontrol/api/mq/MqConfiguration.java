@@ -3,10 +3,9 @@ package ru.maeasoftoworks.normativecontrol.api.mq;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -17,33 +16,32 @@ import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeoutException;
 
 @Configuration
+@Slf4j
 public class MqConfiguration {
-    private static final Logger log = LoggerFactory.getLogger(MqConfiguration.class);
+    @Value("${amqp.uri}")
+    private String uri;
 
-    private static final String URI = "amqp://maeasoftworks:normativecontrol@localhost:5672";
-    private static final String USERNAME = "maeasoftworks";
-    private static final String PASSWORD = "normativecontrol";
+    @Value("${amqp.senderQueueName}")
+    private String senderQueueName;
 
-    private static final String SENDER_QUEUE_NAME = "to_be_verified";
-    private static final String RECEIVER_QUEUE_NAME = "responces_1";
+    @Value("${amqp.receiverQueueName}")
+    private String receiverQueueName;
 
-    private Connection connection;
-    private Channel channel;
+    private final Connection connection;
+    private final Channel channel;
 
     public MqConfiguration() throws URISyntaxException, NoSuchAlgorithmException, KeyManagementException, IOException, TimeoutException {
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setUri(URI);
-        factory.setUsername(USERNAME);
-        factory.setPassword(PASSWORD);
+        factory.setUri(uri);
 
         this.connection = factory.newConnection();
         log.info("AMQP connected to " + factory.getHost() + ":" + factory.getPort());
 
         this.channel = this.connection.createChannel();
-        this.channel.queueDeclare(SENDER_QUEUE_NAME, true, false, false, null);
-        this.channel.queueDeclare(RECEIVER_QUEUE_NAME, true, false, false, null);
+        this.channel.queueDeclare(senderQueueName, true, false, false, null);
+        this.channel.queueDeclare(receiverQueueName, true, false, false, null);
 
-        channel.basicConsume(RECEIVER_QUEUE_NAME, true, new MqConsumer(this.channel));
+        channel.basicConsume(receiverQueueName, true, new MqConsumer(this.channel));
     }
 
     @Bean
