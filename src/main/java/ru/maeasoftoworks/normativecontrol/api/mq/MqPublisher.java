@@ -14,7 +14,7 @@ import java.nio.charset.StandardCharsets;
 @Component
 @RequiredArgsConstructor
 public class MqPublisher {
-    @Value("${amqp.senderQueueName}")
+    @Value("${spring.rabbitmq.senderQueueName}")
     private String senderQueueName;
 
     private final AmqpTemplate template;

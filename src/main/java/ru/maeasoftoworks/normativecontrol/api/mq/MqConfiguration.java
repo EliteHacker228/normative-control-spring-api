@@ -12,7 +12,7 @@ import java.util.UUID;
 @Configuration
 @Slf4j
 public class MqConfiguration {
-    @Value("${amqp.senderQueueName}")
+    @Value("${spring.rabbitmq.senderQueueName}")
     private String senderQueueName;
 
     @Getter

@@ -1,0 +1,42 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:normocontrolDb
+    driverClassName: org.h2.Driver
+    username: maeasoftworks
+    password: maeasoftworks
+  h2:
+    console:
+      enabled: true
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+  rabbitmq:
+    host: localhost
+    password: normativecontrol
+    username: maeasoftworks
+    port: 5672
+    senderQueueName: to_be_verified
+
+jwt:
+  accessToken:
+    key: 267e3dad2f5e22ea927180c740f6c0092d79ac61089845bc25a487f101554808
+    lifetimeInSeconds: 900 # accessToken's lifetime is 15 minutes (900 seconds)
+  refreshToken:
+    key: 2e82817a3fe3eb81717c5afdf8f33da3425fbeb81a059f4b377e359adaa66e2e
+    lifetimeInSeconds: 2592000 # refreshToken's lifetime is 30 days (2592000 seconds)
+
+normativeControl:
+  api:
+    domain: normative-control.ru
+    host: localhost
+    port: 8080
+    protocol: http
+    url: ${normativeControl.api.protocol}://${normativeControl.api.host}:${normativeControl.api.port}
+
+s3:
+  region: US-EAST-1
+  accessKeyId: pdh5niPCbqYxGW5BKxGv
+  secretAccessKey: xqtc6gXpKy0OIZVVSeinxDd7dd0pbDsOEtU7huJX
+  endpoint: http://localhost:9000
+  bucket: normative-control
