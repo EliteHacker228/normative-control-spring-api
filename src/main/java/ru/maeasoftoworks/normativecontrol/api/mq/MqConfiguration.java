@@ -41,8 +41,7 @@ public class MqConfiguration {
 
         this.channel = this.connection.createChannel();
         this.channel.queueDeclare(SENDER_QUEUE_NAME, true, false, false, null);
-        if(false)
-            this.channel.queueDeclare(RECEIVER_QUEUE_NAME, true, false, false, null);
+        this.channel.queueDeclare(RECEIVER_QUEUE_NAME, true, false, false, null);
 
         channel.basicConsume(RECEIVER_QUEUE_NAME, true, new MqConsumer(this.channel));
     }
