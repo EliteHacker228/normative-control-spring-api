@@ -46,7 +46,9 @@ public class DocumentController {
 
     @GetMapping("/isVerified")
     public ResponseEntity<String> isDocumentVerified(@RequestParam String documentId) {
-        boolean result = s3isDocumentVerificationExists(documentId);
+        String target1 = documentId + "/result.docx";
+        String target2 = documentId + "/result.html";
+        boolean result = s3.objectExists(target1) && s3.objectExists(target2);
         JSONObject jsonObject = new JSONObject();
 
         if (result) {
@@ -55,11 +57,11 @@ public class DocumentController {
             return ResponseEntity
                     .ok()
                     .contentType(MediaType.APPLICATION_JSON)
-                    .body(jsonObject.toJSONString());
+                    .body(jsonObject.toJSONString());  // todo create dto
         } else {
             jsonObject.put("message", "document with id " + documentId + " is not verified");
 
-            return ResponseEntity
+            return ResponseEntity // todo throw ResponseStatusException
                     .badRequest()
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(jsonObject.toJSONString());
@@ -70,7 +72,7 @@ public class DocumentController {
     @GetMapping("/verifiedDocument")
     @SneakyThrows
     public ResponseEntity<byte[]> isDocumentVerified(@RequestParam String documentId, @RequestParam String documentType) {
-        try (ByteArrayOutputStream result = s3getVerificationResult(documentId, documentType)) {
+        try (ByteArrayOutputStream result = s3.getObject(documentId + "/result." + documentType)) {
             if (result != null) {
                 val bytes = result.toByteArray(); // todo BLOCKING
                 if (documentType.equals("docx")) {
@@ -99,27 +101,6 @@ public class DocumentController {
             return documentMessageBody;
         } catch (Exception e) {
             log.warn("Error occurred: " + e);
-            return null;
-        }
-    }
-
-    private boolean s3isDocumentVerificationExists(String documentId) {
-        try {
-            String target1 = documentId + "/result.docx";
-            String target2 = documentId + "/result.html";
-            return s3.objectExists(target1) && s3.objectExists(target2);
-        } catch (Exception e) {
-            log.warn("Error occurred: " + e);
-            return false;
-        }
-    }
-
-    private ByteArrayOutputStream s3getVerificationResult(String documentId, String documentType) {
-        try {
-            String target = documentId + "/result." + documentType;
-            return s3.getObject(target);
-        } catch (Exception e) {
-            System.out.println("Error occurred: " + e);
             return null;
         }
     }

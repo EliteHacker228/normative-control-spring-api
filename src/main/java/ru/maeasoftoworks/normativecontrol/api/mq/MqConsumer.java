@@ -1,25 +1,17 @@
 package ru.maeasoftoworks.normativecontrol.api.mq;
 
-import com.rabbitmq.client.AMQP;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.DefaultConsumer;
-import com.rabbitmq.client.Envelope;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-
-public class MqConsumer extends DefaultConsumer {
-    private static final Logger log = LoggerFactory.getLogger(MqConsumer.class);
-
-    public MqConsumer(Channel channel) {
-        super(channel);
-    }
-
-    @Override
-    public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+@Component
+@Slf4j
+public class MqConsumer {
+    @RabbitListener(queues = {"#{mqConfiguration.getReceiverQueueName()}"})
+    public void handleMessage(Message message) {
         log.info("Message received:");
-        log.info(consumerTag);
-        log.info(new String(body));
+        log.info(message.getMessageProperties().getConsumerTag());
+        log.info(new String(message.getBody()));
     }
 }

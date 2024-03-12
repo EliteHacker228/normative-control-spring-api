@@ -1,9 +1,11 @@
 package ru.maeasoftoworks.normativecontrol.api.mq;
 
-import com.rabbitmq.client.AMQP;
-import com.rabbitmq.client.Channel;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.val;
+import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageProperties;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -15,13 +17,12 @@ public class MqPublisher {
     @Value("${amqp.senderQueueName}")
     private String senderQueueName;
 
-    private final Channel channel;
+    private final AmqpTemplate template;
 
     @SneakyThrows
     public void publishToVerify(String body, String correlationId) {
-        channel.basicPublish("",
-                senderQueueName,
-                new AMQP.BasicProperties.Builder().correlationId(correlationId).build(),
-                body.getBytes(StandardCharsets.UTF_8));
+        val props = new MessageProperties();
+        props.setCorrelationId(correlationId);
+        template.send(senderQueueName, new Message(body.getBytes(StandardCharsets.UTF_8), props));
     }
 }

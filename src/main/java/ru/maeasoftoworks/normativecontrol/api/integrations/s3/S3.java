@@ -57,7 +57,7 @@ public class S3 {
                         .bucket(bucket)
                         .build()
         );
-        return head.partsCount() > 0;
+        return head.contentLength() > 0;
     }
 
     @PreDestroy
