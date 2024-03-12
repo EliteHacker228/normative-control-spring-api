@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 import ru.maeasoftoworks.normativecontrol.api.validation.universityEmailValidation.UniversityEmail;
 
 @AllArgsConstructor
@@ -14,14 +15,13 @@ public class RegisterRequest {
     @UniversityEmail
     @NotNull(message = "Email is null")
     @NotBlank(message = "Email is empty")
-    @Max(value = 255, message = "Your email is too long. Maximal length is 255")
     @Getter
     @Setter
     private String email;
 
     @NotNull(message = "Password is null")
     @NotBlank(message = "Password is empty")
-    @Max(value = 255, message = "Your password is too long. Maximal length is 255")
+    @Length(max = 255, message = "Your password is too long. Maximal length is 255")
     @Getter
     @Setter
     private String password;
