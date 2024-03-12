@@ -71,8 +71,8 @@ public class AccountController {
     @PatchMapping("/token")
     private ResponseEntity<String> token(@RequestBody TokenRequest tokenRequest) {
         // Throws unchecked exceptions
-        JwtToken newAccessToken = accountService.updateAccessTokenByRefreshToken(tokenRequest.getRefreshToken());
-        TokenResponse tokenResponse = new TokenResponse(newAccessToken.getCompactToken());
+        JwtToken[] newAccessAndRefreshToken = accountService.updateAccessTokenByRefreshToken(tokenRequest.getRefreshToken());
+        TokenResponse tokenResponse = new TokenResponse(newAccessAndRefreshToken[0], newAccessAndRefreshToken[1]);
 
         return ResponseEntity
                 .ok()

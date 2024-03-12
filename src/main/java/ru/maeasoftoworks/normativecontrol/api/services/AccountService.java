@@ -2,8 +2,6 @@ package ru.maeasoftoworks.normativecontrol.api.services;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.maeasoftoworks.normativecontrol.api.domain.JwtToken;
 import ru.maeasoftoworks.normativecontrol.api.domain.Role;
@@ -80,15 +78,25 @@ public class AccountService {
     }
 
     @Transactional
-    public JwtToken updateAccessTokenByRefreshToken(String compactRefreshToken) {
+    public JwtToken[] updateAccessTokenByRefreshToken(String compactRefreshToken) {
         if (jwtUtils.isRefreshTokenReadable(compactRefreshToken)) {
             if (!jwtUtils.isRefreshTokenExpired(compactRefreshToken)) {
                 if (refreshTokensRepository.existsRefreshTokenByToken(compactRefreshToken)) {
                     //Генерируем новый аксес токен и возвращаем его
-                    RefreshToken refreshToken = refreshTokensRepository.findRefreshTokenByToken(compactRefreshToken);
-                    User user = refreshToken.getUser();
+                    //а также новый рефреш, сохраняем его в бд, тем самым инвалидировав старый,
+                    //а потом возвращаем оба токена пользователю
+                    RefreshToken currentRefreshToken = refreshTokensRepository.findRefreshTokenByToken(compactRefreshToken);
+                    User user = currentRefreshToken.getUser();
 
-                    return jwtUtils.generateAccessTokenForUser(user);
+                    JwtToken newRefreshToken = jwtUtils.generateRefreshTokenForUser(user);
+                    JwtToken newAccessToken = jwtUtils.generateAccessTokenForUser(user);
+
+                    currentRefreshToken.setToken(newRefreshToken.getCompactToken());
+                    currentRefreshToken.setCreatedAt(newRefreshToken.getJws().getPayload().getIssuedAt());
+                    currentRefreshToken.setExpiresAt(newRefreshToken.getJws().getPayload().getExpiration());
+                    refreshTokensRepository.save(currentRefreshToken);
+
+                    return new JwtToken[]{newAccessToken, newRefreshToken};
                 } else {
                     throw new AccessTokenRefreshFailedException("Refresh token does not exists");
                 }
