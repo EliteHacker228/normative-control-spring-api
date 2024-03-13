@@ -6,7 +6,6 @@ import ru.maeasoftoworks.normativecontrol.api.requests.login.LoginResponse;
 import ru.maeasoftoworks.normativecontrol.api.domain.Role;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 
 public class JsonTests {
 
@@ -21,7 +20,7 @@ public class JsonTests {
         refreshToken.put("expiresAt", "2025-03-06T20:35:49.923524200Z");
         loginResponse.setRefreshToken(refreshToken);
         loginResponse.setCredentialsVerified(true);
-        loginResponse.setRole(List.of(Role.ADMIN));
+        loginResponse.setRole(Role.ADMIN);
         loginResponse.setTokenType("Bearer");
 
         String result = loginResponse.getAsJsonString();
