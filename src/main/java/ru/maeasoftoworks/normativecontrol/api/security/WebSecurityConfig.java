@@ -43,7 +43,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/account/login", "/account/register", "/account/token").permitAll()
                         .requestMatchers("/h2-console", "/h2-console/**").permitAll()
-                        .requestMatchers("/account/password").hasAnyRole("INSPECTOR", "STUDENT", "ADMIN")
+                        .requestMatchers("/account/password", "/account/email").hasAnyRole("INSPECTOR", "STUDENT", "ADMIN")
                         .requestMatchers("/documents", "/documents/**").permitAll())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())

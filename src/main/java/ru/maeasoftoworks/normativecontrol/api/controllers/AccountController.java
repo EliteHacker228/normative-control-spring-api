@@ -14,6 +14,8 @@ import ru.maeasoftoworks.normativecontrol.api.entities.User;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.AccessTokenRefreshFailedException;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.UserAlreadyExistsException;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.WrongCredentialsException;
+import ru.maeasoftoworks.normativecontrol.api.requests.email.EmailRequest;
+import ru.maeasoftoworks.normativecontrol.api.requests.email.EmailResponse;
 import ru.maeasoftoworks.normativecontrol.api.requests.login.LoginRequest;
 import ru.maeasoftoworks.normativecontrol.api.requests.login.LoginResponse;
 import ru.maeasoftoworks.normativecontrol.api.requests.password.PasswordRequest;
@@ -24,6 +26,7 @@ import ru.maeasoftoworks.normativecontrol.api.requests.token.TokenRequest;
 import ru.maeasoftoworks.normativecontrol.api.requests.token.TokenResponse;
 import ru.maeasoftoworks.normativecontrol.api.services.AccountService;
 
+//TODO: add status and messages and status to all responses' dto
 @RestController
 @RequestMapping("/account")
 @AllArgsConstructor
@@ -85,8 +88,8 @@ public class AccountController {
 
     @PatchMapping("/password")
     private ResponseEntity<String> password(@RequestHeader("Authorization") String bearerToken, @Valid @RequestBody PasswordRequest passwordRequest) {
-        var accessToken = bearerToken.substring(("Bearer ").length());
-        var plainTextPassword = passwordRequest.getPassword();
+        String accessToken = bearerToken.substring(("Bearer ").length());
+        String plainTextPassword = passwordRequest.getPassword();
         accountService.setPasswordForUserByAccessToken(accessToken, plainTextPassword);
 
         PasswordResponse passwordResponse = new PasswordResponse("password updated successfully");
@@ -98,8 +101,17 @@ public class AccountController {
     }
 
     @PatchMapping("/email")
-    private String email() {
-        return "/email";
+    private ResponseEntity<String> email(@RequestHeader("Authorization") String bearerToken, @Valid @RequestBody EmailRequest emailRequest) {
+        String accessToken = bearerToken.substring(("Bearer ").length());
+        String email = emailRequest.getEmail();
+        JwtToken[] jwtTokens = accountService.setEmailForUserByAccessToken(accessToken, email);
+
+        EmailResponse emailResponse = new EmailResponse(jwtTokens[0], jwtTokens[1]);
+
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(emailResponse.getAsJsonString());
     }
 
     @GetMapping("/sessions")

@@ -124,7 +124,17 @@ public class AccountService {
         User user = usersRepository.findByEmail(userEmail);
         user.setPassword(plainTextpassword);
         usersRepository.save(user);
+    }
 
+    @Transactional
+    public JwtToken[] setEmailForUserByAccessToken(String accessToken, String email) {
+        String userEmail = jwtUtils.getClaimsFromAccessTokenString(accessToken).getPayload().getSubject();
+        log.info("SEARCHING USER WITH EMAIL: " + userEmail);
+        User user = usersRepository.findByEmail(userEmail);
+        user.setEmail(email);
+        usersRepository.save(user);
+
+        JwtToken newAccessToken = jwtUtils.generateAccessTokenForUser(user);
         JwtToken newRefreshToken = jwtUtils.generateRefreshTokenForUser(user);
 
         RefreshToken refreshToken = refreshTokensRepository.findRefreshTokensByUserId(user.getId());
@@ -133,5 +143,7 @@ public class AccountService {
         refreshToken.setCreatedAt(newRefreshToken.getJws().getPayload().getIssuedAt());
         refreshToken.setExpiresAt(newRefreshToken.getJws().getPayload().getExpiration());
         refreshTokensRepository.save(refreshToken);
+
+        return new JwtToken[]{newAccessToken, newRefreshToken};
     }
 }
