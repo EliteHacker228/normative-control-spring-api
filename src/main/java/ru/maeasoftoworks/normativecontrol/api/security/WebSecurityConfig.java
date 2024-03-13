@@ -52,6 +52,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
         return http.build();
     }
 
+    // TODO: Использовать поставляемый спрингом энкодер, а не собтсвенный через sha256
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new PasswordEncoder() {
