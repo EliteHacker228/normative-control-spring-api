@@ -2,9 +2,16 @@ package ru.maeasoftoworks.normativecontrol.api.controllers;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -20,18 +27,22 @@ import ru.maeasoftoworks.normativecontrol.api.requests.register.RegisterResponse
 import ru.maeasoftoworks.normativecontrol.api.requests.token.TokenRequest;
 import ru.maeasoftoworks.normativecontrol.api.requests.token.TokenResponse;
 import ru.maeasoftoworks.normativecontrol.api.services.AccountService;
+import ru.maeasoftoworks.normativecontrol.api.utils.HashingUtils;
 
 @RestController
 @RequestMapping("/account")
 @AllArgsConstructor
+@Slf4j
 public class AccountController {
 
     private AccountService accountService;
-
+    private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
     @PostMapping("/login")
     private ResponseEntity<String> login(@Valid @RequestBody LoginRequest loginRequest) {
         String email = loginRequest.getEmail();
         String plainTextPassword = loginRequest.getPassword();
+        String bcryptedPassword = passwordEncoder.encode(loginRequest.getPassword());
 
         // Throws unchecked WrongCredentialsException handled by @ExceptionHandler
         JwtToken[] tokens = accountService.loginUserByCreds(email, plainTextPassword);
@@ -41,6 +52,13 @@ public class AccountController {
         User user = accessToken.getUser();
         LoginResponse loginResponse = new LoginResponse(user, accessToken, refreshToken);
         String authResponseJson = loginResponse.getAsJsonString();
+
+        var authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                email,
+                plainTextPassword
+        ));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        log.info(authentication.toString());
 
         return ResponseEntity
                 .ok()
@@ -52,15 +70,23 @@ public class AccountController {
     private ResponseEntity<String> register(@Valid @RequestBody RegisterRequest registerRequest) {
         String email = registerRequest.getEmail();
         String plainTextPassword = registerRequest.getPassword();
+        String bcryptedPassword = passwordEncoder.encode(registerRequest.getPassword());
 
         // Throws unchecked UserAlreadyExistsException handled by @ExceptionHandler
-        JwtToken[] tokens = accountService.registrateUserByCreds(email, plainTextPassword);
+        JwtToken[] tokens = accountService.registrateUserByCreds(email, bcryptedPassword);
 
         JwtToken accessToken = tokens[0];
         JwtToken refreshToken = tokens[1];
         User user = accessToken.getUser();
         RegisterResponse registerResponse = new RegisterResponse(user, accessToken, refreshToken);
         String authResponseJson = registerResponse.getAsJsonString();
+
+        var authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                email,
+                plainTextPassword
+        ));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        log.info(authentication.toString());
 
         return ResponseEntity
                 .ok()
@@ -81,8 +107,11 @@ public class AccountController {
     }
 
     @PatchMapping("/password")
-    private String password() {
-        return "/password";
+    private String password(@RequestBody String password) {
+        log.info("Password controller!!!!!!!!!");
+        log.info(SecurityContextHolder.getContext().getAuthentication().getName());
+
+        return password;
     }
 
     @PatchMapping("/email")

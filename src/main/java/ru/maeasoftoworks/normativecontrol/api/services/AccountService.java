@@ -26,7 +26,7 @@ public class AccountService {
 
     @Transactional
     public JwtToken[] loginUserByCreds(String email, String plainTextPassword) {
-        String userHashedPassword = HashingUtils.sha256(plainTextPassword);
+        String userHashedPassword = plainTextPassword;
         User foundUser = usersRepository.findByEmail(email);
 
         if (foundUser == null || !foundUser.getPassword().equals(userHashedPassword))
@@ -58,7 +58,7 @@ public class AccountService {
         if (usersRepository.existsByEmail(email))
             throw new UserAlreadyExistsException();
 
-        User user = new User(email, "", "", plainTextPassword, List.of(Role.STUDENT), "UrFU");
+        User user = new User(email, "", "", plainTextPassword, Role.STUDENT, "UrFU");
 
         JwtToken jwtAccessToken = jwtUtils.generateAccessTokenForUser(user);
         JwtToken jwtRefreshToken = jwtUtils.generateRefreshTokenForUser(user);
