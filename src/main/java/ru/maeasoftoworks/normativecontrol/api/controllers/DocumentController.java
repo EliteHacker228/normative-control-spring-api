@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.maeasoftoworks.normativecontrol.api.integrations.s3.S3;
+import ru.maeasoftoworks.normativecontrol.api.jobpools.DocumentsVerificationPool;
 import ru.maeasoftoworks.normativecontrol.api.mq.DocumentMessageBody;
 import ru.maeasoftoworks.normativecontrol.api.mq.MqConfiguration;
 import ru.maeasoftoworks.normativecontrol.api.mq.MqPublisher;
@@ -33,6 +34,7 @@ public class DocumentController {
     private final MqPublisher mqPublisher;
     private final S3 s3;
     private final MqConfiguration mqConfiguration;
+    private final DocumentsVerificationPool documentsVerificationPool;
 
     // Доступен всем
     // TODO: Добавить использование роли и данных аккаунта
@@ -44,6 +46,7 @@ public class DocumentController {
         }
         mqPublisher.publishToVerify(resultFileName.getAsJsonString(), resultFileName.getCorrelationId());
         VerificationResponse response = new VerificationResponse(resultFileName.getCorrelationId());
+        documentsVerificationPool.startVerification(resultFileName.getCorrelationId());
 
         return ResponseEntity
                 .ok()
@@ -51,28 +54,19 @@ public class DocumentController {
                 .body(response.getAsJsonString());
     }
 
-    //TODO: Сделать систему привязки работ к анонимным пользователям
-    // TODO: Добавить использование роли и данных аккаунта
-
     // Доступен всем, но выдаёт ответ только если запрошенная работа доступна тому кто запрашивает.
     // Нормоконтроллер и админ имеют доступ ко всем работам, остальные - только к своей
     @GetMapping("/isVerified")
     public ResponseEntity<String> isDocumentVerified(@Valid IsVerifiedRequest isVerifiedRequest) {
-        String target1 = isVerifiedRequest.getDocumentId() + "/result.docx";
-        String target2 = isVerifiedRequest.getDocumentId() + "/result.html";
-        boolean result = s3.objectExists(target1) && s3.objectExists(target2);
-
-        if (result) {
-            IsVerifiedResponse isVerifiedResponse = new IsVerifiedResponse("Document with id " + isVerifiedRequest.getDocumentId() + " is verified");
-
-            return ResponseEntity
-                    .ok()
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(isVerifiedResponse.getAsJsonString());
-        } else {
-            IsVerifiedResponse isVerifiedResponse = new IsVerifiedResponse("Document with id " + isVerifiedRequest.getDocumentId() + " is not verified");
-            throw new ResponseStatusException(HttpStatusCode.valueOf(500), isVerifiedResponse.getMessage());
+        IsVerifiedResponse isVerifiedResponse = new IsVerifiedResponse("Document with id " + isVerifiedRequest.getDocumentId() + " is verified or absent");
+        if (documentsVerificationPool.isVerificationInProgress(isVerifiedRequest.getDocumentId())) {
+            isVerifiedResponse = new IsVerifiedResponse("Document with id " + isVerifiedRequest.getDocumentId() + " is not verified");
         }
+
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(isVerifiedResponse.getAsJsonString());
     }
 
     // TODO: Добавить использование роли и данных аккаунта
