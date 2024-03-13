@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import net.minidev.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -14,13 +13,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.maeasoftoworks.normativecontrol.api.integrations.s3.S3;
 import ru.maeasoftoworks.normativecontrol.api.mq.DocumentMessageBody;
+import ru.maeasoftoworks.normativecontrol.api.mq.MqConfiguration;
 import ru.maeasoftoworks.normativecontrol.api.mq.MqPublisher;
 import ru.maeasoftoworks.normativecontrol.api.requests.documents.isVerified.IsVerifiedRequest;
 import ru.maeasoftoworks.normativecontrol.api.requests.documents.isVerified.IsVerifiedResponse;
 import ru.maeasoftoworks.normativecontrol.api.requests.documents.verification.VerificationRequest;
 import ru.maeasoftoworks.normativecontrol.api.requests.documents.verification.VerificationResponse;
 import ru.maeasoftoworks.normativecontrol.api.requests.documents.verifiedDocument.VerifiedDocumentRequest;
-import ru.maeasoftoworks.normativecontrol.api.requests.documents.verifiedDocument.VerifiedDocumentResponse;
 import ru.maeasoftoworks.normativecontrol.api.utils.CorrelationIdUtils;
 
 import java.io.*;
@@ -33,8 +32,10 @@ public class DocumentController {
 
     private final MqPublisher mqPublisher;
     private final S3 s3;
+    private final MqConfiguration mqConfiguration;
 
     // Доступен всем
+    // TODO: Добавить использование роли и данных аккаунта
     @PostMapping("/verification")
     public ResponseEntity<String> sendToVerification(@Valid VerificationRequest verificationRequest) throws IOException {
         DocumentMessageBody resultFileName = uploadFile(verificationRequest.getDocument().getInputStream());
@@ -51,6 +52,7 @@ public class DocumentController {
     }
 
     //TODO: Сделать систему привязки работ к анонимным пользователям
+    // TODO: Добавить использование роли и данных аккаунта
 
     // Доступен всем, но выдаёт ответ только если запрошенная работа доступна тому кто запрашивает.
     // Нормоконтроллер и админ имеют доступ ко всем работам, остальные - только к своей
@@ -72,6 +74,8 @@ public class DocumentController {
             throw new ResponseStatusException(HttpStatusCode.valueOf(500), isVerifiedResponse.getMessage());
         }
     }
+
+    // TODO: Добавить использование роли и данных аккаунта
 
     // Доступен всем, но выдаёт ответ только если запрошенная работа доступна тому кто запрашивает.
     // Нормоконтроллер и админ имеют доступ ко всем работам, остальные - только к своей
@@ -100,6 +104,11 @@ public class DocumentController {
 
     // TODO: Controller: list, выдаёт данные о работе, которую проверял юзер
 
+    @GetMapping("/list")
+    public ResponseEntity<String> getLisOfVerificationsForUser() {
+        return null;
+    }
+
     // TODO: Controller: find, выдаёт список работ по запрошенным параметрам
     // email: adfadf@urfu.me
     // group: RI-400004
@@ -111,7 +120,7 @@ public class DocumentController {
         try {
             String fileName = "source.docx";
             String correlationId = CorrelationIdUtils.generateCorrelationId();
-            DocumentMessageBody documentMessageBody = new DocumentMessageBody(correlationId, fileName);
+            DocumentMessageBody documentMessageBody = new DocumentMessageBody(correlationId, fileName, mqConfiguration.getReceiverQueueName());
             s3.putObject(inputStream, documentMessageBody.getDocument());
             return documentMessageBody;
         } catch (Exception e) {

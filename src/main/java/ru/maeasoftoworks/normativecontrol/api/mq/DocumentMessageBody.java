@@ -25,12 +25,12 @@ public class DocumentMessageBody {
     @Getter
     private final String resultHtml;
 
-    public DocumentMessageBody(String correlationId, String fileName) {
+    public DocumentMessageBody(String correlationId, String fileName, String replyTo) {
         this.correlationId = correlationId;
         this.fileName = fileName;
 
         this.document = correlationId + "/" + fileName;
-        this.replyTo = "responces_1";
+        this.replyTo = replyTo;
         this.resultDocx = correlationId + "/result.docx";
         this.resultHtml = correlationId + "/result.html";
     }
