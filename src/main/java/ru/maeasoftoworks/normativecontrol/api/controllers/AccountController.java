@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import net.minidev.json.JSONObject;
 import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -15,6 +16,8 @@ import ru.maeasoftoworks.normativecontrol.api.exceptions.UserAlreadyExistsExcept
 import ru.maeasoftoworks.normativecontrol.api.exceptions.WrongCredentialsException;
 import ru.maeasoftoworks.normativecontrol.api.requests.login.LoginRequest;
 import ru.maeasoftoworks.normativecontrol.api.requests.login.LoginResponse;
+import ru.maeasoftoworks.normativecontrol.api.requests.password.PasswordRequest;
+import ru.maeasoftoworks.normativecontrol.api.requests.password.PasswordResponse;
 import ru.maeasoftoworks.normativecontrol.api.requests.register.RegisterRequest;
 import ru.maeasoftoworks.normativecontrol.api.requests.register.RegisterResponse;
 import ru.maeasoftoworks.normativecontrol.api.requests.token.TokenRequest;
@@ -81,8 +84,17 @@ public class AccountController {
     }
 
     @PatchMapping("/password")
-    private String password(@RequestBody String request) {
-        return request;
+    private ResponseEntity<String> password(@RequestHeader("Authorization") String bearerToken, @Valid @RequestBody PasswordRequest passwordRequest) {
+        var accessToken = bearerToken.substring(("Bearer ").length());
+        var plainTextPassword = passwordRequest.getPassword();
+        accountService.setPasswordForUserByAccessToken(accessToken, plainTextPassword);
+
+        PasswordResponse passwordResponse = new PasswordResponse("password updated successfully");
+
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(passwordResponse.getAsJsonString());
     }
 
     @PatchMapping("/email")

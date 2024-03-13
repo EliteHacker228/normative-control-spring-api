@@ -2,6 +2,7 @@ package ru.maeasoftoworks.normativecontrol.api.services;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.maeasoftoworks.normativecontrol.api.domain.JwtToken;
 import ru.maeasoftoworks.normativecontrol.api.domain.Role;
@@ -19,6 +20,7 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class AccountService {
     private UsersRepository usersRepository;
     private RefreshTokensRepository refreshTokensRepository;
@@ -113,5 +115,23 @@ public class AccountService {
             // Возвращаем 400
             throw new AccessTokenRefreshFailedException("Refresh is incorrect");
         }
+    }
+
+    @Transactional
+    public void setPasswordForUserByAccessToken(String accessToken, String plainTextpassword) {
+        String userEmail = jwtUtils.getClaimsFromAccessTokenString(accessToken).getPayload().getSubject();
+        log.info("SEARCHING USER WITH EMAIL: " + userEmail);
+        User user = usersRepository.findByEmail(userEmail);
+        user.setPassword(plainTextpassword);
+        usersRepository.save(user);
+
+        JwtToken newRefreshToken = jwtUtils.generateRefreshTokenForUser(user);
+
+        RefreshToken refreshToken = refreshTokensRepository.findRefreshTokensByUserId(user.getId());
+        refreshToken.setUser(user);
+        refreshToken.setToken(newRefreshToken.getCompactToken());
+        refreshToken.setCreatedAt(newRefreshToken.getJws().getPayload().getIssuedAt());
+        refreshToken.setExpiresAt(newRefreshToken.getJws().getPayload().getExpiration());
+        refreshTokensRepository.save(refreshToken);
     }
 }
