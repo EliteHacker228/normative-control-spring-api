@@ -15,7 +15,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -40,18 +39,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
-        log.info("1");
+        log.info("Request in filter");
 
-        // Получаем токен из заголовка
         var authHeader = request.getHeader(HEADER_NAME);
         if (StringUtils.isEmpty(authHeader) || !authHeader.toLowerCase().startsWith(BEARER_PREFIX.toLowerCase())) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        log.info("2");
+        log.info("Request has Bearer access token");
 
-        // Обрезаем префикс и получаем имя пользователя из токена
         var jwt = authHeader.substring(BEARER_PREFIX.length());
         var username = jwtUtils.getClaimsFromAccessTokenString(jwt).getPayload().getSubject();
 
@@ -59,11 +56,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             UserDetails userDetails = userDetailsService()
                     .loadUserByUsername(username);
 
-            log.info("3");
+            log.info("Owner of access token is registred in DB");
 
-            // Если токен валиден, то аутентифицируем пользователя
             if (jwtUtils.isAccessTokenValid(jwt)) {
-                log.info("4");
+                log.info("Access token is valid");
                 SecurityContext context = SecurityContextHolder.createEmptyContext();
 
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
@@ -77,7 +73,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.setContext(context);
                 log.info(SecurityContextHolder.getContext().toString());
                 log.info(authToken.toString());
-                log.info("5");
+                log.info("Access token passed JwtAuthenticationFilter");
             }
         }
 
@@ -88,16 +84,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Bean
     public UserDetailsService userDetailsService() {
-//        UserDetails user =
-//                User.builder()
-//                        .username("inspector@urfu.ru")
-//                        .password("inspector")
-//                        .roles("INSPECTOR")
-//                        .build();
-
-//        log.info("IN MEM USER: " + user.toString());
-//
-//        return new InMemoryUserDetailsManager(user);
 
         return (username) -> {
             log.info("SEARCHING BY: " + username);
@@ -106,7 +92,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 throw new RuntimeException("User not found");
             }
             else {
-                log.info("FOUND: " + user.toString());
+                log.info("FOUND: " + user);
                 return User.builder()
                         .username(user.getEmail())
                         .password(user.getPassword())
