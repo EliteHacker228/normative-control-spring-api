@@ -1,4 +1,4 @@
-package ru.maeasoftoworks.normativecontrol.api.requests.login;
+package ru.maeasoftoworks.normativecontrol.api.requests.account.login;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;

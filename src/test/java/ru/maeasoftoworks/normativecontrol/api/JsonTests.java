@@ -2,7 +2,7 @@ package ru.maeasoftoworks.normativecontrol.api;
 
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
-import ru.maeasoftoworks.normativecontrol.api.requests.login.LoginResponse;
+import ru.maeasoftoworks.normativecontrol.api.requests.account.login.LoginResponse;
 import ru.maeasoftoworks.normativecontrol.api.domain.Role;
 
 import java.util.LinkedHashMap;

@@ -1,4 +1,4 @@
-package ru.maeasoftoworks.normativecontrol.api.requests.register;
+package ru.maeasoftoworks.normativecontrol.api.requests.account.register;
 
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;

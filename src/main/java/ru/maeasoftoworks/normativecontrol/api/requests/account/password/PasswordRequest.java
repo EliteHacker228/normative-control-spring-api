@@ -1,4 +1,4 @@
-package ru.maeasoftoworks.normativecontrol.api.requests.password;
+package ru.maeasoftoworks.normativecontrol.api.requests.account.password;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

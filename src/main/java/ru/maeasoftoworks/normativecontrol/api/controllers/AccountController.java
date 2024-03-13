@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import net.minidev.json.JSONObject;
 import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -14,16 +13,16 @@ import ru.maeasoftoworks.normativecontrol.api.entities.User;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.AccessTokenRefreshFailedException;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.UserAlreadyExistsException;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.WrongCredentialsException;
-import ru.maeasoftoworks.normativecontrol.api.requests.email.EmailRequest;
-import ru.maeasoftoworks.normativecontrol.api.requests.email.EmailResponse;
-import ru.maeasoftoworks.normativecontrol.api.requests.login.LoginRequest;
-import ru.maeasoftoworks.normativecontrol.api.requests.login.LoginResponse;
-import ru.maeasoftoworks.normativecontrol.api.requests.password.PasswordRequest;
-import ru.maeasoftoworks.normativecontrol.api.requests.password.PasswordResponse;
-import ru.maeasoftoworks.normativecontrol.api.requests.register.RegisterRequest;
-import ru.maeasoftoworks.normativecontrol.api.requests.register.RegisterResponse;
-import ru.maeasoftoworks.normativecontrol.api.requests.token.TokenRequest;
-import ru.maeasoftoworks.normativecontrol.api.requests.token.TokenResponse;
+import ru.maeasoftoworks.normativecontrol.api.requests.account.email.EmailRequest;
+import ru.maeasoftoworks.normativecontrol.api.requests.account.email.EmailResponse;
+import ru.maeasoftoworks.normativecontrol.api.requests.account.login.LoginRequest;
+import ru.maeasoftoworks.normativecontrol.api.requests.account.login.LoginResponse;
+import ru.maeasoftoworks.normativecontrol.api.requests.account.password.PasswordRequest;
+import ru.maeasoftoworks.normativecontrol.api.requests.account.password.PasswordResponse;
+import ru.maeasoftoworks.normativecontrol.api.requests.account.register.RegisterRequest;
+import ru.maeasoftoworks.normativecontrol.api.requests.account.register.RegisterResponse;
+import ru.maeasoftoworks.normativecontrol.api.requests.account.token.TokenRequest;
+import ru.maeasoftoworks.normativecontrol.api.requests.account.token.TokenResponse;
 import ru.maeasoftoworks.normativecontrol.api.services.AccountService;
 
 //TODO: add status and messages and status to all responses' dto
@@ -112,21 +111,6 @@ public class AccountController {
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(emailResponse.getAsJsonString());
-    }
-
-    @GetMapping("/sessions")
-    private String sessions() {
-        return "/sessions";
-    }
-
-    @GetMapping("/verify")
-    private String getVerify() {
-        return "GET /verify";
-    }
-
-    @PostMapping("/verify")
-    private String PostVerify() {
-        return "POST /verify";
     }
 
     @ExceptionHandler

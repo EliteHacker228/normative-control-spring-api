@@ -1,4 +1,4 @@
-package ru.maeasoftoworks.normativecontrol.api.requests.token;
+package ru.maeasoftoworks.normativecontrol.api.requests.account.token;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
