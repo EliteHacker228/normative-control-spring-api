@@ -26,7 +26,7 @@ public class RegisterResponse {
     private boolean isCredentialsVerified;
     @Getter
     @Setter
-    private List<Role> roles;
+    private Role role;
     @Getter
     @Setter
     private String tokenType;
@@ -37,7 +37,7 @@ public class RegisterResponse {
 
     public RegisterResponse(User user, JwtToken accessToken, JwtToken refreshToken) {
         boolean isCredentialsVerified = user.getIsVerified();
-        List<Role> roles = user.getRoles();
+        Role role = user.getRole();
         final String tokenType = "Bearer";
         LinkedHashMap<String, String> refreshTokenMap = new LinkedHashMap<>();
         refreshTokenMap.put("refreshToken", refreshToken.getCompactToken());
@@ -47,7 +47,7 @@ public class RegisterResponse {
         this.setAccessToken(accessToken.getCompactToken());
         this.setRefreshToken(refreshTokenMap);
         this.setCredentialsVerified(isCredentialsVerified);
-        this.setRoles(roles);
+        this.setRole(role);
         this.setTokenType(tokenType);
     }
 

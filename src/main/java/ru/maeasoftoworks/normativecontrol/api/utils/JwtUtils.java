@@ -46,13 +46,24 @@ public class JwtUtils {
                 .claim("aud", normativeControlApiDomain)
                 .issuer(normativeControlApiDomain)
                 .issuedAt(DateUtils.localDateTimeToDate(tokenIssuingDate))
-                .subject(user.getLogin())
-                .claim("role", user.getRoles())
+                .subject(user.getEmail())
+                .claim("role", user.getRole())
                 .claim("ent", tokenEntDate)
                 .expiration(tokenExpirationDate)
                 .signWith(signatureKey, Jwts.SIG.HS256);
 
         return JwtToken.getJwtTokenFromString(jwt.compact(), key, user);
+    }
+
+    public Jws<Claims> getClaimsFromAccessTokenString(String jwt){
+        return getClaimsFromTokenString(jwt, accessTokenKey);
+    }
+    public Jws<Claims> getClaimsFromRefreshTokenString(String jwt){
+        return getClaimsFromTokenString(jwt, refreshTokenKey);
+    }
+    private Jws<Claims> getClaimsFromTokenString(String jwt, String key){
+        var signatureKey = Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
+        return Jwts.parser().verifyWith(signatureKey).build().parseSignedClaims(jwt);
     }
 
     public boolean isAccessTokenValid(String jwt){

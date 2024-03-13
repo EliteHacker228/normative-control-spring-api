@@ -81,8 +81,8 @@ public class AccountController {
     }
 
     @PatchMapping("/password")
-    private String password() {
-        return "/password";
+    private String password(@RequestBody String request) {
+        return request;
     }
 
     @PatchMapping("/email")

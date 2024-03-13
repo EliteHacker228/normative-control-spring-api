@@ -24,7 +24,7 @@ public class JwtTests {
 
     @Test
     public void jwtUtilsTest() {
-        User user = new User("Kuznetsov.Mikhail@urfu.me", "Кузнецов М.А.", "misha.kuznetsov", "ilovepuppies2548", List.of(Role.STUDENT), "UrFU");
+        User user = new User("Kuznetsov.Mikhail@urfu.me", "Кузнецов М.А.", "misha.kuznetsov", "ilovepuppies2548", Role.STUDENT, "UrFU");
 
         JwtToken userAccessToken = jwtUtils.generateAccessTokenForUser(user);
         JwtToken userRefreshToken = jwtUtils.generateRefreshTokenForUser(user);

@@ -20,12 +20,12 @@ public class User {
     @Getter
     private Long id;
 
-    public User(String email, String name, String login, String plainTextPassword, List<Role> roles, String organization) {
+    public User(String email, String name, String login, String plainTextPassword, Role role, String organization) {
         this.email = email;
         this.name = name;
         this.login = login;
         this.password = HashingUtils.sha256(plainTextPassword);
-        this.roles = roles;
+        this.role = role;
         this.isVerified = false;
         this.organization = organization;
     }
@@ -55,7 +55,7 @@ public class User {
     @Column(name = "roles")
     @Getter
     @Setter
-    private List<Role> roles;
+    private Role role;
 
     @Column(name = "isVerified")
     @Getter

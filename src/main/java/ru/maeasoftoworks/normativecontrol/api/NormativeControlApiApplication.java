@@ -35,7 +35,7 @@ public class NormativeControlApiApplication {
 
 	@PostConstruct
 	private void initDatabase(){
-		User user = new User("inspector@urfu.ru", "Кузнецов М.А.", "misha.kuznetsov", "inspector", List.of(Role.INSPECTOR), "UrFU");
+		User user = new User("inspector@urfu.ru", "Кузнецов М.А.", "misha.kuznetsov", "inspector", Role.INSPECTOR, "UrFU");
 		usersRepository.save(user);
 		log.info("Inspector account created. Login: inspector@urfu.ru; Password: inspector;");
 	}

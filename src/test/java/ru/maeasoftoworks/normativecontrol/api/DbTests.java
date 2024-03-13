@@ -37,9 +37,9 @@ public class DbTests {
     public void userSavingAndFindingTest() {
         usersRepository.deleteAll();
 
-        usersRepository.save(new User("Kuznetsov.Mikhail@urfu.me", "Кузнецов М.А.", "misha.kuznetsov", "ilovepuppies2548", List.of(Role.STUDENT), "UrFU"));
-        usersRepository.save(new User("Mikhalkov.Valeriy@at.urfu.ru", "Михалков В.Л.", "mixalkoW", "1234qwerty5678", List.of(Role.INSPECTOR), "UrFU"));
-        usersRepository.save(new User("Karpov.Ilya@urfu.ru", "Карпов И.Н", "Karpov1974", "i<3rtf", List.of(Role.ADMIN), "UrFU"));
+        usersRepository.save(new User("Kuznetsov.Mikhail@urfu.me", "Кузнецов М.А.", "misha.kuznetsov", "ilovepuppies2548", Role.STUDENT, "UrFU"));
+        usersRepository.save(new User("Mikhalkov.Valeriy@at.urfu.ru", "Михалков В.Л.", "mixalkoW", "1234qwerty5678", Role.INSPECTOR, "UrFU"));
+        usersRepository.save(new User("Karpov.Ilya@urfu.ru", "Карпов И.Н", "Karpov1974", "i<3rtf", Role.ADMIN, "UrFU"));
         for (User findedStrudent : usersRepository.findAll()) {
             System.out.println(findedStrudent);
         }
@@ -49,7 +49,7 @@ public class DbTests {
     public void userFindingAndEditingTest() {
         usersRepository.deleteAll();
 
-        usersRepository.save(new User("Kuznetsov.Mikhail@urfu.me", "Кузнецов М.А.", "misha.kuznetsov", "ilovepuppies2548", List.of(Role.STUDENT), "UrFU"));
+        usersRepository.save(new User("Kuznetsov.Mikhail@urfu.me", "Кузнецов М.А.", "misha.kuznetsov", "ilovepuppies2548", Role.STUDENT, "UrFU"));
         var user = usersRepository.findAll().get(0);
         System.out.println(user);
         user.setEmail("KuznetsovMisha@urfu.ru");
@@ -63,7 +63,7 @@ public class DbTests {
     public void userRegistrationTest() {
         usersRepository.deleteAll();
 
-        User user = new User("Kuznetsov.Mikhail@urfu.me", "Кузнецов М.А.", "misha.kuznetsov", "ilovepuppies2548", List.of(Role.STUDENT), "UrFU");
+        User user = new User("Kuznetsov.Mikhail@urfu.me", "Кузнецов М.А.", "misha.kuznetsov", "ilovepuppies2548", Role.STUDENT, "UrFU");
 
         JwtToken jwtRefreshToken = jwtUtils.generateRefreshTokenForUser(user);
         RefreshToken refreshToken = new RefreshToken(user,

@@ -21,7 +21,7 @@ public class JsonTests {
         refreshToken.put("expiresAt", "2025-03-06T20:35:49.923524200Z");
         loginResponse.setRefreshToken(refreshToken);
         loginResponse.setCredentialsVerified(true);
-        loginResponse.setRoles(List.of(Role.ADMIN));
+        loginResponse.setRole(List.of(Role.ADMIN));
         loginResponse.setTokenType("Bearer");
 
         String result = loginResponse.getAsJsonString();
