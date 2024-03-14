@@ -32,7 +32,6 @@ import ru.maeasoftoworks.normativecontrol.api.utils.JwtUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -115,7 +114,7 @@ public class AuthedDocumentsController {
     // TODO: Controller: list, выдаёт данные о работе, которую проверял юзер
 
     @GetMapping("/list")
-    public List<ResultFromList> getLisOfVerificationsForUser(@RequestHeader("Authorization") String bearerToken, @RequestParam("targetUserEmail") String targetUserEmail) {
+    public List<ResultFromList> getListOfVerificationsForUser(@RequestHeader("Authorization") String bearerToken, @RequestParam("targetUserEmail") String targetUserEmail) {
         String accessToken = bearerToken.substring("Bearer ".length());
         String userEmail = jwtUtils.getClaimsFromAccessTokenString(accessToken).getPayload().getSubject();
         User user = usersRepository.findByEmail(userEmail);
@@ -133,6 +132,12 @@ public class AuthedDocumentsController {
     // name: Кузнецов М. А.
     // afterDate: DD.MM.YYYY:HH:MM:SS (нижняя граница дипазона дат)
     // beforeDate: DD.MM.YYYY:HH:MM:SS (верхняя граница дипазона дат)
+
+    @GetMapping("/find")
+    public List<ResultFromList> findListOfVerificationsForUser(@RequestParam("searchQuery") String searchQuery) {
+        User targetUser = usersRepository.findByEmail(searchQuery);
+        return documentsRepository.findAllByUser(targetUser).stream().map(document -> new ResultFromList(document.getCorrelationId(), document.getTimestamp())).toList();
+    }
 
     private DocumentMessageBody uploadFile(InputStream inputStream) {
         try {
