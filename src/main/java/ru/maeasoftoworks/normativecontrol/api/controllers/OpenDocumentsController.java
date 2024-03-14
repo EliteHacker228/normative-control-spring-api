@@ -1,5 +1,6 @@
 package ru.maeasoftoworks.normativecontrol.api.controllers;
 
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -11,35 +12,44 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import ru.maeasoftoworks.normativecontrol.api.entities.Document;
 import ru.maeasoftoworks.normativecontrol.api.integrations.s3.S3;
 import ru.maeasoftoworks.normativecontrol.api.jobpools.DocumentsVerificationPool;
 import ru.maeasoftoworks.normativecontrol.api.mq.DocumentMessageBody;
 import ru.maeasoftoworks.normativecontrol.api.mq.MqConfiguration;
 import ru.maeasoftoworks.normativecontrol.api.mq.MqPublisher;
+import ru.maeasoftoworks.normativecontrol.api.repositories.DocumentsRepository;
+import ru.maeasoftoworks.normativecontrol.api.repositories.UsersRepository;
 import ru.maeasoftoworks.normativecontrol.api.requests.documents.isVerified.IsVerifiedRequest;
 import ru.maeasoftoworks.normativecontrol.api.requests.documents.isVerified.IsVerifiedResponse;
 import ru.maeasoftoworks.normativecontrol.api.requests.documents.verification.VerificationRequest;
 import ru.maeasoftoworks.normativecontrol.api.requests.documents.verification.VerificationResponse;
 import ru.maeasoftoworks.normativecontrol.api.requests.documents.verifiedDocument.VerifiedDocumentRequest;
 import ru.maeasoftoworks.normativecontrol.api.utils.CorrelationIdUtils;
+import ru.maeasoftoworks.normativecontrol.api.utils.JwtUtils;
 
 import java.io.*;
 
 @RestController
-@RequestMapping("/documents")
+@RequestMapping("/documents/open")
 @RequiredArgsConstructor
 @Slf4j
-public class DocumentController {
+public class OpenDocumentsController {
 
     private final MqPublisher mqPublisher;
     private final S3 s3;
     private final MqConfiguration mqConfiguration;
     private final DocumentsVerificationPool documentsVerificationPool;
+    private final DocumentsRepository documentsRepository;
+    private final UsersRepository usersRepository;
+    private final JwtUtils jwtUtils;
 
-    // Доступен всем
-    // TODO: Добавить использование роли и данных аккаунта
     @PostMapping("/verification")
+    @Transactional
     public ResponseEntity<String> sendToVerification(@Valid VerificationRequest verificationRequest) throws IOException {
+        if (verificationRequest.getDocument().isEmpty()) {
+            throw new ResponseStatusException(HttpStatusCode.valueOf(403), "Empty files not allowed");
+        }
         DocumentMessageBody resultFileName = uploadFile(verificationRequest.getDocument().getInputStream());
         if (resultFileName == null) {
             throw new ResponseStatusException(HttpStatusCode.valueOf(500), "Uploading of file has failed");
@@ -48,14 +58,17 @@ public class DocumentController {
         VerificationResponse response = new VerificationResponse(resultFileName.getCorrelationId());
         documentsVerificationPool.startVerification(resultFileName.getCorrelationId());
 
+        Document document = new Document(null, System.currentTimeMillis());
+        document.setFingerprint(verificationRequest.getFingerprint());
+        document.setCorrelationId(resultFileName.getCorrelationId());
+        documentsRepository.save(document);
+
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response.getAsJsonString());
     }
 
-    // Доступен всем, но выдаёт ответ только если запрошенная работа доступна тому кто запрашивает.
-    // Нормоконтроллер и админ имеют доступ ко всем работам, остальные - только к своей
     @GetMapping("/isVerified")
     public ResponseEntity<String> isDocumentVerified(@Valid IsVerifiedRequest isVerifiedRequest) {
         IsVerifiedResponse isVerifiedResponse = new IsVerifiedResponse("Document with id " + isVerifiedRequest.getDocumentId() + " is verified or absent");
@@ -69,14 +82,11 @@ public class DocumentController {
                 .body(isVerifiedResponse.getAsJsonString());
     }
 
-    // TODO: Добавить использование роли и данных аккаунта
-
-    // Доступен всем, но выдаёт ответ только если запрошенная работа доступна тому кто запрашивает.
-    // Нормоконтроллер и админ имеют доступ ко всем работам, остальные - только к своей
     @GetMapping("/verifiedDocument")
     @SneakyThrows
     public ResponseEntity<byte[]> getVerifiedDocument(@Valid VerifiedDocumentRequest verifiedDocumentRequest) {
-        try (ByteArrayOutputStream result = s3.getObject(verifiedDocumentRequest.getDocumentId() + "/result." + verifiedDocumentRequest.getDocumentType())) {
+        Document document = documentsRepository.findByFingerprintAndCorrelationId(verifiedDocumentRequest.getFingerprint(), verifiedDocumentRequest.getDocumentId());
+        try (ByteArrayOutputStream result = s3.getObject(document.getCorrelationId() + "/result." + verifiedDocumentRequest.getDocumentType())) {
             if (result != null) {
                 val bytes = result.toByteArray(); // todo BLOCKING
                 if (verifiedDocumentRequest.getDocumentType().equals("docx")) {
@@ -95,20 +105,6 @@ public class DocumentController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Result of type " + verifiedDocumentRequest.getDocumentType() + " is not exists");
         }
     }
-
-    // TODO: Controller: list, выдаёт данные о работе, которую проверял юзер
-
-    @GetMapping("/list")
-    public ResponseEntity<String> getLisOfVerificationsForUser() {
-        return null;
-    }
-
-    // TODO: Controller: find, выдаёт список работ по запрошенным параметрам
-    // email: adfadf@urfu.me
-    // group: RI-400004
-    // name: Кузнецов М. А.
-    // afterDate: DD.MM.YYYY:HH:MM:SS (нижняя граница дипазона дат)
-    // beforeDate: DD.MM.YYYY:HH:MM:SS (верхняя граница дипазона дат)
 
     private DocumentMessageBody uploadFile(InputStream inputStream) {
         try {

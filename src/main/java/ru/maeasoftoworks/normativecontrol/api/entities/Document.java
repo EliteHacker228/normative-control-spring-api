@@ -28,6 +28,16 @@ public class Document {
     @Setter
     private User user;
 
+    @Column(name = "correlation_id", unique = true, nullable = false)
+    @Getter
+    @Setter
+    private String correlationId;
+
+    @Column(name = "fingerprint")
+    @Getter
+    @Setter
+    private String fingerprint;
+
     @Column(name = "timestamp")
     @Getter
     private Long timestamp;
