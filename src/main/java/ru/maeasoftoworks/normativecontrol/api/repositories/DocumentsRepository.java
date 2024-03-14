@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface DocumentsRepository extends JpaRepository<Document, Long> {
     Document findByUserAndCorrelationId(User user, String correlationId);
+    Document findByCorrelationId(String correlationId);
     Document findByFingerprintAndCorrelationId(String fingerprint, String correlationId);
     boolean existsByFingerprint(String fingerprint);
 }

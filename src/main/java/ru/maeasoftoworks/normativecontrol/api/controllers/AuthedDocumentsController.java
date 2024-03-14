@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import ru.maeasoftoworks.normativecontrol.api.domain.Role;
 import ru.maeasoftoworks.normativecontrol.api.entities.Document;
 import ru.maeasoftoworks.normativecontrol.api.entities.User;
 import ru.maeasoftoworks.normativecontrol.api.integrations.s3.S3;
@@ -80,7 +81,16 @@ public class AuthedDocumentsController {
         String accessToken = bearerToken.substring("Bearer ".length());
         String userEmail = jwtUtils.getClaimsFromAccessTokenString(accessToken).getPayload().getSubject();
         User user = usersRepository.findByEmail(userEmail);
-        Document document = documentsRepository.findByUserAndCorrelationId(user, verificationAuthedRequest.getDocumentId());
+        Document document;
+        if (user.getRole() == Role.STUDENT) {
+            document = documentsRepository.findByUserAndCorrelationId(user, verificationAuthedRequest.getDocumentId());
+        } else {
+            document = documentsRepository.findByCorrelationId(verificationAuthedRequest.getDocumentId());
+        }
+
+        if (user.getRole() == Role.STUDENT && document.getUser().getRole() == Role.STUDENT && !user.getId().equals(document.getUser().getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You have no access for this document");
+        }
         try (ByteArrayOutputStream result = s3.getObject(document.getCorrelationId() + "/result." + verificationAuthedRequest.getDocumentType())) {
             if (result != null) {
                 val bytes = result.toByteArray(); // todo BLOCKING
