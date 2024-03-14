@@ -1,14 +1,13 @@
-package ru.maeasoftoworks.normativecontrol.api.requests.documents.verification;
+package ru.maeasoftoworks.normativecontrol.api.requests.documents.open.verification;
 
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Getter
-public class VerificationRequest {
+public class VerificationOpenRequest {
     @NotNull(message = "Document can not be null")
     private final MultipartFile document;
 

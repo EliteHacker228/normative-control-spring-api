@@ -20,11 +20,11 @@ import ru.maeasoftoworks.normativecontrol.api.mq.MqConfiguration;
 import ru.maeasoftoworks.normativecontrol.api.mq.MqPublisher;
 import ru.maeasoftoworks.normativecontrol.api.repositories.DocumentsRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.UsersRepository;
-import ru.maeasoftoworks.normativecontrol.api.requests.documents.isVerified.IsVerifiedRequest;
-import ru.maeasoftoworks.normativecontrol.api.requests.documents.isVerified.IsVerifiedResponse;
-import ru.maeasoftoworks.normativecontrol.api.requests.documents.verification.VerificationRequest;
-import ru.maeasoftoworks.normativecontrol.api.requests.documents.verification.VerificationResponse;
-import ru.maeasoftoworks.normativecontrol.api.requests.documents.verifiedDocument.VerifiedDocumentRequest;
+import ru.maeasoftoworks.normativecontrol.api.requests.documents.open.isVerified.IsVerifiedOpenRequest;
+import ru.maeasoftoworks.normativecontrol.api.requests.documents.open.isVerified.IsVerifiedOpenResponse;
+import ru.maeasoftoworks.normativecontrol.api.requests.documents.open.verification.VerificationOpenRequest;
+import ru.maeasoftoworks.normativecontrol.api.requests.documents.open.verification.VerificationOpenResponse;
+import ru.maeasoftoworks.normativecontrol.api.requests.documents.open.verifiedDocument.VerifiedDocumentOpenRequest;
 import ru.maeasoftoworks.normativecontrol.api.utils.CorrelationIdUtils;
 import ru.maeasoftoworks.normativecontrol.api.utils.JwtUtils;
 
@@ -46,20 +46,20 @@ public class OpenDocumentsController {
 
     @PostMapping("/verification")
     @Transactional
-    public ResponseEntity<String> sendToVerification(@Valid VerificationRequest verificationRequest) throws IOException {
-        if (verificationRequest.getDocument().isEmpty()) {
+    public ResponseEntity<String> sendToVerification(@Valid VerificationOpenRequest verificationOpenRequest) throws IOException {
+        if (verificationOpenRequest.getDocument().isEmpty()) {
             throw new ResponseStatusException(HttpStatusCode.valueOf(403), "Empty files not allowed");
         }
-        DocumentMessageBody resultFileName = uploadFile(verificationRequest.getDocument().getInputStream());
+        DocumentMessageBody resultFileName = uploadFile(verificationOpenRequest.getDocument().getInputStream());
         if (resultFileName == null) {
             throw new ResponseStatusException(HttpStatusCode.valueOf(500), "Uploading of file has failed");
         }
         mqPublisher.publishToVerify(resultFileName.getAsJsonString(), resultFileName.getCorrelationId());
-        VerificationResponse response = new VerificationResponse(resultFileName.getCorrelationId());
+        VerificationOpenResponse response = new VerificationOpenResponse(resultFileName.getCorrelationId());
         documentsVerificationPool.startVerification(resultFileName.getCorrelationId());
 
         Document document = new Document(null, System.currentTimeMillis());
-        document.setFingerprint(verificationRequest.getFingerprint());
+        document.setFingerprint(verificationOpenRequest.getFingerprint());
         document.setCorrelationId(resultFileName.getCorrelationId());
         documentsRepository.save(document);
 
@@ -70,39 +70,39 @@ public class OpenDocumentsController {
     }
 
     @GetMapping("/isVerified")
-    public ResponseEntity<String> isDocumentVerified(@Valid IsVerifiedRequest isVerifiedRequest) {
-        IsVerifiedResponse isVerifiedResponse = new IsVerifiedResponse("Document with id " + isVerifiedRequest.getDocumentId() + " is verified or absent");
-        if (documentsVerificationPool.isVerificationInProgress(isVerifiedRequest.getDocumentId())) {
-            isVerifiedResponse = new IsVerifiedResponse("Document with id " + isVerifiedRequest.getDocumentId() + " is not verified");
+    public ResponseEntity<String> isDocumentVerified(@Valid IsVerifiedOpenRequest isVerifiedOpenRequest) {
+        IsVerifiedOpenResponse isVerifiedOpenResponse = new IsVerifiedOpenResponse("Document with id " + isVerifiedOpenRequest.getDocumentId() + " is verified or absent");
+        if (documentsVerificationPool.isVerificationInProgress(isVerifiedOpenRequest.getDocumentId())) {
+            isVerifiedOpenResponse = new IsVerifiedOpenResponse("Document with id " + isVerifiedOpenRequest.getDocumentId() + " is not verified");
         }
 
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(isVerifiedResponse.getAsJsonString());
+                .body(isVerifiedOpenResponse.getAsJsonString());
     }
 
     @GetMapping("/verifiedDocument")
     @SneakyThrows
-    public ResponseEntity<byte[]> getVerifiedDocument(@Valid VerifiedDocumentRequest verifiedDocumentRequest) {
-        Document document = documentsRepository.findByFingerprintAndCorrelationId(verifiedDocumentRequest.getFingerprint(), verifiedDocumentRequest.getDocumentId());
-        try (ByteArrayOutputStream result = s3.getObject(document.getCorrelationId() + "/result." + verifiedDocumentRequest.getDocumentType())) {
+    public ResponseEntity<byte[]> getVerifiedDocument(@Valid VerifiedDocumentOpenRequest verifiedDocumentOpenRequest) {
+        Document document = documentsRepository.findByFingerprintAndCorrelationId(verifiedDocumentOpenRequest.getFingerprint(), verifiedDocumentOpenRequest.getDocumentId());
+        try (ByteArrayOutputStream result = s3.getObject(document.getCorrelationId() + "/result." + verifiedDocumentOpenRequest.getDocumentType())) {
             if (result != null) {
                 val bytes = result.toByteArray(); // todo BLOCKING
-                if (verifiedDocumentRequest.getDocumentType().equals("docx")) {
+                if (verifiedDocumentOpenRequest.getDocumentType().equals("docx")) {
                     return ResponseEntity
                             .ok()
                             .contentType(MediaType.APPLICATION_OCTET_STREAM)
                             .body(bytes);
                 }
-                if (verifiedDocumentRequest.getDocumentType().equals("html")) {
+                if (verifiedDocumentOpenRequest.getDocumentType().equals("html")) {
                     return ResponseEntity
                             .ok()
                             .contentType(MediaType.TEXT_HTML)
                             .body(bytes);
                 }
             }
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Result of type " + verifiedDocumentRequest.getDocumentType() + " is not exists");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Result of type " + verifiedDocumentOpenRequest.getDocumentType() + " is not exists");
         }
     }
 

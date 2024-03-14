@@ -1,4 +1,4 @@
-package ru.maeasoftoworks.normativecontrol.api.requests.documents.isVerified;
+package ru.maeasoftoworks.normativecontrol.api.requests.documents.authed.isVerified;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -10,7 +10,7 @@ import lombok.Setter;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class IsVerifiedRequest {
+public class IsVerifiedAuthedRequest {
 
     @NotNull(message = "Document ID can not be null")
     @NotEmpty(message = "Document ID can not be empty")
