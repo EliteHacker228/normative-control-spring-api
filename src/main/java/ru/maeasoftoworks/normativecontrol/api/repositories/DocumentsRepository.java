@@ -11,5 +11,7 @@ public interface DocumentsRepository extends JpaRepository<Document, Long> {
     Document findByCorrelationId(String correlationId);
     Document findByFingerprintAndCorrelationId(String fingerprint, String correlationId);
     boolean existsByFingerprint(String fingerprint);
+
+    List<Document> findAllByUser(User user);
 }
 

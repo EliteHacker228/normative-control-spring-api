@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import ru.maeasoftoworks.normativecontrol.api.domain.ResultFromList;
 import ru.maeasoftoworks.normativecontrol.api.domain.Role;
 import ru.maeasoftoworks.normativecontrol.api.entities.Document;
 import ru.maeasoftoworks.normativecontrol.api.entities.User;
@@ -24,15 +25,15 @@ import ru.maeasoftoworks.normativecontrol.api.repositories.DocumentsRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.UsersRepository;
 import ru.maeasoftoworks.normativecontrol.api.requests.documents.authed.verification.VerificationAuthedRequest;
 import ru.maeasoftoworks.normativecontrol.api.requests.documents.authed.verifiedDocument.VerifiedDocumentAuthedRequest;
-import ru.maeasoftoworks.normativecontrol.api.requests.documents.authed.verifiedDocument.VerifiedDocumentAuthedResponse;
 import ru.maeasoftoworks.normativecontrol.api.requests.documents.open.verification.VerificationOpenResponse;
-import ru.maeasoftoworks.normativecontrol.api.requests.documents.open.verifiedDocument.VerifiedDocumentOpenRequest;
 import ru.maeasoftoworks.normativecontrol.api.utils.CorrelationIdUtils;
 import ru.maeasoftoworks.normativecontrol.api.utils.JwtUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/documents/authed")
@@ -114,8 +115,16 @@ public class AuthedDocumentsController {
     // TODO: Controller: list, выдаёт данные о работе, которую проверял юзер
 
     @GetMapping("/list")
-    public ResponseEntity<String> getLisOfVerificationsForUser() {
-        return null;
+    public List<ResultFromList> getLisOfVerificationsForUser(@RequestHeader("Authorization") String bearerToken, @RequestParam("targetUserEmail") String targetUserEmail) {
+        String accessToken = bearerToken.substring("Bearer ".length());
+        String userEmail = jwtUtils.getClaimsFromAccessTokenString(accessToken).getPayload().getSubject();
+        User user = usersRepository.findByEmail(userEmail);
+        if(user.getRole() == Role.STUDENT){
+            return documentsRepository.findAllByUser(user).stream().map(document -> new ResultFromList(document.getCorrelationId(), document.getTimestamp())).toList();
+        }
+
+        User targetUser = usersRepository.findByEmail(targetUserEmail);
+        return documentsRepository.findAllByUser(targetUser).stream().map(document -> new ResultFromList(document.getCorrelationId(), document.getTimestamp())).toList();
     }
 
     // TODO: Controller: find, выдаёт список работ по запрошенным параметрам
