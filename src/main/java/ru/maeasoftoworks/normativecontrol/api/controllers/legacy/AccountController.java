@@ -25,6 +25,9 @@
 //import ru.maeasoftoworks.normativecontrol.api.requests.account.token.TokenResponse;
 //import ru.maeasoftoworks.normativecontrol.api.services.AccountService;
 //
+////TODO: add status and messages and status to all responses' dto
+////TODO: use spring's native response marshalling to return json objects
+//
 //@RestController
 //@RequestMapping("/account")
 //@AllArgsConstructor

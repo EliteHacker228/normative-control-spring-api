@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.maeasoftoworks.normativecontrol.api.domain.JwtToken;
-import ru.maeasoftoworks.normativecontrol.api.domain.Role;
 import ru.maeasoftoworks.normativecontrol.api.entities.RefreshToken;
 import ru.maeasoftoworks.normativecontrol.api.entities.User;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.AccessTokenRefreshFailedException;
@@ -163,5 +162,19 @@ public class AccountService {
         refreshTokensRepository.save(refreshToken);
 
         return new JwtToken[]{newAccessToken, newRefreshToken};
+    }
+
+    public User getUserByJwtAccessToken(String accessToken){
+        String userEmail = jwtUtils.getClaimsFromAccessTokenString(accessToken).getPayload().getSubject();
+        User user = usersRepository.findByEmail(userEmail);
+        return user;
+    }
+
+    @Transactional
+    public void deleteUserByAccessToken(String accessToken){
+        String userEmail = jwtUtils.getClaimsFromAccessTokenString(accessToken).getPayload().getSubject();
+        User user = usersRepository.findByEmail(userEmail);
+        refreshTokensRepository.deleteByUser(user);
+        usersRepository.delete(user);
     }
 }

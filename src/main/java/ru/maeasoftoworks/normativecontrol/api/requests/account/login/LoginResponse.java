@@ -32,7 +32,8 @@ public class LoginResponse {
 
     }
 
-    public LoginResponse(User user, JwtToken accessToken, JwtToken refreshToken) {
+    public LoginResponse(JwtToken accessToken, JwtToken refreshToken) {
+        User user = accessToken.getUser();
         boolean isCredentialsVerified = user.getIsVerified();
         Role role = user.getRole();
         final String tokenType = "Bearer";

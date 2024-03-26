@@ -44,23 +44,46 @@ public class NormativeControlApiApplication {
     @PostConstruct
     @Transactional
     protected void initDatabase() {
-        User user = new User();
-        user.setEmail("inspector@urfu.ru");
-        user.setPassword("inspector");
-        user.setFirstName("Михаил");
-        user.setMiddleName("Андреевич");
-        user.setLastName("Кузнецов");
-        user.setAcademicGroup(null);
-        user.setOrganization("UrFU");
-        user.setRole(Role.INSPECTOR);
+        if(!usersRepository.existsByEmail("inspector@urfu.me")) {
+            User normocontroller = new User();
+            normocontroller.setEmail("inspector@urfu.me");
+            normocontroller.setPassword("inspector");
+            normocontroller.setFirstName("Михаил");
+            normocontroller.setMiddleName("Андреевич");
+            normocontroller.setLastName("Кузнецов");
+            normocontroller.setAcademicGroup(null);
+            normocontroller.setOrganization("UrFU");
+            normocontroller.setRole(Role.INSPECTOR);
 
-        JwtToken userRefreshToken = jwtUtils.generateRefreshTokenForUser(user);
-        RefreshToken refreshToken = new RefreshToken(user,
-                userRefreshToken.getCompactToken(),
-                userRefreshToken.getJws().getPayload().getIssuedAt(),
-                userRefreshToken.getJws().getPayload().getExpiration());
-        usersRepository.save(user);
-        refreshTokensRepository.save(refreshToken);
-        log.info("Inspector account created. Login: inspector@urfu.ru; Password: inspector;");
+            JwtToken normocontrollerJwtRefreshToken = jwtUtils.generateRefreshTokenForUser(normocontroller);
+            RefreshToken normocontrollerRefreshToken = new RefreshToken(normocontroller,
+                    normocontrollerJwtRefreshToken.getCompactToken(),
+                    normocontrollerJwtRefreshToken.getJws().getPayload().getIssuedAt(),
+                    normocontrollerJwtRefreshToken.getJws().getPayload().getExpiration());
+            usersRepository.save(normocontroller);
+            refreshTokensRepository.save(normocontrollerRefreshToken);
+            log.info("Inspector account created. Login: inspector@urfu.me; Password: inspector;");
+        }
+
+        if(!usersRepository.existsByEmail("admin@urfu.me")) {
+            User admin = new User();
+            admin.setEmail("admin@urfu.me");
+            admin.setPassword("admin");
+            admin.setFirstName("Виктор");
+            admin.setMiddleName("Николаевич");
+            admin.setLastName("Салтыков");
+            admin.setAcademicGroup(null);
+            admin.setOrganization("UrFU");
+            admin.setRole(Role.ADMIN);
+
+            JwtToken adminJwtRefreshToken = jwtUtils.generateRefreshTokenForUser(admin);
+            RefreshToken adminRefreshToken = new RefreshToken(admin,
+                    adminJwtRefreshToken.getCompactToken(),
+                    adminJwtRefreshToken.getJws().getPayload().getIssuedAt(),
+                    adminJwtRefreshToken.getJws().getPayload().getExpiration());
+            usersRepository.save(admin);
+            refreshTokensRepository.save(adminRefreshToken);
+            log.info("Admin account created. Login: admin@urfu.me; Password: admin;");
+        }
     }
 }
