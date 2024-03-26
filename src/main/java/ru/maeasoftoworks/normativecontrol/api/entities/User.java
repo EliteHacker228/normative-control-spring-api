@@ -20,14 +20,15 @@ public class User {
     @Getter
     private Long id;
 
-    public User(String email, String name, String login, String plainTextPassword, Role role, String organization) {
+    public User(String email, String password, String firstName, String middleName, String lastName, String academicGroup, String organization, Role role) {
         this.email = email;
-        this.name = name;
-        this.login = login;
-        this.password = HashingUtils.sha256(plainTextPassword);
-        this.role = role;
-        this.isVerified = false;
+        this.password = password;
+        this.firstName = firstName;
+        this.middleName = middleName;
+        this.lastName = lastName;
+        this.academicGroup = academicGroup;
         this.organization = organization;
+        this.role = role;
     }
 
     @Column(name = "email")
@@ -35,35 +36,46 @@ public class User {
     @Setter
     private String email;
 
-    @Column(name = "name")
-    @Getter
-    @Setter
-    private String name;
-
-    @Column(name = "login")
-    @Getter
-    @Setter
-    private String login;
-
     @Column(name = "password")
     @Getter
     private String password;
+
     public void setPassword(String plainTextPassword) {
         this.password = HashingUtils.sha256(plainTextPassword);
     }
 
-    @Column(name = "roles")
+    @Column(name = "first_name")
     @Getter
     @Setter
-    private Role role;
+    private String firstName;
 
-    @Column(name = "isVerified")
+    @Column(name = "middle_name")
     @Getter
     @Setter
-    private Boolean isVerified;
+    private String middleName;
+
+    @Column(name = "last_name")
+    @Getter
+    @Setter
+    private String lastName;
+
+    @Column(name = "academic_group")
+    @Getter
+    @Setter
+    private String academicGroup;
 
     @Column(name = "organization")
     @Getter
     @Setter
     private String organization;
+
+    @Column(name = "is_verified")
+    @Getter
+    @Setter
+    private Boolean isVerified = false;
+
+    @Column(name = "role")
+    @Getter
+    @Setter
+    private Role role;
 }

@@ -26,7 +26,7 @@ import ru.maeasoftoworks.normativecontrol.api.utils.JwtUtils;
 
 import java.util.List;
 
-@SpringBootApplication(exclude = org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class)
+@SpringBootApplication(exclude = {org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class})
 //@SpringBootApplication
 @AllArgsConstructor
 public class NormativeControlApiApplication {
@@ -44,7 +44,16 @@ public class NormativeControlApiApplication {
     @PostConstruct
     @Transactional
     protected void initDatabase() {
-        User user = new User("inspector@urfu.ru", "Кузнецов М.А.", "misha.kuznetsov", "inspector", Role.INSPECTOR, "UrFU");
+        User user = new User();
+        user.setEmail("inspector@urfu.ru");
+        user.setPassword("inspector");
+        user.setFirstName("Михаил");
+        user.setMiddleName("Андреевич");
+        user.setLastName("Кузнецов");
+        user.setAcademicGroup(null);
+        user.setOrganization("UrFU");
+        user.setRole(Role.INSPECTOR);
+
         JwtToken userRefreshToken = jwtUtils.generateRefreshTokenForUser(user);
         RefreshToken refreshToken = new RefreshToken(user,
                 userRefreshToken.getCompactToken(),

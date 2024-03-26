@@ -12,7 +12,6 @@ import ru.maeasoftoworks.normativecontrol.api.entities.User;
 import ru.maeasoftoworks.normativecontrol.api.utils.DateUtils;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 
 public class RegisterResponse {
     @Getter
@@ -23,7 +22,7 @@ public class RegisterResponse {
     private LinkedHashMap<String, String> refreshToken;
     @Getter
     @Setter
-    private boolean isCredentialsVerified;
+    private boolean isVerified;
     @Getter
     @Setter
     private Role role;
@@ -46,7 +45,7 @@ public class RegisterResponse {
 
         this.setAccessToken(accessToken.getCompactToken());
         this.setRefreshToken(refreshTokenMap);
-        this.setCredentialsVerified(isCredentialsVerified);
+        this.setVerified(isCredentialsVerified);
         this.setRole(role);
         this.setTokenType(tokenType);
     }

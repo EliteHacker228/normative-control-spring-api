@@ -16,8 +16,6 @@ import ru.maeasoftoworks.normativecontrol.api.repositories.UsersRepository;
 import ru.maeasoftoworks.normativecontrol.api.utils.HashingUtils;
 import ru.maeasoftoworks.normativecontrol.api.utils.JwtUtils;
 
-import java.util.List;
-
 @Service
 @AllArgsConstructor
 @Slf4j
@@ -55,18 +53,14 @@ public class AccountService {
     }
 
     @Transactional
-    public JwtToken[] registrateUserByCreds(String email, String plainTextPassword) {
-
-        if (usersRepository.existsByEmail(email))
+    public JwtToken[] registerUser(User user){
+        if(usersRepository.existsByEmail(user.getEmail()))
             throw new UserAlreadyExistsException();
-
-        User user = new User(email, "", "", plainTextPassword, Role.STUDENT, "UrFU");
 
         JwtToken jwtAccessToken = jwtUtils.generateAccessTokenForUser(user);
         JwtToken jwtRefreshToken = jwtUtils.generateRefreshTokenForUser(user);
 
         RefreshToken refreshToken = new RefreshToken();
-
         refreshToken.setUser(user);
         refreshToken.setToken(jwtRefreshToken.getCompactToken());
         refreshToken.setCreatedAt(jwtRefreshToken.getJws().getPayload().getIssuedAt());
@@ -75,9 +69,33 @@ public class AccountService {
         usersRepository.save(user);
         refreshTokensRepository.save(refreshToken);
 
-
         return new JwtToken[]{jwtAccessToken, jwtRefreshToken};
     }
+
+//    @Transactional
+//    public JwtToken[] registerUserByCreds(String email, String plainTextPassword) {
+//
+//        if (usersRepository.existsByEmail(email))
+//            throw new UserAlreadyExistsException();
+//
+//        User user = new User(email, "", "", plainTextPassword, Role.STUDENT, "UrFU");
+//
+//        JwtToken jwtAccessToken = jwtUtils.generateAccessTokenForUser(user);
+//        JwtToken jwtRefreshToken = jwtUtils.generateRefreshTokenForUser(user);
+//
+//        RefreshToken refreshToken = new RefreshToken();
+//
+//        refreshToken.setUser(user);
+//        refreshToken.setToken(jwtRefreshToken.getCompactToken());
+//        refreshToken.setCreatedAt(jwtRefreshToken.getJws().getPayload().getIssuedAt());
+//        refreshToken.setExpiresAt(jwtRefreshToken.getJws().getPayload().getExpiration());
+//
+//        usersRepository.save(user);
+//        refreshTokensRepository.save(refreshToken);
+//
+//
+//        return new JwtToken[]{jwtAccessToken, jwtRefreshToken};
+//    }
 
     @Transactional
     public JwtToken[] updateAccessTokenByRefreshToken(String compactRefreshToken) {
