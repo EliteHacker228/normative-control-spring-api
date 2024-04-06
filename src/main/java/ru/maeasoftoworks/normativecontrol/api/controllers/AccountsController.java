@@ -32,8 +32,10 @@ public class AccountsController {
         return usersRepository.findUsersByUniversity(university);
     }
 
+    // Администратор может получить данные о любом аккаунте из университета, к которому приписан
+    // Другие пользователи - только данные о своём аккаунте
     @GetMapping("/{user_id}")
-    public User getUserAsAdmin(@RequestHeader("Authorization") String bearerToken,
+    public User getUser(@RequestHeader("Authorization") String bearerToken,
                                      @PathVariable("user_id") Long userId) {
         String accessToken = bearerToken.substring(("Bearer ").length());
         Jwt accessJwt = jwtService.getJwtFromAccessTokenString(accessToken);
