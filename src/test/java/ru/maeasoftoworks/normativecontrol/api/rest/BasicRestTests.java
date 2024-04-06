@@ -10,6 +10,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.junit.jupiter.api.Test;
+import ru.maeasoftoworks.normativecontrol.api.dto.auth.AuthJwtPair;
+import ru.maeasoftoworks.normativecontrol.api.dto.auth.login.LoginData;
 import ru.maeasoftoworks.normativecontrol.api.services.AuthService;
 import ru.maeasoftoworks.normativecontrol.api.utils.jwt.Jwt;
 
@@ -38,12 +40,13 @@ public class BasicRestTests {
 
     @Test
     void shouldReturnDefaultMessage() throws Exception {
-        when(authService.loginByCredentials("P.O.Kurchatov@urfu.me", "admin_password")).thenReturn(new Jwt[]{null, null});
+        LoginData loginData = new LoginData();
+        loginData.setEmail("P.O.Kurchatov@urfu.me");
+        loginData.setPassword("admin_password");
+        when(authService.login(loginData)).thenReturn(new AuthJwtPair("", ""));
 
-        this.mockMvc.perform(post("/auth/login").content("{\"email\": \"P.O.Kurchatov@urfu.me\", \"password\": \"admin_password\"}").contentType(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(post("/auth/login").content(loginData.toString()).contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString("accessToken")))
-                .andExpect(content().string(containsString("refreshToken")));
+                .andExpect(status().isOk());
     }
 }

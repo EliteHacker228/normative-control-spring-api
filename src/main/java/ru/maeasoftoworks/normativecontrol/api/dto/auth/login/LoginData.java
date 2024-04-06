@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 import ru.maeasoftoworks.normativecontrol.api.dto.auth.JsonSerializable;
 
-@AllArgsConstructor
 @Getter
 @Setter
 public class LoginData extends JsonSerializable {
