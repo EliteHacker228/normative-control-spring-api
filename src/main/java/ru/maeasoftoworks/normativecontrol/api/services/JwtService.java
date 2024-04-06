@@ -46,7 +46,7 @@ public class JwtService {
         String email = jws.getPayload().getSubject();
         User user = usersRepository.findUserByEmail(email);
         if(user == null)
-            throw new UserDoesNotExistsException("User with e-mail " + email + " is not exists");
+            throw new UserDoesNotExistsException("User with e-mail " + email + " does not exists");
         return Jwt.getJwtTokenFromString(jwt, key, user);
     }
 

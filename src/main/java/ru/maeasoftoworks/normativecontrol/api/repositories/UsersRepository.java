@@ -7,6 +7,7 @@ import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
 import java.util.List;
 
 public interface UsersRepository extends JpaRepository<User, Long> {
+    User findUsersById(Long id);
     User findUserByEmail(String email);
     List<User> findUsersByUniversity(University university);
     boolean existsUserByEmail(String email);

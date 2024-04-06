@@ -22,7 +22,7 @@ public class AuthService {
     public AuthJwtPair login(LoginData loginData) {
         User user = usersRepository.findUserByEmail(loginData.getEmail());
         if (user == null)
-            throw new UserDoesNotExistsException("User with e-mail " + loginData.getEmail() + " is not exists");
+            throw new UserDoesNotExistsException("User with e-mail " + loginData.getEmail() + " does not exists");
         if (!user.getPassword().equals(loginData.getPassword()))
             throw new WrongPasswordException("Given password is incorrect");
 
