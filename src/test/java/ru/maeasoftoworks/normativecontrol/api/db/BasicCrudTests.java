@@ -103,6 +103,7 @@ public class BasicCrudTests {
                     .middleName("Анатольевич")
                     .lastName("Шарапов")
                     .isVerified(true)
+                    .university(UrFU)
                     .academicGroup(RI_400015)
                     .normocontroller(normocontroller)
                     .documentsLimit(5)
@@ -116,6 +117,7 @@ public class BasicCrudTests {
                     .middleName("Сергеевич")
                     .lastName("Жеглов")
                     .isVerified(true)
+                    .university(UrFU)
                     .academicGroup(RI_400015)
                     .normocontroller(normocontroller)
                     .documentsLimit(5)
@@ -132,6 +134,7 @@ public class BasicCrudTests {
                     .academicGroup(RI_400016)
                     .normocontroller(normocontroller)
                     .documentsLimit(5)
+                    .university(UrFU)
                     .build();
             usersRepository.save(student);
         }

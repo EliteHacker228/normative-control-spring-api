@@ -1,4 +1,4 @@
-package ru.maeasoftoworks.normativecontrol.api.dto.auth;
+package ru.maeasoftoworks.normativecontrol.api.dto;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;

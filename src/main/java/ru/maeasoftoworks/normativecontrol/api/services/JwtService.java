@@ -1,20 +1,26 @@
-package ru.maeasoftoworks.normativecontrol.api.utils.jwt;
+package ru.maeasoftoworks.normativecontrol.api.services;
 
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
+import ru.maeasoftoworks.normativecontrol.api.exceptions.UserDoesNotExistsException;
+import ru.maeasoftoworks.normativecontrol.api.repositories.UsersRepository;
 import ru.maeasoftoworks.normativecontrol.api.utils.date.DateUtils;
+import ru.maeasoftoworks.normativecontrol.api.utils.jwt.Jwt;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Date;
 
+// TODO: переделать систему работы с JWT
 @Component
-public class JwtUtils {
+@RequiredArgsConstructor
+public class JwtService {
     @Value("${jwt.accessToken.key}")
     private String accessTokenKey;
     @Value("${jwt.accessToken.lifetimeInSeconds}")
@@ -25,6 +31,24 @@ public class JwtUtils {
     private long refreshTokenLifetime;
     @Value("${normativeControl.api.domain}")
     private String normativeControlApiDomain;
+    private final UsersRepository usersRepository;
+
+    public Jwt getJwtFromAccessTokenString(String jwt){
+        return getJwtFromTokenString(jwt, accessTokenKey);
+    }
+
+    public Jwt getJwtFromRefreshTokenString(String jwt){
+        return getJwtFromTokenString(jwt, refreshTokenKey);
+    }
+
+    private Jwt getJwtFromTokenString(String jwt, String key){
+        Jws<Claims> jws = getClaimsFromTokenString(jwt, key);
+        String email = jws.getPayload().getSubject();
+        User user = usersRepository.findUserByEmail(email);
+        if(user == null)
+            throw new UserDoesNotExistsException("User with e-mail " + email + " is not exists");
+        return Jwt.getJwtTokenFromString(jwt, key, user);
+    }
 
     public Jwt generateAccessTokenForUser(User user) {
         return generateTokenStringForUser(user, accessTokenKey, accessTokenLifetime);

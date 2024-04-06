@@ -1,9 +1,8 @@
 package ru.maeasoftoworks.normativecontrol.api.dto.auth.login;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import ru.maeasoftoworks.normativecontrol.api.dto.auth.JsonSerializable;
+import ru.maeasoftoworks.normativecontrol.api.dto.JsonSerializable;
 
 @Getter
 @Setter

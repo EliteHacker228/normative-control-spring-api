@@ -75,6 +75,7 @@ public class NormativeControlApiApplication {
                 .lastName("Шарапов")
                 .isVerified(true)
                 .academicGroup(RI_400015)
+                .university(UrFU)
                 .normocontroller(normocontroller)
                 .documentsLimit(5)
                 .build();

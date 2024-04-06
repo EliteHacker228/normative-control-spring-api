@@ -22,15 +22,14 @@ public class Admin extends User {
         super.firstName = firstName;
         super.middleName = middleName;
         super.lastName = lastName;
-        this.university = university;
+        super.university = university;
+        this.role = Role.ADMIN;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "university")
-    private University university;
+    private Role role;
 
     @Override
     public Role getRole() {
-        return Role.ADMIN;
+        return this.role;
     }
 }

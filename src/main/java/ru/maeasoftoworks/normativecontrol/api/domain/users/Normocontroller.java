@@ -22,19 +22,18 @@ public class Normocontroller extends User {
         super.firstName = firstName;
         super.middleName = middleName;
         super.lastName = lastName;
-        this.university = university;
+        super.university = university;
         this.documentsLimit = documentsLimit;
+        this.role = Role.NORMOCONTROLLER;
     }
-
-    @ManyToOne
-    @JoinColumn(name = "university")
-    private University university;
 
     @Column(name = "documents_limit")
     private int documentsLimit;
 
+    private Role role;
+
     @Override
     public Role getRole() {
-        return Role.NORMOCONTROLLER;
+        return this.role;
     }
 }

@@ -1,12 +1,14 @@
 package ru.maeasoftoworks.normativecontrol.api.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity(name = "academic_groups")
 @NoArgsConstructor
 @ToString
+@Getter
 public class AcademicGroup {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
