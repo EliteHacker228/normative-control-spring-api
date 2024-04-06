@@ -2,14 +2,13 @@ package ru.maeasoftoworks.normativecontrol.api.dto.auth.login;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import ru.maeasoftoworks.normativecontrol.api.dto.auth.WebDto;
+import ru.maeasoftoworks.normativecontrol.api.dto.auth.JsonSerializable;
 
 @AllArgsConstructor
 @Getter
 @Setter
-public class LoginRequest extends WebDto {
+public class LoginData extends JsonSerializable {
     private String email;
     private String password;
 }

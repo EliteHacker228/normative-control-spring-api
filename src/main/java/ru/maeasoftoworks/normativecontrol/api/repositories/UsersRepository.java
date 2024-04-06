@@ -4,5 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
 
 public interface UsersRepository extends JpaRepository<User, Long> {
-    public User findUserByEmail(String email);
+    User findUserByEmail(String email);
+    boolean existsUserByEmail(String email);
 }
