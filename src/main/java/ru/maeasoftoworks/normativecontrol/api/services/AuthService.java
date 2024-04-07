@@ -3,13 +3,11 @@ package ru.maeasoftoworks.normativecontrol.api.services;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
 import ru.maeasoftoworks.normativecontrol.api.dto.auth.AuthJwtPair;
 import ru.maeasoftoworks.normativecontrol.api.dto.auth.login.LoginData;
-import ru.maeasoftoworks.normativecontrol.api.exceptions.InvalidRefreshTokenException;
-import ru.maeasoftoworks.normativecontrol.api.exceptions.UserAlreadyExistsException;
-import ru.maeasoftoworks.normativecontrol.api.exceptions.UserDoesNotExistsException;
-import ru.maeasoftoworks.normativecontrol.api.exceptions.WrongPasswordException;
+import ru.maeasoftoworks.normativecontrol.api.exceptions.*;
 import ru.maeasoftoworks.normativecontrol.api.repositories.UsersRepository;
 
 @Service

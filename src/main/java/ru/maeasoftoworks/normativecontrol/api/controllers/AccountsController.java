@@ -2,17 +2,14 @@ package ru.maeasoftoworks.normativecontrol.api.controllers;
 
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONObject;
-import netscape.javascript.JSObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.maeasoftoworks.normativecontrol.api.domain.University;
+import ru.maeasoftoworks.normativecontrol.api.domain.users.Admin;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
 import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserDto;
-import ru.maeasoftoworks.normativecontrol.api.exceptions.UnauthorizedException;
-import ru.maeasoftoworks.normativecontrol.api.exceptions.UserDoesNotExistsException;
 import ru.maeasoftoworks.normativecontrol.api.repositories.UsersRepository;
 import ru.maeasoftoworks.normativecontrol.api.services.AccountsService;
 import ru.maeasoftoworks.normativecontrol.api.services.JwtService;
@@ -24,8 +21,6 @@ import java.util.List;
 @RequestMapping("/accounts")
 @RequiredArgsConstructor
 public class AccountsController {
-    // TODO: вынести логику, требующую взаимодействия с репозиторием, в сервис
-    private final UsersRepository usersRepository;
     private final JwtService jwtService;
     private final AccountsService accountsService;
 
@@ -37,10 +32,8 @@ public class AccountsController {
     public List<User> getAllUsersAsAdmin(@RequestHeader("Authorization") String bearerToken) {
         String accessToken = bearerToken.substring(("Bearer ").length());
         Jwt accessJwt = jwtService.getJwtFromAccessTokenString(accessToken);
-        User user = accessJwt.getUser();
-        University university = user.getUniversity();
-        List<User> foundUsers = usersRepository.findUsersByUniversity(university);
-        return foundUsers.stream().filter(usr -> usr.getRole() != Role.ADMIN || usr == user).toList();
+        Admin admin = (Admin) accessJwt.getUser();
+        return accountsService.getUsersForAdmin(admin);
     }
 
     // Администратор может получить данные о любом аккаунте из университета, к которому приписан
@@ -50,20 +43,7 @@ public class AccountsController {
         String accessToken = bearerToken.substring(("Bearer ").length());
         Jwt accessJwt = jwtService.getJwtFromAccessTokenString(accessToken);
         User user = accessJwt.getUser();
-        University university = user.getUniversity();
-
-        User foundUser = usersRepository.findUsersById(userId);
-
-        if (foundUser == null)
-            throw new UserDoesNotExistsException("User with id " + userId + " does not exists");
-        if (foundUser.getUniversity() != university)
-            throw new UnauthorizedException("You are not authorized to access this resource");
-        if (user.getRole() != Role.ADMIN && user != foundUser)
-            throw new UnauthorizedException("You are not authorized to access this resource");
-        if (user.getRole() == Role.ADMIN && foundUser.getRole() == Role.ADMIN && user != foundUser)
-            throw new UnauthorizedException("You are not authorized to access this resource");
-
-        return foundUser;
+        return accountsService.getOwnUserOrAnyAsAdminById(user, userId);
     }
 
     // Администратор может обновить данные любого аккаунта в своём университете, кроме аккаунта другого администратора
@@ -75,42 +55,18 @@ public class AccountsController {
         String accessToken = bearerToken.substring(("Bearer ").length());
         Jwt accessJwt = jwtService.getJwtFromAccessTokenString(accessToken);
         User user = accessJwt.getUser();
-        University university = user.getUniversity();
-
-        User foundUser = usersRepository.findUsersById(userId);
-
-        if (foundUser == null)
-            throw new UserDoesNotExistsException("User with id " + userId + " does not exists");
-        if (foundUser.getUniversity() != university)
-            throw new UnauthorizedException("You are not authorized to access this resource");
-        if (user.getRole() != Role.ADMIN && user != foundUser)
-            throw new UnauthorizedException("You are not authorized to access this resource");
-        if (user.getRole() == Role.ADMIN && foundUser.getRole() == Role.ADMIN && user != foundUser)
-            throw new UnauthorizedException("You are not authorized to access this resource");
-
-        return accountsService.updateUser(foundUser, updateUserDto);
+        User userToUpdate = accountsService.getOwnUserOrAnyAsAdminById(user, userId);
+        return accountsService.updateUser(userToUpdate, updateUserDto);
     }
 
     @DeleteMapping(value = "/{user_id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public JSONObject deleteUser(@RequestHeader("Authorization") String bearerToken,
-                                               @PathVariable("user_id") Long userId) {
+                                 @PathVariable("user_id") Long userId) {
         String accessToken = bearerToken.substring(("Bearer ").length());
         Jwt accessJwt = jwtService.getJwtFromAccessTokenString(accessToken);
         User user = accessJwt.getUser();
-        University university = user.getUniversity();
-
-        User foundUser = usersRepository.findUsersById(userId);
-
-        if (foundUser == null)
-            throw new UserDoesNotExistsException("User with id " + userId + " does not exists");
-        if (foundUser.getUniversity() != university)
-            throw new UnauthorizedException("You are not authorized to access this resource");
-        if (user.getRole() != Role.ADMIN && user != foundUser)
-            throw new UnauthorizedException("You are not authorized to access this resource");
-        if(user.getRole() == Role.ADMIN && foundUser.getRole() == Role.ADMIN && user != foundUser)
-            throw new UnauthorizedException("You are not authorized to access this resource");
-
-        accountsService.deleteUser(foundUser);
+        User userToDelete = accountsService.getOwnUserOrAnyAsAdminById(user, userId);
+        accountsService.deleteUser(userToDelete);
         JSONObject response = new JSONObject();
         response.put("status", HttpStatus.OK);
         response.put("message", "User with id " + userId + " deleted successfully");

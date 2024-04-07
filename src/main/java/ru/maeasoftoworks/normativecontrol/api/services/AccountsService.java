@@ -5,16 +5,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.maeasoftoworks.normativecontrol.api.domain.AcademicGroup;
 import ru.maeasoftoworks.normativecontrol.api.domain.University;
-import ru.maeasoftoworks.normativecontrol.api.domain.users.Normocontroller;
-import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
-import ru.maeasoftoworks.normativecontrol.api.domain.users.Student;
-import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
+import ru.maeasoftoworks.normativecontrol.api.domain.users.*;
 import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserDto;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.ResourceDoesNotExists;
+import ru.maeasoftoworks.normativecontrol.api.exceptions.UnauthorizedException;
+import ru.maeasoftoworks.normativecontrol.api.exceptions.UserDoesNotExistsException;
 import ru.maeasoftoworks.normativecontrol.api.repositories.AcademicGroupsRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.NormocontrollersRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.UniversitiesRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.UsersRepository;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +24,26 @@ public class AccountsService {
     private final UniversitiesRepository universitiesRepository;
     private final AcademicGroupsRepository academicGroupsRepository;
     private final NormocontrollersRepository normocontrollersRepository;
+
+    public List<User> getUsersForAdmin(Admin admin){
+        List<User> foundUsers = usersRepository.findUsersByUniversity(admin.getUniversity());
+        return foundUsers.stream().filter(user -> user.getRole() != Role.ADMIN || user == admin).toList();
+    }
+
+    public User getOwnUserOrAnyAsAdminById(User actor, Long targetId){
+        User target = usersRepository.findUsersById(targetId);
+
+        if (target == null)
+            throw new UserDoesNotExistsException("User with id " + targetId + " does not exists");
+        if (target.getUniversity() != actor.getUniversity())
+            throw new UnauthorizedException("You are not authorized to access this resource");
+        if (actor.getRole() != Role.ADMIN && actor != target)
+            throw new UnauthorizedException("You are not authorized to access this resource");
+        if (actor.getRole() == Role.ADMIN && target.getRole() == Role.ADMIN && actor != target)
+            throw new UnauthorizedException("You are not authorized to access this resource");
+
+        return target;
+    }
 
     @Transactional
     public User updateUser(User user, UpdateUserDto updateUserDto) {
