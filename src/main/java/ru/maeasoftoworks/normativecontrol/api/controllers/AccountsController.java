@@ -9,7 +9,10 @@ import ru.maeasoftoworks.normativecontrol.api.domain.University;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Admin;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
+import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserDocumentsLimitDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserDto;
+import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserEmailDto;
+import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserPasswordDto;
 import ru.maeasoftoworks.normativecontrol.api.repositories.UsersRepository;
 import ru.maeasoftoworks.normativecontrol.api.services.AccountsService;
 import ru.maeasoftoworks.normativecontrol.api.services.JwtService;
@@ -29,47 +32,72 @@ public class AccountsController {
 
     // Администратор может просмотреть аккаунты всех студентов и нормоконтролеров в своём университете
     @GetMapping
-    public List<User> getAllUsersAsAdmin(@RequestHeader("Authorization") String bearerToken) {
-        String accessToken = bearerToken.substring(("Bearer ").length());
-        Jwt accessJwt = jwtService.getJwtFromAccessTokenString(accessToken);
-        Admin admin = (Admin) accessJwt.getUser();
+    public List<User> getAllUsersAsAdmin(@RequestHeader("Authorization") String authorizationHeader) {
+        Admin admin = (Admin) getUserFromAuthorizationHeader(authorizationHeader);
         return accountsService.getUsersForAdmin(admin);
     }
 
     // Администратор может получить данные о любом аккаунте из университета, к которому приписан
     // Другие пользователи - только данные о своём аккаунте
     @GetMapping("/{user_id}")
-    public User getUser(@RequestHeader("Authorization") String bearerToken, @PathVariable("user_id") Long userId) {
-        String accessToken = bearerToken.substring(("Bearer ").length());
-        Jwt accessJwt = jwtService.getJwtFromAccessTokenString(accessToken);
-        User user = accessJwt.getUser();
+    public User getUser(@RequestHeader("Authorization") String authorizationHeader, @PathVariable("user_id") Long userId) {
+        User user = getUserFromAuthorizationHeader(authorizationHeader);
         return accountsService.getOwnUserOrAnyAsAdminById(user, userId);
     }
 
     // Администратор может обновить данные любого аккаунта в своём университете, кроме аккаунта другого администратора
     // Другие пользователи - только данные своего аккаунта
     @PatchMapping("/{user_id}")
-    public User updateUser(@RequestHeader("Authorization") String bearerToken,
+    public User updateUser(@RequestHeader("Authorization") String authorizationHeader,
                            @PathVariable("user_id") Long userId,
                            @RequestBody UpdateUserDto updateUserDto) {
-        String accessToken = bearerToken.substring(("Bearer ").length());
-        Jwt accessJwt = jwtService.getJwtFromAccessTokenString(accessToken);
-        User user = accessJwt.getUser();
+        User user = getUserFromAuthorizationHeader(authorizationHeader);
         User userToUpdate = accountsService.getOwnUserOrAnyAsAdminById(user, userId);
         return accountsService.updateUser(userToUpdate, updateUserDto);
     }
 
     @DeleteMapping("/{user_id}")
-    public JSONObject deleteUser(@RequestHeader("Authorization") String bearerToken,
+    public JSONObject deleteUser(@RequestHeader("Authorization") String authorizationHeader,
                                  @PathVariable("user_id") Long userId) {
-        String accessToken = bearerToken.substring(("Bearer ").length());
-        Jwt accessJwt = jwtService.getJwtFromAccessTokenString(accessToken);
-        User user = accessJwt.getUser();
+        User user = getUserFromAuthorizationHeader(authorizationHeader);
         User userToDelete = accountsService.getOwnUserOrAnyAsAdminById(user, userId);
         accountsService.deleteUser(userToDelete);
         JSONObject response = new JSONObject();
         response.put("status", HttpStatus.OK);
         response.put("message", "User with id " + userId + " deleted successfully");
         return response;
+    }
+
+    @PatchMapping("/{user_id}/email")
+    public User updateUserEmail(@RequestHeader("Authorization") String authorizationHeader,
+                                @PathVariable("user_id") Long userId,
+                                @RequestBody UpdateUserEmailDto updateUserEmailDto) {
+        User user = getUserFromAuthorizationHeader(authorizationHeader);
+        User userToUpdateEmail = accountsService.getOwnUserOrAnyAsAdminById(user, userId);
+        return accountsService.updateUserEmail(userToUpdateEmail, updateUserEmailDto);
+    }
+
+    @PatchMapping("/{user_id}/password")
+    public User updateUserEmail(@RequestHeader("Authorization") String authorizationHeader,
+                                @PathVariable("user_id") Long userId,
+                                @RequestBody UpdateUserPasswordDto updateUserPasswordDto) {
+        User user = getUserFromAuthorizationHeader(authorizationHeader);
+        User userToUpdateEmail = accountsService.getOwnUserOrAnyAsAdminById(user, userId);
+        return accountsService.updateUserPassword(userToUpdateEmail, updateUserPasswordDto);
+    }
+
+    @PatchMapping("/{user_id}/documents-limit")
+    public User updateUserEmail(@RequestHeader("Authorization") String authorizationHeader,
+                                @PathVariable("user_id") Long userId,
+                                @RequestBody UpdateUserDocumentsLimitDto updateUserDocumentsLimitDto) {
+        User user = getUserFromAuthorizationHeader(authorizationHeader);
+        User userToUpdateEmail = accountsService.getOwnUserOrAnyAsAdminById(user, userId);
+        return accountsService.updateUserDocumentsLimit(userToUpdateEmail, updateUserDocumentsLimitDto);
+    }
+
+    private User getUserFromAuthorizationHeader(String authHeader){
+        String accessToken = authHeader.substring(("Bearer ").length());
+        Jwt accessJwt = jwtService.getJwtFromAccessTokenString(accessToken);
+        return accessJwt.getUser();
     }
 }
