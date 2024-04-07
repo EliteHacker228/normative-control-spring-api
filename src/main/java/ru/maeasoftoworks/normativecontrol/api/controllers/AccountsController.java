@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.maeasoftoworks.normativecontrol.api.domain.University;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Admin;
@@ -95,7 +96,20 @@ public class AccountsController {
         return accountsService.updateUserDocumentsLimit(userToUpdateEmail, updateUserDocumentsLimitDto);
     }
 
-    private User getUserFromAuthorizationHeader(String authHeader){
+    @DeleteMapping("/{user_id}/verifications/{verification_link_id}")
+    public ResponseEntity<JSONObject> verifyUserAction(@RequestHeader("Authorization") String authorizationHeader,
+                                                       @PathVariable("user_id") Long userId,
+                                                       @PathVariable("verification_link_id") Long verificationLinkId) {
+        JSONObject response = new JSONObject();
+        response.put("status", HttpStatus.NOT_IMPLEMENTED.value());
+        response.put("message", "Verification functional is not implemented yet");
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_IMPLEMENTED)
+                .body(response);
+    }
+
+    private User getUserFromAuthorizationHeader(String authHeader) {
         String accessToken = authHeader.substring(("Bearer ").length());
         Jwt accessJwt = jwtService.getJwtFromAccessTokenString(accessToken);
         return accessJwt.getUser();
