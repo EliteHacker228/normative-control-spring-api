@@ -19,6 +19,6 @@ public class University {
         this.name = name;
     }
 
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     private String name;
 }

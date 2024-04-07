@@ -24,6 +24,6 @@ public class AcademicGroup {
     @JoinColumn(name = "university")
     private University university;
 
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     private String name;
 }
