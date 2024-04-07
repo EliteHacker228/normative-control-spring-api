@@ -3,6 +3,7 @@ package ru.maeasoftoworks.normativecontrol.api.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 @Entity(name = "academic_groups")
@@ -25,5 +26,6 @@ public class AcademicGroup {
     private University university;
 
     @Column(name = "name", unique = true)
+    @Setter
     private String name;
 }

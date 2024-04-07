@@ -19,7 +19,6 @@ import ru.maeasoftoworks.normativecontrol.api.repositories.NormocontrollersRepos
 import ru.maeasoftoworks.normativecontrol.api.repositories.UniversitiesRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.UsersRepository;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.List;
 
 @Service

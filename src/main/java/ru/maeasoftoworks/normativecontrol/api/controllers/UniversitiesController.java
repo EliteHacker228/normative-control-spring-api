@@ -9,6 +9,7 @@ import ru.maeasoftoworks.normativecontrol.api.domain.AcademicGroup;
 import ru.maeasoftoworks.normativecontrol.api.domain.University;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
 import ru.maeasoftoworks.normativecontrol.api.dto.universities.CreateAcademicGroupDto;
+import ru.maeasoftoworks.normativecontrol.api.dto.universities.UpdateAcademicGroupDto;
 import ru.maeasoftoworks.normativecontrol.api.services.JwtService;
 import ru.maeasoftoworks.normativecontrol.api.services.UniversitiesService;
 
@@ -69,5 +70,18 @@ public class UniversitiesController {
         User user = jwtService.getUserFromAuthorizationHeader(authorizationHeader);
         University university = universitiesService.getOwnUniversity(user, universityId);
         return universitiesService.createAcademicGroupForUniversity(university, createAcademicGroupDto);
+    }
+
+    // TODO: universitiesService.getOwnUniversity получает данные, а если они недоступны - кидает исключение.
+    // TODO: Подумать, как это можно разделить на 2 сущности
+    @PatchMapping("/{university_id}/groups/{group_id}")
+    public AcademicGroup createAcademicGroupForUniversity(@RequestHeader("Authorization") String authorizationHeader,
+                                                          @PathVariable("university_id") Long universityId,
+                                                          @PathVariable("group_id") Long academicGroupId,
+                                                          @RequestBody UpdateAcademicGroupDto updateAcademicGroupDto) {
+        User user = jwtService.getUserFromAuthorizationHeader(authorizationHeader);
+        University university = universitiesService.getOwnUniversity(user, universityId);
+        AcademicGroup academicGroup = universitiesService.getOwnAcademicGroup(user, academicGroupId);
+        return universitiesService.updateAcademicGroupForUniversity(academicGroup, updateAcademicGroupDto);
     }
 }
