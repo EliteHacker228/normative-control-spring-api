@@ -29,7 +29,7 @@ public class BasicCrudTests {
     @Autowired
     private AdminsRepository adminsRepository;
     @Autowired
-    private AcacdemicGroupsRepository acacdemicGroupsRepository;
+    private AcademicGroupsRepository academicGroupsRepository;
     @Autowired
     private NormocontrollersRepository normocontrollersRepository;
     @Autowired
@@ -67,10 +67,10 @@ public class BasicCrudTests {
             adminsRepository.save(admin);
 
             AcademicGroup RI_400015 = new AcademicGroup(UrFU, "РИ-400015");
-            acacdemicGroupsRepository.save(RI_400015);
+            academicGroupsRepository.save(RI_400015);
 
             AcademicGroup RI_400016 = new AcademicGroup(UrFU, "РИ-400016");
-            acacdemicGroupsRepository.save(RI_400016);
+            academicGroupsRepository.save(RI_400016);
 
             Normocontroller normocontroller = Normocontroller.builder()
                     .email("A.V.Levchenko@urfu.me")
@@ -147,7 +147,7 @@ public class BasicCrudTests {
         Assertions.assertTrue(admins.toArray().length >= 1);
         logCollection(admins);
 
-        List<AcademicGroup> academicGroups = acacdemicGroupsRepository.findAll();
+        List<AcademicGroup> academicGroups = academicGroupsRepository.findAll();
         Assertions.assertTrue(academicGroups.toArray().length >= 1);
         logCollection(academicGroups);
 

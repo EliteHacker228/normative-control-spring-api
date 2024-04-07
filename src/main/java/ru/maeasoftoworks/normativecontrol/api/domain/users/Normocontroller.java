@@ -1,10 +1,7 @@
 package ru.maeasoftoworks.normativecontrol.api.domain.users;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import ru.maeasoftoworks.normativecontrol.api.domain.University;
 
 @Entity(name = "normocontrollers")
@@ -28,6 +25,7 @@ public class Normocontroller extends User {
     }
 
     @Column(name = "documents_limit")
+    @Setter
     private int documentsLimit;
 
     private Role role;

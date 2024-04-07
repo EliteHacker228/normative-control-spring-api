@@ -1,10 +1,7 @@
 package ru.maeasoftoworks.normativecontrol.api.domain.users;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import ru.maeasoftoworks.normativecontrol.api.domain.AcademicGroup;
 import ru.maeasoftoworks.normativecontrol.api.domain.University;
 
@@ -33,13 +30,16 @@ public class Student extends User {
 
     @ManyToOne
     @JoinColumn(name = "normocontroller")
+    @Setter
     private Normocontroller normocontroller;
 
     @ManyToOne
     @JoinColumn(name = "academic_group")
+    @Setter
     private AcademicGroup academicGroup;
 
     @Column(name = "documents_limit")
+    @Setter
     private int documentsLimit;
 
     private Role role;

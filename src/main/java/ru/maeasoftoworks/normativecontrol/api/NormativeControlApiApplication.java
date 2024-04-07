@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Profile;
 import ru.maeasoftoworks.normativecontrol.api.domain.AcademicGroup;
 import ru.maeasoftoworks.normativecontrol.api.domain.University;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Admin;
@@ -25,7 +24,7 @@ public class NormativeControlApiApplication {
     @Autowired
     private AdminsRepository adminsRepository;
     @Autowired
-    private AcacdemicGroupsRepository acacdemicGroupsRepository;
+    private AcademicGroupsRepository academicGroupsRepository;
     @Autowired
     private NormocontrollersRepository normocontrollersRepository;
     @Autowired
@@ -41,6 +40,9 @@ public class NormativeControlApiApplication {
         University UrFU = new University("УрФУ им. первого президента России Б. Н. Ельцина");
         universitiesRepository.save(UrFU);
 
+        University RGGPU = new University("ФГАОУ ВО «РГППУ»");
+        universitiesRepository.save(RGGPU);
+
         Admin admin = Admin.builder()
                 .email("P.O.Kurchatov@urfu.me")
                 .password("admin_password")
@@ -52,8 +54,19 @@ public class NormativeControlApiApplication {
                 .build();
         adminsRepository.save(admin);
 
+        admin = Admin.builder()
+                .email("A.N.Mitkin@urfu.me")
+                .password("admin_password")
+                .firstName("Алексей")
+                .middleName("Николаевич")
+                .lastName("Митькин")
+                .isVerified(true)
+                .university(RGGPU)
+                .build();
+        adminsRepository.save(admin);
+
         AcademicGroup RI_400015 = new AcademicGroup(UrFU, "РИ-400015");
-        acacdemicGroupsRepository.save(RI_400015);
+        academicGroupsRepository.save(RI_400015);
 
         Normocontroller normocontroller = Normocontroller.builder()
                 .email("A.V.Levchenko@urfu.me")

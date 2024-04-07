@@ -4,5 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Normocontroller;
 
 public interface NormocontrollersRepository extends JpaRepository<Normocontroller, Long> {
+    Normocontroller findNormocontrollerById(Long id);
     Normocontroller findNormocontrollerByEmail(String email);
 }
