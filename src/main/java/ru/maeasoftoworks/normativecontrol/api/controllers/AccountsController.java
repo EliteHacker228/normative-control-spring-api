@@ -59,7 +59,7 @@ public class AccountsController {
         return accountsService.updateUser(userToUpdate, updateUserDto);
     }
 
-    @DeleteMapping(value = "/{user_id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping("/{user_id}")
     public JSONObject deleteUser(@RequestHeader("Authorization") String bearerToken,
                                  @PathVariable("user_id") Long userId) {
         String accessToken = bearerToken.substring(("Bearer ").length());

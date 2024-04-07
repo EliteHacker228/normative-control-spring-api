@@ -17,22 +17,22 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping("/login")
     private AuthJwtPair login(@RequestBody LoginData loginData) {
         return authService.login(loginData);
     }
 
-    @PostMapping(value = "/register/student", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping("/register/student")
     private AuthJwtPair registerStudent(@RequestBody Student student) {
         return authService.register(student);
     }
 
-    @PostMapping(value = "/register/normocontroller", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping("/register/normocontroller")
     private AuthJwtPair registerNormocontroller(@RequestBody Normocontroller normocontroller) {
         return authService.register(normocontroller);
     }
 
-    @PutMapping(value = "/tokens", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping("/tokens")
     private AuthJwtPair updateAuthTokens(@RequestBody UpdateAuthTokensDto updateAuthTokensDto) {
         String refreshToken = updateAuthTokensDto.getRefreshToken();
         return authService.updateAuthTokens(refreshToken);
