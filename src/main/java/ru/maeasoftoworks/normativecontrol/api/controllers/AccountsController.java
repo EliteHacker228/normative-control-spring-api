@@ -64,7 +64,6 @@ public class AccountsController {
         User userToDelete = accountsService.getOwnUserOrAnyAsAdminById(user, userId);
         accountsService.deleteUser(userToDelete);
         JSONObject response = new JSONObject();
-        response.put("status", HttpStatus.OK);
         response.put("message", "User with id " + userId + " deleted successfully");
         return response;
     }
@@ -101,7 +100,6 @@ public class AccountsController {
                                                        @PathVariable("user_id") Long userId,
                                                        @PathVariable("verification_link_id") Long verificationLinkId) {
         JSONObject response = new JSONObject();
-        response.put("status", HttpStatus.NOT_IMPLEMENTED.value());
         response.put("message", "Verification functional is not implemented yet");
 
         return ResponseEntity
