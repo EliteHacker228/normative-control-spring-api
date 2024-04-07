@@ -68,6 +68,9 @@ public class NormativeControlApiApplication {
         AcademicGroup RI_400015 = new AcademicGroup(UrFU, "РИ-400015");
         academicGroupsRepository.save(RI_400015);
 
+        AcademicGroup RI_400016 = new AcademicGroup(UrFU, "РИ-400016");
+        academicGroupsRepository.save(RI_400016);
+
         Normocontroller normocontroller = Normocontroller.builder()
                 .email("A.V.Levchenko@urfu.me")
                 .password("normocontroller_password")
