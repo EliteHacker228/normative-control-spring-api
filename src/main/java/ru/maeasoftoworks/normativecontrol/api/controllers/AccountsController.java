@@ -1,6 +1,11 @@
 package ru.maeasoftoworks.normativecontrol.api.controllers;
 
 import lombok.RequiredArgsConstructor;
+import net.minidev.json.JSONObject;
+import netscape.javascript.JSObject;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.maeasoftoworks.normativecontrol.api.domain.University;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
@@ -19,6 +24,7 @@ import java.util.List;
 @RequestMapping("/accounts")
 @RequiredArgsConstructor
 public class AccountsController {
+    // TODO: вынести логику, требующую взаимодействия с репозиторием, в сервис
     private final UsersRepository usersRepository;
     private final JwtService jwtService;
     private final AccountsService accountsService;
@@ -54,7 +60,7 @@ public class AccountsController {
             throw new UnauthorizedException("You are not authorized to access this resource");
         if (user.getRole() != Role.ADMIN && user != foundUser)
             throw new UnauthorizedException("You are not authorized to access this resource");
-        if(user.getRole() == Role.ADMIN && foundUser.getRole() == Role.ADMIN && user != foundUser)
+        if (user.getRole() == Role.ADMIN && foundUser.getRole() == Role.ADMIN && user != foundUser)
             throw new UnauthorizedException("You are not authorized to access this resource");
 
         return foundUser;
@@ -64,8 +70,30 @@ public class AccountsController {
     // Другие пользователи - только данные своего аккаунта
     @PatchMapping("/{user_id}")
     public User updateUser(@RequestHeader("Authorization") String bearerToken,
-                          @PathVariable("user_id") Long userId,
-                          @RequestBody UpdateUserDto updateUserDto) {
+                           @PathVariable("user_id") Long userId,
+                           @RequestBody UpdateUserDto updateUserDto) {
+        String accessToken = bearerToken.substring(("Bearer ").length());
+        Jwt accessJwt = jwtService.getJwtFromAccessTokenString(accessToken);
+        User user = accessJwt.getUser();
+        University university = user.getUniversity();
+
+        User foundUser = usersRepository.findUsersById(userId);
+
+        if (foundUser == null)
+            throw new UserDoesNotExistsException("User with id " + userId + " does not exists");
+        if (foundUser.getUniversity() != university)
+            throw new UnauthorizedException("You are not authorized to access this resource");
+        if (user.getRole() != Role.ADMIN && user != foundUser)
+            throw new UnauthorizedException("You are not authorized to access this resource");
+        if (user.getRole() == Role.ADMIN && foundUser.getRole() == Role.ADMIN && user != foundUser)
+            throw new UnauthorizedException("You are not authorized to access this resource");
+
+        return accountsService.updateUser(foundUser, updateUserDto);
+    }
+
+    @DeleteMapping(value = "/{user_id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public JSONObject deleteUser(@RequestHeader("Authorization") String bearerToken,
+                                               @PathVariable("user_id") Long userId) {
         String accessToken = bearerToken.substring(("Bearer ").length());
         Jwt accessJwt = jwtService.getJwtFromAccessTokenString(accessToken);
         User user = accessJwt.getUser();
@@ -82,6 +110,10 @@ public class AccountsController {
         if(user.getRole() == Role.ADMIN && foundUser.getRole() == Role.ADMIN && user != foundUser)
             throw new UnauthorizedException("You are not authorized to access this resource");
 
-        return accountsService.updateUser(foundUser, updateUserDto);
+        accountsService.deleteUser(foundUser);
+        JSONObject response = new JSONObject();
+        response.put("status", HttpStatus.OK);
+        response.put("message", "User with id " + userId + " deleted successfully");
+        return response;
     }
 }

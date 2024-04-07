@@ -63,4 +63,9 @@ public class AccountsService {
 
         return user;
     }
+
+    @Transactional
+    public void deleteUser(User user){
+        usersRepository.delete(user);
+    }
 }
