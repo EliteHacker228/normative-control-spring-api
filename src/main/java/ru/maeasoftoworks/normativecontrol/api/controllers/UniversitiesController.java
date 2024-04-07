@@ -5,7 +5,10 @@ import net.minidev.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.maeasoftoworks.normativecontrol.api.domain.AcademicGroup;
 import ru.maeasoftoworks.normativecontrol.api.domain.University;
+import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
+import ru.maeasoftoworks.normativecontrol.api.services.JwtService;
 import ru.maeasoftoworks.normativecontrol.api.services.UniversitiesService;
 
 import java.util.List;
@@ -16,6 +19,7 @@ import java.util.List;
 public class UniversitiesController {
 
     private final UniversitiesService universitiesService;
+    private final JwtService jwtService;
 
     @GetMapping
     public List<University> getAllUniversities() {
@@ -47,5 +51,13 @@ public class UniversitiesController {
         return ResponseEntity
                 .status(HttpStatus.NOT_IMPLEMENTED)
                 .body(response);
+    }
+
+    @GetMapping("/{university_id}/groups")
+    public List<AcademicGroup> getAcademicGroupsOfUniversity(@RequestHeader("Authorization") String authorizationHeader,
+                                                             @PathVariable("university_id") Long universityId) {
+        User user = jwtService.getUserFromAuthorizationHeader(authorizationHeader);
+        University university = universitiesService.getOwnUniversity(user, universityId);
+        return universitiesService.getAcademicGroupsOfUniversity(university);
     }
 }
