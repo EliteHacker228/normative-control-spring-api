@@ -3,10 +3,9 @@ package ru.maeasoftoworks.normativecontrol.api.services;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
 import ru.maeasoftoworks.normativecontrol.api.dto.auth.AuthJwtPair;
-import ru.maeasoftoworks.normativecontrol.api.dto.auth.login.LoginData;
+import ru.maeasoftoworks.normativecontrol.api.dto.auth.LoginData;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.*;
 import ru.maeasoftoworks.normativecontrol.api.repositories.UsersRepository;
 

@@ -1,4 +1,4 @@
-package ru.maeasoftoworks.normativecontrol.api.dto.auth.login;
+package ru.maeasoftoworks.normativecontrol.api.dto.auth;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -11,16 +11,13 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.junit.jupiter.api.Test;
 import ru.maeasoftoworks.normativecontrol.api.dto.auth.AuthJwtPair;
-import ru.maeasoftoworks.normativecontrol.api.dto.auth.login.LoginData;
+import ru.maeasoftoworks.normativecontrol.api.dto.auth.LoginData;
 import ru.maeasoftoworks.normativecontrol.api.services.AuthService;
-import ru.maeasoftoworks.normativecontrol.api.utils.jwt.Jwt;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 

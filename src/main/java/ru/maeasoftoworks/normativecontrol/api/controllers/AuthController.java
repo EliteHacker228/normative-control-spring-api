@@ -1,13 +1,12 @@
 package ru.maeasoftoworks.normativecontrol.api.controllers;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Normocontroller;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Student;
 import ru.maeasoftoworks.normativecontrol.api.dto.auth.AuthJwtPair;
 import ru.maeasoftoworks.normativecontrol.api.dto.auth.UpdateAuthTokensDto;
-import ru.maeasoftoworks.normativecontrol.api.dto.auth.login.LoginData;
+import ru.maeasoftoworks.normativecontrol.api.dto.auth.LoginData;
 import ru.maeasoftoworks.normativecontrol.api.services.AuthService;
 
 @RestController
