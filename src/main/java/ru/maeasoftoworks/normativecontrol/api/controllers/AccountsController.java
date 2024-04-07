@@ -101,7 +101,6 @@ public class AccountsController {
                                                        @PathVariable("verification_link_id") Long verificationLinkId) {
         JSONObject response = new JSONObject();
         response.put("message", "Verification functional is not implemented yet");
-
         return ResponseEntity
                 .status(HttpStatus.NOT_IMPLEMENTED)
                 .body(response);
