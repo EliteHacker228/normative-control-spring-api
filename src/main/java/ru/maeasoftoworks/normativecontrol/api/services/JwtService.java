@@ -33,6 +33,12 @@ public class JwtService {
     private String normativeControlApiDomain;
     private final UsersRepository usersRepository;
 
+    public User getUserFromAuthorizationHeader(String authHeader) {
+        String accessToken = authHeader.substring(("Bearer ").length());
+        Jwt accessJwt = getJwtFromAccessTokenString(accessToken);
+        return accessJwt.getUser();
+    }
+
     public Jwt getJwtFromAccessTokenString(String jwt){
         return getJwtFromTokenString(jwt, accessTokenKey);
     }

@@ -34,7 +34,7 @@ public class AccountsController {
     // Администратор может просмотреть аккаунты всех студентов и нормоконтролеров в своём университете
     @GetMapping
     public List<User> getAllUsersAsAdmin(@RequestHeader("Authorization") String authorizationHeader) {
-        Admin admin = (Admin) getUserFromAuthorizationHeader(authorizationHeader);
+        Admin admin = (Admin) jwtService.getUserFromAuthorizationHeader(authorizationHeader);
         return accountsService.getUsersForAdmin(admin);
     }
 
@@ -42,7 +42,7 @@ public class AccountsController {
     // Другие пользователи - только данные о своём аккаунте
     @GetMapping("/{user_id}")
     public User getUser(@RequestHeader("Authorization") String authorizationHeader, @PathVariable("user_id") Long userId) {
-        User user = getUserFromAuthorizationHeader(authorizationHeader);
+        User user = jwtService.getUserFromAuthorizationHeader(authorizationHeader);
         return accountsService.getOwnUserOrAnyAsAdminById(user, userId);
     }
 
@@ -52,7 +52,7 @@ public class AccountsController {
     public User updateUser(@RequestHeader("Authorization") String authorizationHeader,
                            @PathVariable("user_id") Long userId,
                            @RequestBody UpdateUserDto updateUserDto) {
-        User user = getUserFromAuthorizationHeader(authorizationHeader);
+        User user = jwtService.getUserFromAuthorizationHeader(authorizationHeader);
         User userToUpdate = accountsService.getOwnUserOrAnyAsAdminById(user, userId);
         return accountsService.updateUser(userToUpdate, updateUserDto);
     }
@@ -60,7 +60,7 @@ public class AccountsController {
     @DeleteMapping("/{user_id}")
     public JSONObject deleteUser(@RequestHeader("Authorization") String authorizationHeader,
                                  @PathVariable("user_id") Long userId) {
-        User user = getUserFromAuthorizationHeader(authorizationHeader);
+        User user = jwtService.getUserFromAuthorizationHeader(authorizationHeader);
         User userToDelete = accountsService.getOwnUserOrAnyAsAdminById(user, userId);
         accountsService.deleteUser(userToDelete);
         JSONObject response = new JSONObject();
@@ -72,7 +72,7 @@ public class AccountsController {
     public User updateUserEmail(@RequestHeader("Authorization") String authorizationHeader,
                                 @PathVariable("user_id") Long userId,
                                 @RequestBody UpdateUserEmailDto updateUserEmailDto) {
-        User user = getUserFromAuthorizationHeader(authorizationHeader);
+        User user = jwtService.getUserFromAuthorizationHeader(authorizationHeader);
         User userToUpdateEmail = accountsService.getOwnUserOrAnyAsAdminById(user, userId);
         return accountsService.updateUserEmail(userToUpdateEmail, updateUserEmailDto);
     }
@@ -81,7 +81,7 @@ public class AccountsController {
     public User updateUserEmail(@RequestHeader("Authorization") String authorizationHeader,
                                 @PathVariable("user_id") Long userId,
                                 @RequestBody UpdateUserPasswordDto updateUserPasswordDto) {
-        User user = getUserFromAuthorizationHeader(authorizationHeader);
+        User user = jwtService.getUserFromAuthorizationHeader(authorizationHeader);
         User userToUpdateEmail = accountsService.getOwnUserOrAnyAsAdminById(user, userId);
         return accountsService.updateUserPassword(userToUpdateEmail, updateUserPasswordDto);
     }
@@ -90,7 +90,7 @@ public class AccountsController {
     public User updateUserEmail(@RequestHeader("Authorization") String authorizationHeader,
                                 @PathVariable("user_id") Long userId,
                                 @RequestBody UpdateUserDocumentsLimitDto updateUserDocumentsLimitDto) {
-        User user = getUserFromAuthorizationHeader(authorizationHeader);
+        User user = jwtService.getUserFromAuthorizationHeader(authorizationHeader);
         User userToUpdateEmail = accountsService.getOwnUserOrAnyAsAdminById(user, userId);
         return accountsService.updateUserDocumentsLimit(userToUpdateEmail, updateUserDocumentsLimitDto);
     }
@@ -104,11 +104,5 @@ public class AccountsController {
         return ResponseEntity
                 .status(HttpStatus.NOT_IMPLEMENTED)
                 .body(response);
-    }
-
-    private User getUserFromAuthorizationHeader(String authHeader) {
-        String accessToken = authHeader.substring(("Bearer ").length());
-        Jwt accessJwt = jwtService.getJwtFromAccessTokenString(accessToken);
-        return accessJwt.getUser();
     }
 }
