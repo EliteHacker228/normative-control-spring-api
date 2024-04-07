@@ -39,4 +39,13 @@ public class UniversitiesController {
                 .status(HttpStatus.NOT_IMPLEMENTED)
                 .body(response);
     }
+
+    @DeleteMapping("/{university_id}")
+    public ResponseEntity<JSONObject> deleteUniversity() {
+        JSONObject response = new JSONObject();
+        response.put("message", "University deletion functional is not implemented yet");
+        return ResponseEntity
+                .status(HttpStatus.NOT_IMPLEMENTED)
+                .body(response);
+    }
 }
