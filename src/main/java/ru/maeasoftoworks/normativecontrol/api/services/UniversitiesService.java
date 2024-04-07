@@ -1,11 +1,13 @@
 package ru.maeasoftoworks.normativecontrol.api.services;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.maeasoftoworks.normativecontrol.api.domain.AcademicGroup;
 import ru.maeasoftoworks.normativecontrol.api.domain.University;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
+import ru.maeasoftoworks.normativecontrol.api.dto.universities.CreateAcademicGroupDto;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.UnauthorizedException;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.UserDoesNotExistsException;
 import ru.maeasoftoworks.normativecontrol.api.repositories.AcademicGroupsRepository;
@@ -32,5 +34,12 @@ public class UniversitiesService {
 
     public List<AcademicGroup> getAcademicGroupsOfUniversity(University university) {
         return academicGroupsRepository.findAcademicGroupsByUniversityId(university.getId());
+    }
+
+    @Transactional
+    public AcademicGroup createAcademicGroupForUniversity(University university, CreateAcademicGroupDto createAcademicGroupDto) {
+        AcademicGroup academicGroup = new AcademicGroup(university, createAcademicGroupDto.getName());
+        academicGroupsRepository.save(academicGroup);
+        return academicGroup;
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.maeasoftoworks.normativecontrol.api.domain.AcademicGroup;
 import ru.maeasoftoworks.normativecontrol.api.domain.University;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
+import ru.maeasoftoworks.normativecontrol.api.dto.universities.CreateAcademicGroupDto;
 import ru.maeasoftoworks.normativecontrol.api.services.JwtService;
 import ru.maeasoftoworks.normativecontrol.api.services.UniversitiesService;
 
@@ -59,5 +60,14 @@ public class UniversitiesController {
         User user = jwtService.getUserFromAuthorizationHeader(authorizationHeader);
         University university = universitiesService.getOwnUniversity(user, universityId);
         return universitiesService.getAcademicGroupsOfUniversity(university);
+    }
+
+    @PostMapping("/{university_id}/groups")
+    public AcademicGroup createAcademicGroupForUniversity(@RequestHeader("Authorization") String authorizationHeader,
+                                                                @PathVariable("university_id") Long universityId,
+                                                                @RequestBody CreateAcademicGroupDto createAcademicGroupDto) {
+        User user = jwtService.getUserFromAuthorizationHeader(authorizationHeader);
+        University university = universitiesService.getOwnUniversity(user, universityId);
+        return universitiesService.createAcademicGroupForUniversity(university, createAcademicGroupDto);
     }
 }
