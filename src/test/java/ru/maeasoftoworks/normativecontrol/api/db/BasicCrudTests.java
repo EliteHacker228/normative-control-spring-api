@@ -120,6 +120,7 @@ public class BasicCrudTests {
             Document document = Document.builder()
                     .user(student)
                     .fileName("И.А.Шарапов РИ-400015 ВКР")
+                    .studentName("Шарапов И.А.")
                     .isReported(false)
                     .comment("")
                     .build();

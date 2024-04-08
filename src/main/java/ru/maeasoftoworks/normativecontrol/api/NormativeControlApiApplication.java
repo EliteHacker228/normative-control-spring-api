@@ -106,6 +106,7 @@ public class NormativeControlApiApplication {
 
         Document document = Document.builder()
                 .user(student)
+                .studentName("Шарапов И.А.")
                 .fileName("И.А.Шарапов РИ-400015 ВКР")
                 .isReported(false)
                 .comment("")

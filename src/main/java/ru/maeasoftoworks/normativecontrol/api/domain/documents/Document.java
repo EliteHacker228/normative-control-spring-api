@@ -18,8 +18,9 @@ public class Document {
     private long id;
 
     @Builder
-    public Document(User user, String fileName, boolean isReported, String comment) {
+    public Document(User user, String studentName, String fileName, boolean isReported, String comment) {
         this.user = user;
+        this.studentName = studentName;
         this.fileName = fileName;
         this.isReported = isReported;
         this.comment = comment;
@@ -28,6 +29,9 @@ public class Document {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @Column(name = "student_name")
+    private String studentName;
 
     @Column(name = "file_name")
     private String fileName;

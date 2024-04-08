@@ -1,13 +1,15 @@
 package ru.maeasoftoworks.normativecontrol.api.controllers;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Document;
+import ru.maeasoftoworks.normativecontrol.api.domain.documents.Result;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Admin;
-import ru.maeasoftoworks.normativecontrol.api.services.AccountsService;
+import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
+import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
+import ru.maeasoftoworks.normativecontrol.api.dto.documents.CreateDocumentDto;
+import ru.maeasoftoworks.normativecontrol.api.exceptions.UnauthorizedException;
 import ru.maeasoftoworks.normativecontrol.api.services.DocumentsService;
 import ru.maeasoftoworks.normativecontrol.api.services.JwtService;
 
@@ -24,5 +26,15 @@ public class DocumentsController {
     public List<Document> getDocuments(@RequestHeader("Authorization") String bearerToken) {
         Admin admin = (Admin) jwtService.getUserFromAuthorizationHeader(bearerToken);
         return documentsService.getDocuments(admin);
+    }
+
+    @PostMapping
+    public Result createDocument(@RequestHeader("Authorization") String bearerToken,
+                                       @ModelAttribute CreateDocumentDto createDocumentDto) {
+        User user = jwtService.getUserFromAuthorizationHeader(bearerToken);
+        // TODO: Перенести эту логику в Spring Security
+        if(user.getRole() == Role.ADMIN)
+            throw new UnauthorizedException("Admin can not send documents to verification");
+        return documentsService.createDocument(user, createDocumentDto);
     }
 }
