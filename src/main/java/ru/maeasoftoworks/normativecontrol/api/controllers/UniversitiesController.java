@@ -65,8 +65,8 @@ public class UniversitiesController {
 
     @PostMapping("/{university_id}/groups")
     public AcademicGroup createAcademicGroupForUniversity(@RequestHeader("Authorization") String authorizationHeader,
-                                                                @PathVariable("university_id") Long universityId,
-                                                                @RequestBody CreateAcademicGroupDto createAcademicGroupDto) {
+                                                          @PathVariable("university_id") Long universityId,
+                                                          @RequestBody CreateAcademicGroupDto createAcademicGroupDto) {
         User user = jwtService.getUserFromAuthorizationHeader(authorizationHeader);
         University university = universitiesService.getOwnUniversity(user, universityId);
         return universitiesService.createAcademicGroupForUniversity(university, createAcademicGroupDto);
@@ -76,8 +76,8 @@ public class UniversitiesController {
     // TODO: Подумать, как это можно разделить на 2 сущности
     @GetMapping("/{university_id}/groups/{group_id}")
     public AcademicGroup getAcademicGroupForUniversityById(@RequestHeader("Authorization") String authorizationHeader,
-                                                          @PathVariable("university_id") Long universityId,
-                                                          @PathVariable("group_id") Long academicGroupId) {
+                                                           @PathVariable("university_id") Long universityId,
+                                                           @PathVariable("group_id") Long academicGroupId) {
         User user = jwtService.getUserFromAuthorizationHeader(authorizationHeader);
         University university = universitiesService.getOwnUniversity(user, universityId);
         return universitiesService.getOwnAcademicGroup(user, academicGroupId);
@@ -92,5 +92,21 @@ public class UniversitiesController {
         University university = universitiesService.getOwnUniversity(user, universityId);
         AcademicGroup academicGroup = universitiesService.getOwnAcademicGroup(user, academicGroupId);
         return universitiesService.updateAcademicGroupForUniversity(academicGroup, updateAcademicGroupDto);
+    }
+
+    @DeleteMapping("/{university_id}/groups/{group_id}")
+    public ResponseEntity<JSONObject> deleteAcademicGroupOfUniversity(@RequestHeader("Authorization") String authorizationHeader,
+                                                                      @PathVariable("university_id") Long universityId,
+                                                                      @PathVariable("group_id") Long academicGroupId) {
+        User user = jwtService.getUserFromAuthorizationHeader(authorizationHeader);
+        University university = universitiesService.getOwnUniversity(user, universityId);
+        AcademicGroup academicGroup = universitiesService.getOwnAcademicGroup(user, academicGroupId);
+        universitiesService.deleteAcademicGroupOfUniversity(academicGroup);
+
+        JSONObject response = new JSONObject();
+        response.put("message", "Academic group " + academicGroup.getName() + " with id " + academicGroupId + " deleted successfully");
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
     }
 }

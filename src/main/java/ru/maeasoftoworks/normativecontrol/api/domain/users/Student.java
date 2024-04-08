@@ -2,6 +2,8 @@ package ru.maeasoftoworks.normativecontrol.api.domain.users;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import ru.maeasoftoworks.normativecontrol.api.domain.AcademicGroup;
 import ru.maeasoftoworks.normativecontrol.api.domain.University;
 
@@ -29,11 +31,13 @@ public class Student extends User {
     }
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "normocontroller")
     @Setter
     private Normocontroller normocontroller;
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "academic_group")
     @Setter
     private AcademicGroup academicGroup;

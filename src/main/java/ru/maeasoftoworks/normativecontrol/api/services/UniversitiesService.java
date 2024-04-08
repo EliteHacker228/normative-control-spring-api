@@ -56,4 +56,9 @@ public class UniversitiesService {
         academicGroupsRepository.save(academicGroup);
         return academicGroup;
     }
+
+    @Transactional
+    public void deleteAcademicGroupOfUniversity(AcademicGroup academicGroup){
+        academicGroupsRepository.delete(academicGroup);
+    }
 }
