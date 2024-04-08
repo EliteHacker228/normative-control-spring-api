@@ -18,13 +18,15 @@ public class Document {
     private long id;
 
     @Builder
-    public Document(User user, String studentName, AcademicGroup academicGroup, String fileName, boolean isReported, String comment) {
+    public Document(User user, String studentName, AcademicGroup academicGroup, String fileName, boolean isReported,
+                    DocumentVerdict documentVerdict, String comment) {
         this.user = user;
         this.studentName = studentName;
         this.academicGroup = academicGroup;
         this.fileName = fileName;
         this.isReported = isReported;
         this.comment = comment;
+        this.documentVerdict = documentVerdict;
     }
 
     @ManyToOne
@@ -44,8 +46,14 @@ public class Document {
     private String fileName;
 
     @Column(name = "is_reported")
-    private boolean isReported;
+    @Setter
+    private boolean isReported = false;
+
+    @Column(name = "status")
+    @Setter
+    private DocumentVerdict documentVerdict = DocumentVerdict.NOT_CHECKED;
 
     @Column(name = "comment")
-    private String comment;
+    @Setter
+    private String comment = "";
 }

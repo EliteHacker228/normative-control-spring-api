@@ -11,6 +11,7 @@ import ru.maeasoftoworks.normativecontrol.api.domain.users.Admin;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
 import ru.maeasoftoworks.normativecontrol.api.dto.documents.CreateDocumentDto;
+import ru.maeasoftoworks.normativecontrol.api.dto.documents.DocumentVerdictDto;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.UnauthorizedException;
 import ru.maeasoftoworks.normativecontrol.api.services.DocumentsService;
 import ru.maeasoftoworks.normativecontrol.api.services.JwtService;
@@ -52,11 +53,19 @@ public class DocumentsController {
 
     @GetMapping("/{document_id}/status")
     public ResponseEntity<JSONObject> getDocumentsVerificationStatus(@RequestHeader("Authorization") String bearerToken,
-                                                     @PathVariable("document_id") Long documentId) {
+                                                                     @PathVariable("document_id") Long documentId) {
         User user = jwtService.getUserFromAuthorizationHeader(bearerToken);
         VerificationStatus status = documentsService.getDocumentsVerificationStatus(documentId);
         JSONObject response = new JSONObject();
         response.put("status", status.name());
         return ResponseEntity.ok().body(response);
+    }
+
+    @PatchMapping("/{document_id}")
+    public Document setVerdictOnDocument(@RequestHeader("Authorization") String bearerToken,
+                                       @PathVariable("document_id") Long documentId,
+                                       @RequestBody DocumentVerdictDto documentVerdictDto) {
+        User user = jwtService.getUserFromAuthorizationHeader(bearerToken);
+        return documentsService.setVerdictOnDocument(documentId, documentVerdictDto);
     }
 }

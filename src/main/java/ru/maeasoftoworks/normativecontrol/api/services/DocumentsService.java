@@ -13,6 +13,7 @@ import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Student;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
 import ru.maeasoftoworks.normativecontrol.api.dto.documents.CreateDocumentDto;
+import ru.maeasoftoworks.normativecontrol.api.dto.documents.DocumentVerdictDto;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.UnauthorizedException;
 import ru.maeasoftoworks.normativecontrol.api.repositories.AcademicGroupsRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.DocumentsRepository;
@@ -86,6 +87,15 @@ public class DocumentsService {
     public VerificationStatus getDocumentsVerificationStatus(Long documentId){
         Document document = documentsRepository.findDocumentById(documentId);
         return resultsRepository.findResultByDocument(document).getVerificationStatus();
+    }
+
+    @Transactional
+    public Document setVerdictOnDocument(Long documentId, DocumentVerdictDto documentVerdictDto){
+        Document document = documentsRepository.findDocumentById(documentId);
+        document.setDocumentVerdict(documentVerdictDto.getVerdict());
+        document.setComment(documentVerdictDto.getMessage());
+        documentsRepository.save(document);
+        return document;
     }
 
     private String getShortenedNameForUser(User user) {
