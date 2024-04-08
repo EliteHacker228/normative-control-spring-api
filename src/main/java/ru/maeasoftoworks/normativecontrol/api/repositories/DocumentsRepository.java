@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface DocumentsRepository extends JpaRepository<Document, Long> {
     List<Document> findDocumentsByUser(User user);
+
+    Document findDocumentById(Long documentId);
 }

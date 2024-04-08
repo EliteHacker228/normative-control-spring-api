@@ -1,7 +1,8 @@
 package ru.maeasoftoworks.normativecontrol.api.controllers;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
+import net.minidev.json.JSONObject;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Document;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Result;
@@ -30,11 +31,21 @@ public class DocumentsController {
 
     @PostMapping
     public Result createDocument(@RequestHeader("Authorization") String bearerToken,
-                                       @ModelAttribute CreateDocumentDto createDocumentDto) {
+                                 @ModelAttribute CreateDocumentDto createDocumentDto) {
         User user = jwtService.getUserFromAuthorizationHeader(bearerToken);
         // TODO: Перенести эту логику в Spring Security
-        if(user.getRole() == Role.ADMIN)
+        if (user.getRole() == Role.ADMIN)
             throw new UnauthorizedException("Admin can not send documents to verification");
         return documentsService.createDocument(user, createDocumentDto);
+    }
+
+    @DeleteMapping("/{document_id}")
+    public ResponseEntity<JSONObject> deleteDocument(@RequestHeader("Authorization") String bearerToken,
+                                                     @PathVariable("document_id") Long documentId) {
+        Admin admin = (Admin) jwtService.getUserFromAuthorizationHeader(bearerToken);
+        documentsService.deleteDocument(admin, documentId);
+        JSONObject response = new JSONObject();
+        response.put("message", "Document with id " + documentId + " deleted successfully");
+        return ResponseEntity.ok().body(response);
     }
 }

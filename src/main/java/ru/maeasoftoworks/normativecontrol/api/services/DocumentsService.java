@@ -75,6 +75,14 @@ public class DocumentsService {
         return result;
     }
 
+    @Transactional
+    public void deleteDocument(Admin admin, Long documentId){
+        Document document = documentsRepository.findDocumentById(documentId);
+        if(admin.getUniversity() != document.getUser().getUniversity())
+            throw new UnauthorizedException("You don't have access to this resource");
+        documentsRepository.delete(document);
+    }
+
     private String getShortenedNameForUser(User user) {
         String lastName = user.getLastName();
         String firstnameInitial = String.valueOf(user.getFirstName().charAt(0));
