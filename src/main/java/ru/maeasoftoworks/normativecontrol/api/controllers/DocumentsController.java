@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Document;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Result;
+import ru.maeasoftoworks.normativecontrol.api.domain.documents.VerificationStatus;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Admin;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
@@ -46,6 +47,16 @@ public class DocumentsController {
         documentsService.deleteDocument(admin, documentId);
         JSONObject response = new JSONObject();
         response.put("message", "Document with id " + documentId + " deleted successfully");
+        return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping("/{document_id}/status")
+    public ResponseEntity<JSONObject> getDocumentsVerificationStatus(@RequestHeader("Authorization") String bearerToken,
+                                                     @PathVariable("document_id") Long documentId) {
+        User user = jwtService.getUserFromAuthorizationHeader(bearerToken);
+        VerificationStatus status = documentsService.getDocumentsVerificationStatus(documentId);
+        JSONObject response = new JSONObject();
+        response.put("status", status.name());
         return ResponseEntity.ok().body(response);
     }
 }

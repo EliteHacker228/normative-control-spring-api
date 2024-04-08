@@ -83,6 +83,11 @@ public class DocumentsService {
         documentsRepository.delete(document);
     }
 
+    public VerificationStatus getDocumentsVerificationStatus(Long documentId){
+        Document document = documentsRepository.findDocumentById(documentId);
+        return resultsRepository.findResultByDocument(document).getVerificationStatus();
+    }
+
     private String getShortenedNameForUser(User user) {
         String lastName = user.getLastName();
         String firstnameInitial = String.valueOf(user.getFirstName().charAt(0));
