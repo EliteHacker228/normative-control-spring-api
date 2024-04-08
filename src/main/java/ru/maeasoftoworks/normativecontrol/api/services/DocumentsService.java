@@ -47,7 +47,7 @@ public class DocumentsService {
 
         if (user.getRole() == Role.NORMOCONTROLLER) {
             AcademicGroup academicGroup = academicGroupsRepository.findAcademicGroupById(createDocumentDto.getAcademicGroupId());
-            if(academicGroup.getUniversity() != user.getUniversity())
+            if (academicGroup.getUniversity() != user.getUniversity())
                 throw new UnauthorizedException("You don't have access to this resource");
             document = Document.builder()
                     .user(user)
@@ -77,23 +77,31 @@ public class DocumentsService {
     }
 
     @Transactional
-    public void deleteDocument(Admin admin, Long documentId){
+    public void deleteDocument(Admin admin, Long documentId) {
         Document document = documentsRepository.findDocumentById(documentId);
-        if(admin.getUniversity() != document.getUser().getUniversity())
+        if (admin.getUniversity() != document.getUser().getUniversity())
             throw new UnauthorizedException("You don't have access to this resource");
         documentsRepository.delete(document);
     }
 
-    public VerificationStatus getDocumentsVerificationStatus(Long documentId){
+    public VerificationStatus getDocumentsVerificationStatus(Long documentId) {
         Document document = documentsRepository.findDocumentById(documentId);
         return resultsRepository.findResultByDocument(document).getVerificationStatus();
     }
 
     @Transactional
-    public Document setVerdictOnDocument(Long documentId, DocumentVerdictDto documentVerdictDto){
+    public Document setVerdictOnDocument(Long documentId, DocumentVerdictDto documentVerdictDto) {
         Document document = documentsRepository.findDocumentById(documentId);
         document.setDocumentVerdict(documentVerdictDto.getVerdict());
         document.setComment(documentVerdictDto.getMessage());
+        documentsRepository.save(document);
+        return document;
+    }
+
+    @Transactional
+    public Document reportOnDocument(Long documentId) {
+        Document document = documentsRepository.findDocumentById(documentId);
+        document.setReported(true);
         documentsRepository.save(document);
         return document;
     }

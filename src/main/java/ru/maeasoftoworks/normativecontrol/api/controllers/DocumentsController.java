@@ -68,4 +68,11 @@ public class DocumentsController {
         User user = jwtService.getUserFromAuthorizationHeader(bearerToken);
         return documentsService.setVerdictOnDocument(documentId, documentVerdictDto);
     }
+
+    @PatchMapping("/{document_id}/report")
+    public Document reportOnDocument(@RequestHeader("Authorization") String bearerToken,
+                                         @PathVariable("document_id") Long documentId) {
+        User user = jwtService.getUserFromAuthorizationHeader(bearerToken);
+        return documentsService.reportOnDocument(documentId);
+    }
 }
