@@ -5,12 +5,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.maeasoftoworks.normativecontrol.api.domain.AcademicGroup;
 import ru.maeasoftoworks.normativecontrol.api.domain.University;
+import ru.maeasoftoworks.normativecontrol.api.domain.users.Student;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
 import ru.maeasoftoworks.normativecontrol.api.dto.universities.CreateAcademicGroupDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.universities.UpdateAcademicGroupDto;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.ResourceDoesNotExists;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.UnauthorizedException;
 import ru.maeasoftoworks.normativecontrol.api.repositories.AcademicGroupsRepository;
+import ru.maeasoftoworks.normativecontrol.api.repositories.StudentsRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.UniversitiesRepository;
 
 import java.util.List;
@@ -20,6 +22,7 @@ import java.util.List;
 public class UniversitiesService {
     private final UniversitiesRepository universitiesRepository;
     private final AcademicGroupsRepository academicGroupsRepository;
+    private final StudentsRepository studentsRepository;
 
     public List<University> getUniversities() {
         return universitiesRepository.findAll();
@@ -58,7 +61,14 @@ public class UniversitiesService {
     }
 
     @Transactional
-    public void deleteAcademicGroupOfUniversity(AcademicGroup academicGroup){
+    public void deleteAcademicGroupOfUniversity(AcademicGroup academicGroup) {
         academicGroupsRepository.delete(academicGroup);
+    }
+
+    public List<Student> getStudentsFromAcademicGroupOfUniversity(Long academicGroupId) {
+        AcademicGroup academicGroup = academicGroupsRepository.findAcademicGroupById(academicGroupId);
+        if(academicGroup == null)
+            throw new ResourceDoesNotExists("Academic group with id " + academicGroupId + "does not exists");
+        return studentsRepository.findStudentsByAcademicGroup(academicGroup);
     }
 }

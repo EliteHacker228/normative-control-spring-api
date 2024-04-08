@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.maeasoftoworks.normativecontrol.api.domain.AcademicGroup;
 import ru.maeasoftoworks.normativecontrol.api.domain.University;
+import ru.maeasoftoworks.normativecontrol.api.domain.users.Student;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
 import ru.maeasoftoworks.normativecontrol.api.dto.universities.CreateAcademicGroupDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.universities.UpdateAcademicGroupDto;
@@ -18,6 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/universities")
 @RequiredArgsConstructor
+// TODO: Разделить контроллер на /universities и /groups
 public class UniversitiesController {
 
     private final UniversitiesService universitiesService;
@@ -108,5 +110,14 @@ public class UniversitiesController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(response);
+    }
+
+    @GetMapping("/{university_id}/groups/{group_id}/students")
+    public List<Student> getStudentsFromAcademicGroupOfUniversity(@RequestHeader("Authorization") String authorizationHeader,
+                                                                  @PathVariable("university_id") Long universityId,
+                                                                  @PathVariable("group_id") Long academicGroupId) {
+        User user = jwtService.getUserFromAuthorizationHeader(authorizationHeader);
+        University university = universitiesService.getOwnUniversity(user, universityId);
+        return universitiesService.getStudentsFromAcademicGroupOfUniversity(academicGroupId);
     }
 }
