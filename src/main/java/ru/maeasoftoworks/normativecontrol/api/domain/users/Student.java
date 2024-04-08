@@ -32,13 +32,13 @@ public class Student extends User {
 
     @ManyToOne
     @OnDelete(action = OnDeleteAction.SET_NULL)
-    @JoinColumn(name = "normocontroller")
+    @JoinColumn(name = "normocontroller_id")
     @Setter
     private Normocontroller normocontroller;
 
     @ManyToOne
     @OnDelete(action = OnDeleteAction.SET_NULL)
-    @JoinColumn(name = "academic_group")
+    @JoinColumn(name = "academic_group_id")
     @Setter
     private AcademicGroup academicGroup;
 

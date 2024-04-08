@@ -43,7 +43,7 @@ public abstract class User {
     protected String lastName;
 
     @ManyToOne
-    @JoinColumn(name = "university")
+    @JoinColumn(name = "university_id")
     @Setter
     protected University university;
 

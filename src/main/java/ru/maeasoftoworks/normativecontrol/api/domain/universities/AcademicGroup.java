@@ -22,7 +22,7 @@ public class AcademicGroup {
     }
 
     @ManyToOne
-    @JoinColumn(name = "university")
+    @JoinColumn(name = "university_id")
     private University university;
 
     @Column(name = "name", unique = true)
