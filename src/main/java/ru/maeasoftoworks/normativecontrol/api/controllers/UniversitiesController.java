@@ -74,6 +74,15 @@ public class UniversitiesController {
 
     // TODO: universitiesService.getOwnUniversity получает данные, а если они недоступны - кидает исключение.
     // TODO: Подумать, как это можно разделить на 2 сущности
+    @GetMapping("/{university_id}/groups/{group_id}")
+    public AcademicGroup getAcademicGroupForUniversityById(@RequestHeader("Authorization") String authorizationHeader,
+                                                          @PathVariable("university_id") Long universityId,
+                                                          @PathVariable("group_id") Long academicGroupId) {
+        User user = jwtService.getUserFromAuthorizationHeader(authorizationHeader);
+        University university = universitiesService.getOwnUniversity(user, universityId);
+        return universitiesService.getOwnAcademicGroup(user, academicGroupId);
+    }
+
     @PatchMapping("/{university_id}/groups/{group_id}")
     public AcademicGroup createAcademicGroupForUniversity(@RequestHeader("Authorization") String authorizationHeader,
                                                           @PathVariable("university_id") Long universityId,
