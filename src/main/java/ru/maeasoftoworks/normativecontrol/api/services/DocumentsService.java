@@ -6,11 +6,15 @@ import org.springframework.stereotype.Service;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Document;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Result;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.VerificationStatus;
+import ru.maeasoftoworks.normativecontrol.api.domain.universities.AcademicGroup;
 import ru.maeasoftoworks.normativecontrol.api.domain.universities.University;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Admin;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
+import ru.maeasoftoworks.normativecontrol.api.domain.users.Student;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
 import ru.maeasoftoworks.normativecontrol.api.dto.documents.CreateDocumentDto;
+import ru.maeasoftoworks.normativecontrol.api.exceptions.UnauthorizedException;
+import ru.maeasoftoworks.normativecontrol.api.repositories.AcademicGroupsRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.DocumentsRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.ResultsRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.UsersRepository;
@@ -24,6 +28,7 @@ public class DocumentsService {
     private final DocumentsRepository documentsRepository;
     private final ResultsRepository resultsRepository;
     private final UsersRepository usersRepository;
+    private final AcademicGroupsRepository academicGroupsRepository;
 
     public List<Document> getDocuments(Admin admin) {
         University university = admin.getUniversity();
@@ -40,9 +45,13 @@ public class DocumentsService {
         Document document;
 
         if (user.getRole() == Role.NORMOCONTROLLER) {
+            AcademicGroup academicGroup = academicGroupsRepository.findAcademicGroupById(createDocumentDto.getAcademicGroupId());
+            if(academicGroup.getUniversity() != user.getUniversity())
+                throw new UnauthorizedException("You don't have access to this resource");
             document = Document.builder()
                     .user(user)
                     .studentName(createDocumentDto.getStudentName())
+                    .academicGroup(academicGroup)
                     .fileName(createDocumentDto.getDocumentName())
                     .isReported(false)
                     .comment(null)
@@ -51,6 +60,7 @@ public class DocumentsService {
             document = Document.builder()
                     .user(user)
                     .studentName(getShortenedNameForUser(user))
+                    .academicGroup(((Student) user).getAcademicGroup())
                     .fileName(createDocumentDto.getDocumentName())
                     .isReported(false)
                     .comment(null)
@@ -65,7 +75,7 @@ public class DocumentsService {
         return result;
     }
 
-    private String getShortenedNameForUser(User user){
+    private String getShortenedNameForUser(User user) {
         String lastName = user.getLastName();
         String firstnameInitial = String.valueOf(user.getFirstName().charAt(0));
         String middlenameInitial = String.valueOf(user.getMiddleName().charAt(0));
