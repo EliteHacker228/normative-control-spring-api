@@ -33,7 +33,7 @@ normativeControl:
 
 s3:
   region: US-EAST-1
-  accessKeyId: pdh5niPCbqYxGW5BKxGv
-  secretAccessKey: xqtc6gXpKy0OIZVVSeinxDd7dd0pbDsOEtU7huJX
+  accessKeyId: maeasoftworks
+  secretAccessKey: normativecontrol
   endpoint: http://localhost:9000
   bucket: normative-control

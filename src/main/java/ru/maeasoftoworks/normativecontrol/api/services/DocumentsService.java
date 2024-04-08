@@ -2,6 +2,7 @@ package ru.maeasoftoworks.normativecontrol.api.services;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Document;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Result;
@@ -19,6 +20,7 @@ import ru.maeasoftoworks.normativecontrol.api.repositories.AcademicGroupsReposit
 import ru.maeasoftoworks.normativecontrol.api.repositories.DocumentsRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.ResultsRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.UsersRepository;
+import ru.maeasoftoworks.normativecontrol.api.s3.S3;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +32,7 @@ public class DocumentsService {
     private final ResultsRepository resultsRepository;
     private final UsersRepository usersRepository;
     private final AcademicGroupsRepository academicGroupsRepository;
+    private final S3 s3;
 
     public List<Document> getDocuments(Admin admin) {
         University university = admin.getUniversity();
@@ -42,6 +45,7 @@ public class DocumentsService {
     }
 
     @Transactional
+    @SneakyThrows
     public Result createDocument(User user, CreateDocumentDto createDocumentDto) {
         Document document;
 
@@ -53,7 +57,7 @@ public class DocumentsService {
                     .user(user)
                     .studentName(createDocumentDto.getStudentName())
                     .academicGroup(academicGroup)
-                    .fileName(createDocumentDto.getDocumentName())
+                    .fileName(normalizeFileName(createDocumentDto.getDocumentName()))
                     .isReported(false)
                     .comment(null)
                     .build();
@@ -62,13 +66,15 @@ public class DocumentsService {
                     .user(user)
                     .studentName(getShortenedNameForUser(user))
                     .academicGroup(((Student) user).getAcademicGroup())
-                    .fileName(createDocumentDto.getDocumentName())
+                    .fileName(normalizeFileName(createDocumentDto.getDocumentName()))
                     .isReported(false)
                     .comment(null)
                     .build();
         }
 
         documentsRepository.save(document);
+        String documentName = user.getEmail() + "/" + document.getId() + "/source.docx";
+        s3.putObject(createDocumentDto.getDocument().getInputStream(), documentName);
 
         Result result = new Result(document, VerificationStatus.PENDING);
         resultsRepository.save(result);
@@ -111,5 +117,12 @@ public class DocumentsService {
         String firstnameInitial = String.valueOf(user.getFirstName().charAt(0));
         String middlenameInitial = String.valueOf(user.getMiddleName().charAt(0));
         return lastName + " " + firstnameInitial + "." + middlenameInitial + ".";
+    }
+
+    private String normalizeFileName(String fileName){
+        if(fileName.endsWith(".docx"))
+            return fileName;
+        else
+            return fileName + ".docx";
     }
 }
