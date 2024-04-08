@@ -44,6 +44,9 @@ public class NormativeControlApiApplication {
     @PostConstruct
     @Transactional
     protected void initDatabase() {
+        if(universitiesRepository.existsUniversityByName("УрФУ им. первого президента России Б. Н. Ельцина"))
+            return;
+
         University UrFU = new University("УрФУ им. первого президента России Б. Н. Ельцина");
         universitiesRepository.save(UrFU);
 
