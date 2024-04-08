@@ -8,6 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import ru.maeasoftoworks.normativecontrol.api.domain.documents.Document;
+import ru.maeasoftoworks.normativecontrol.api.domain.documents.Result;
+import ru.maeasoftoworks.normativecontrol.api.domain.documents.VerificationStatus;
 import ru.maeasoftoworks.normativecontrol.api.domain.universities.AcademicGroup;
 import ru.maeasoftoworks.normativecontrol.api.domain.universities.University;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Admin;
@@ -36,6 +39,10 @@ public class BasicCrudTests {
     private StudentsRepository studentsRepository;
     @Autowired
     private UsersRepository usersRepository;
+    @Autowired
+    private DocumentsRepository documentsRepository;
+    @Autowired
+    private ResultsRepository resultsRepository;
 
     @Test
     @Transactional
@@ -110,6 +117,17 @@ public class BasicCrudTests {
                     .build();
             studentsRepository.save(student);
 
+            Document document = Document.builder()
+                    .user(student)
+                    .fileName("И.А.Шарапов РИ-400015 ВКР")
+                    .isReported(false)
+                    .comment("")
+                    .build();
+            documentsRepository.save(document);
+
+            Result result = new Result(document, VerificationStatus.PENDING);
+            resultsRepository.save(result);
+
             student = Student.builder()
                     .email("M.S.Jeglov@urfu.me")
                     .password("student_password")
@@ -162,6 +180,14 @@ public class BasicCrudTests {
         List<User> users = usersRepository.findAll();
         Assertions.assertTrue(users.toArray().length >= 1);
         logCollection(users);
+
+        List<Document> documents = documentsRepository.findAll();
+        Assertions.assertTrue(documents.toArray().length >= 1);
+        logCollection(documents);
+
+        List<Result> results = resultsRepository.findAll();
+        Assertions.assertTrue(results.toArray().length >= 1);
+        logCollection(results);
     }
 
     private void logCollection(Collection collection){

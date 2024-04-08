@@ -7,6 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import ru.maeasoftoworks.normativecontrol.api.domain.documents.Document;
+import ru.maeasoftoworks.normativecontrol.api.domain.documents.Result;
+import ru.maeasoftoworks.normativecontrol.api.domain.documents.VerificationStatus;
 import ru.maeasoftoworks.normativecontrol.api.domain.universities.AcademicGroup;
 import ru.maeasoftoworks.normativecontrol.api.domain.universities.University;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Admin;
@@ -29,6 +32,10 @@ public class NormativeControlApiApplication {
     private NormocontrollersRepository normocontrollersRepository;
     @Autowired
     private StudentsRepository studentsRepository;
+    @Autowired
+    private DocumentsRepository documentsRepository;
+    @Autowired
+    private ResultsRepository resultsRepository;
 
     public static void main(String[] args) {
         SpringApplication.run(NormativeControlApiApplication.class, args);
@@ -96,5 +103,16 @@ public class NormativeControlApiApplication {
                 .documentsLimit(5)
                 .build();
         studentsRepository.save(student);
+
+        Document document = Document.builder()
+                .user(student)
+                .fileName("И.А.Шарапов РИ-400015 ВКР")
+                .isReported(false)
+                .comment("")
+                .build();
+        documentsRepository.save(document);
+
+        Result result = new Result(document, VerificationStatus.PENDING);
+        resultsRepository.save(result);
     }
 }
