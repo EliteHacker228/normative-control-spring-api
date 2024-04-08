@@ -2,7 +2,7 @@ package ru.maeasoftoworks.normativecontrol.api.domain.users;
 
 import jakarta.persistence.*;
 import lombok.*;
-import ru.maeasoftoworks.normativecontrol.api.domain.University;
+import ru.maeasoftoworks.normativecontrol.api.domain.universities.University;
 
 @Entity(name = "normocontrollers")
 @NoArgsConstructor

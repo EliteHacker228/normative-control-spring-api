@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import ru.maeasoftoworks.normativecontrol.api.domain.University;
+import ru.maeasoftoworks.normativecontrol.api.domain.universities.University;
 
 @Entity(name = "admins")
 @NoArgsConstructor

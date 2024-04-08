@@ -3,21 +3,16 @@ package ru.maeasoftoworks.normativecontrol.api.controllers;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONObject;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.maeasoftoworks.normativecontrol.api.domain.University;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Admin;
-import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
 import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserDocumentsLimitDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserEmailDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserPasswordDto;
-import ru.maeasoftoworks.normativecontrol.api.repositories.UsersRepository;
 import ru.maeasoftoworks.normativecontrol.api.services.AccountsService;
 import ru.maeasoftoworks.normativecontrol.api.services.JwtService;
-import ru.maeasoftoworks.normativecontrol.api.utils.jwt.Jwt;
 
 import java.util.List;
 

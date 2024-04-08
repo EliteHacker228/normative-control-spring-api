@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import ru.maeasoftoworks.normativecontrol.api.domain.AcademicGroup;
-import ru.maeasoftoworks.normativecontrol.api.domain.University;
+import ru.maeasoftoworks.normativecontrol.api.domain.universities.AcademicGroup;
+import ru.maeasoftoworks.normativecontrol.api.domain.universities.University;
 
 @Entity(name = "students")
 @NoArgsConstructor

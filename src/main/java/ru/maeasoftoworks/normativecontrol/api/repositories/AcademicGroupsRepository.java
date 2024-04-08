@@ -1,8 +1,7 @@
 package ru.maeasoftoworks.normativecontrol.api.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import ru.maeasoftoworks.normativecontrol.api.domain.AcademicGroup;
-import ru.maeasoftoworks.normativecontrol.api.domain.University;
+import ru.maeasoftoworks.normativecontrol.api.domain.universities.AcademicGroup;
 
 import java.util.List;
 
