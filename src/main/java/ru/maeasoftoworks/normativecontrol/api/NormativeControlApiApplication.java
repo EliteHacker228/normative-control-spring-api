@@ -107,17 +107,17 @@ public class NormativeControlApiApplication {
                 .build();
         studentsRepository.save(student);
 
-        Document document = Document.builder()
-                .user(student)
-                .studentName("Шарапов И.А.")
-                .academicGroup(RI_400015)
-                .fileName("И.А.Шарапов РИ-400015 ВКР")
-                .isReported(false)
-                .comment("")
-                .build();
-        documentsRepository.save(document);
+//        Document document = Document.builder()
+//                .user(student)
+//                .studentName("Шарапов И.А.")
+//                .academicGroup(RI_400015)
+//                .fileName("И.А.Шарапов РИ-400015 ВКР")
+//                .isReported(false)
+//                .comment("")
+//                .build();
+//        documentsRepository.save(document);
 
-        Result result = new Result(document, VerificationStatus.PENDING);
-        resultsRepository.save(result);
+//        Result result = new Result(document, VerificationStatus.PENDING);
+//        resultsRepository.save(result);
     }
 }

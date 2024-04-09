@@ -18,6 +18,8 @@ import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
 import ru.maeasoftoworks.normativecontrol.api.dto.documents.CreateDocumentDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.documents.DocumentVerdictDto;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.UnauthorizedException;
+import ru.maeasoftoworks.normativecontrol.api.mq.Message;
+import ru.maeasoftoworks.normativecontrol.api.mq.MqPublisher;
 import ru.maeasoftoworks.normativecontrol.api.repositories.AcademicGroupsRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.DocumentsRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.ResultsRepository;
@@ -36,6 +38,7 @@ public class DocumentsService {
     private final UsersRepository usersRepository;
     private final AcademicGroupsRepository academicGroupsRepository;
     private final S3 s3;
+    private final MqPublisher mqPublisher;
 
     public List<Document> getDocuments(Admin admin) {
         University university = admin.getUniversity();
@@ -51,7 +54,6 @@ public class DocumentsService {
     @SneakyThrows
     public Result createDocument(User user, CreateDocumentDto createDocumentDto) {
         Document document;
-
         if (user.getRole() == Role.NORMOCONTROLLER) {
             AcademicGroup academicGroup = academicGroupsRepository.findAcademicGroupById(createDocumentDto.getAcademicGroupId());
             if (academicGroup.getUniversity() != user.getUniversity())
@@ -81,6 +83,11 @@ public class DocumentsService {
 
         Result result = new Result(document, VerificationStatus.PENDING);
         resultsRepository.save(result);
+
+        String docxResultName = user.getEmail() + "/" + document.getId() + "/result.docx";
+        String htmlResultName = user.getEmail() + "/" + document.getId() + "/result.html";
+        Message message = new Message(document.getId(), documentName, docxResultName, htmlResultName);
+        mqPublisher.publishToVerify(message.getAsJsonString());
 
         return result;
     }
