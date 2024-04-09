@@ -73,11 +73,8 @@ public class DocumentsController {
                                               @RequestParam(name = "type") String documentType) {
 
         User user = jwtService.getUserFromAuthorizationHeader(bearerToken);
-        String documentPath = user.getEmail() + "/" + documentId + "/result." + documentType;
-        try (ByteArrayOutputStream result = s3.getObject(documentPath)) {
-            byte[] bytes = result.toByteArray();
-            return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(bytes);
-        }
+        byte[] documentBytes = documentsService.getDocument(user, documentId, documentType);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(documentBytes);
     }
 
 

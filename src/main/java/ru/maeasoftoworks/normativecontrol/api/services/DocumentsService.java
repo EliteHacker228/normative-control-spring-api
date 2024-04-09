@@ -3,6 +3,8 @@ package ru.maeasoftoworks.normativecontrol.api.services;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Document;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Result;
@@ -22,6 +24,7 @@ import ru.maeasoftoworks.normativecontrol.api.repositories.ResultsRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.UsersRepository;
 import ru.maeasoftoworks.normativecontrol.api.s3.S3;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,6 +83,15 @@ public class DocumentsService {
         resultsRepository.save(result);
 
         return result;
+    }
+
+    @SneakyThrows
+    public byte[] getDocument(User user, Long documentId, String documentType){
+        String documentPath = user.getEmail() + "/" + documentId + "/result." + documentType;
+        try (ByteArrayOutputStream result = s3.getObject(documentPath)) {
+            byte[] bytes = result.toByteArray();
+            return bytes;
+        }
     }
 
     @Transactional
