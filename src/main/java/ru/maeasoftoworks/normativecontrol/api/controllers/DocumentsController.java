@@ -1,7 +1,9 @@
 package ru.maeasoftoworks.normativecontrol.api.controllers;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import net.minidev.json.JSONObject;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Document;
@@ -13,9 +15,11 @@ import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
 import ru.maeasoftoworks.normativecontrol.api.dto.documents.CreateDocumentDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.documents.DocumentVerdictDto;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.UnauthorizedException;
+import ru.maeasoftoworks.normativecontrol.api.s3.S3;
 import ru.maeasoftoworks.normativecontrol.api.services.DocumentsService;
 import ru.maeasoftoworks.normativecontrol.api.services.JwtService;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 @RestController
@@ -24,6 +28,7 @@ import java.util.List;
 public class DocumentsController {
     private final DocumentsService documentsService;
     private final JwtService jwtService;
+    private final S3 s3;
 
     @GetMapping
     public List<Document> getDocuments(@RequestHeader("Authorization") String bearerToken) {
@@ -61,17 +66,32 @@ public class DocumentsController {
         return ResponseEntity.ok().body(response);
     }
 
+    @GetMapping("/{document_id}")
+    @SneakyThrows
+    public ResponseEntity<byte[]> getDocument(@RequestHeader("Authorization") String bearerToken,
+                                              @PathVariable("document_id") Long documentId,
+                                              @RequestParam(name = "type") String documentType) {
+
+        User user = jwtService.getUserFromAuthorizationHeader(bearerToken);
+        String documentPath = user.getEmail() + "/" + documentId + "/result." + documentType;
+        try (ByteArrayOutputStream result = s3.getObject(documentPath)) {
+            byte[] bytes = result.toByteArray();
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(bytes);
+        }
+    }
+
+
     @PatchMapping("/{document_id}")
     public Document setVerdictOnDocument(@RequestHeader("Authorization") String bearerToken,
-                                       @PathVariable("document_id") Long documentId,
-                                       @RequestBody DocumentVerdictDto documentVerdictDto) {
+                                         @PathVariable("document_id") Long documentId,
+                                         @RequestBody DocumentVerdictDto documentVerdictDto) {
         User user = jwtService.getUserFromAuthorizationHeader(bearerToken);
         return documentsService.setVerdictOnDocument(documentId, documentVerdictDto);
     }
 
     @PatchMapping("/{document_id}/report")
     public Document reportOnDocument(@RequestHeader("Authorization") String bearerToken,
-                                         @PathVariable("document_id") Long documentId) {
+                                     @PathVariable("document_id") Long documentId) {
         User user = jwtService.getUserFromAuthorizationHeader(bearerToken);
         return documentsService.reportOnDocument(documentId);
     }
