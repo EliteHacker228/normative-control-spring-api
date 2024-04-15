@@ -21,14 +21,13 @@ public class Normocontroller extends User {
         super.lastName = lastName;
         super.university = university;
         this.documentsLimit = documentsLimit;
-        this.role = Role.NORMOCONTROLLER;
     }
 
     @Column(name = "documents_limit")
     @Setter
     private int documentsLimit;
 
-    private Role role;
+    private final Role role = Role.NORMOCONTROLLER;
 
     @Override
     public Role getRole() {

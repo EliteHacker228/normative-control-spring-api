@@ -1,12 +1,19 @@
 package ru.maeasoftoworks.normativecontrol.api.controllers;
 
 import lombok.RequiredArgsConstructor;
+import net.minidev.json.JSONObject;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Normocontroller;
+import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Student;
 import ru.maeasoftoworks.normativecontrol.api.dto.auth.AuthJwtPair;
+import ru.maeasoftoworks.normativecontrol.api.dto.auth.RegisterDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.auth.UpdateAuthTokensDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.auth.LoginData;
+import ru.maeasoftoworks.normativecontrol.api.exceptions.UserAlreadyExistsException;
 import ru.maeasoftoworks.normativecontrol.api.services.AuthService;
 
 @RestController
@@ -22,13 +29,16 @@ public class AuthController {
     }
 
     @PostMapping("/register/student")
-    private AuthJwtPair registerStudent(@RequestBody Student student) {
-        return authService.register(student);
-    }
-
-    @PostMapping("/register/normocontroller")
-    private AuthJwtPair registerNormocontroller(@RequestBody Normocontroller normocontroller) {
-        return authService.register(normocontroller);
+    private ResponseEntity register(@RequestBody RegisterDto registerDto) {
+        try {
+            registerDto.setRole(Role.STUDENT);
+            AuthJwtPair authJwtPair = authService.register(registerDto);
+            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(authJwtPair);
+        } catch (UserAlreadyExistsException e) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("message", "Email " + registerDto.getEmail() + " is already in use");
+            return ResponseEntity.status(HttpStatus.CONFLICT).contentType(MediaType.APPLICATION_JSON).body(jsonObject.toJSONString());
+        }
     }
 
     @PutMapping("/tokens")

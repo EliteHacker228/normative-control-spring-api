@@ -5,13 +5,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.maeasoftoworks.normativecontrol.api.domain.universities.AcademicGroup;
 import ru.maeasoftoworks.normativecontrol.api.domain.universities.University;
+import ru.maeasoftoworks.normativecontrol.api.domain.users.Normocontroller;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Student;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
 import ru.maeasoftoworks.normativecontrol.api.dto.universities.CreateAcademicGroupDto;
+import ru.maeasoftoworks.normativecontrol.api.dto.universities.NormocontrollerDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.universities.UpdateAcademicGroupDto;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.ResourceDoesNotExists;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.UnauthorizedException;
 import ru.maeasoftoworks.normativecontrol.api.repositories.AcademicGroupsRepository;
+import ru.maeasoftoworks.normativecontrol.api.repositories.NormocontrollersRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.StudentsRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.UniversitiesRepository;
 
@@ -23,6 +26,7 @@ public class UniversitiesService {
     private final UniversitiesRepository universitiesRepository;
     private final AcademicGroupsRepository academicGroupsRepository;
     private final StudentsRepository studentsRepository;
+    private final NormocontrollersRepository normocontrollersRepository;
 
     public List<University> getUniversities() {
         return universitiesRepository.findAll();
@@ -37,6 +41,18 @@ public class UniversitiesService {
 
     public List<AcademicGroup> getAcademicGroupsOfUniversity(University university) {
         return academicGroupsRepository.findAcademicGroupsByUniversityId(university.getId());
+    }
+
+    public List<NormocontrollerDto> getNormocontrollersOfUniversity(University university) {
+        return normocontrollersRepository.findNormocontrollerByUniversity(university)
+                .stream()
+                .map(normocontroller -> NormocontrollerDto.builder()
+                        .id(normocontroller.getId())
+                        .lastName(normocontroller.getLastName())
+                        .firstName(normocontroller.getFirstName())
+                        .middleName(normocontroller.getMiddleName())
+                        .build())
+                .toList();
     }
 
     @Transactional

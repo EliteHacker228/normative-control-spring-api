@@ -7,9 +7,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.maeasoftoworks.normativecontrol.api.domain.universities.AcademicGroup;
 import ru.maeasoftoworks.normativecontrol.api.domain.universities.University;
+import ru.maeasoftoworks.normativecontrol.api.domain.users.Normocontroller;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Student;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
 import ru.maeasoftoworks.normativecontrol.api.dto.universities.CreateAcademicGroupDto;
+import ru.maeasoftoworks.normativecontrol.api.dto.universities.NormocontrollerDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.universities.UpdateAcademicGroupDto;
 import ru.maeasoftoworks.normativecontrol.api.services.JwtService;
 import ru.maeasoftoworks.normativecontrol.api.services.UniversitiesService;
@@ -58,10 +60,8 @@ public class UniversitiesController {
     }
 
     @GetMapping("/{university_id}/groups")
-    public List<AcademicGroup> getAcademicGroupsOfUniversity(@RequestHeader("Authorization") String authorizationHeader,
-                                                             @PathVariable("university_id") Long universityId) {
-        User user = jwtService.getUserFromAuthorizationHeader(authorizationHeader);
-        University university = universitiesService.getOwnUniversity(user, universityId);
+    public List<AcademicGroup> getAcademicGroupsOfUniversity() {
+        University university = universitiesService.getUniversities().get(0);
         return universitiesService.getAcademicGroupsOfUniversity(university);
     }
 
@@ -72,6 +72,12 @@ public class UniversitiesController {
         User user = jwtService.getUserFromAuthorizationHeader(authorizationHeader);
         University university = universitiesService.getOwnUniversity(user, universityId);
         return universitiesService.createAcademicGroupForUniversity(university, createAcademicGroupDto);
+    }
+
+    @GetMapping("/{university_id}/normocontrollers")
+    public List<NormocontrollerDto> getNormocontrollersForUniversity() {
+        University university = universitiesService.getUniversities().get(0);
+        return universitiesService.getNormocontrollersOfUniversity(university);
     }
 
     // TODO: universitiesService.getOwnUniversity получает данные, а если они недоступны - кидает исключение.

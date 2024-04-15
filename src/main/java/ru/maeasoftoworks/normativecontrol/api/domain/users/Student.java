@@ -17,7 +17,7 @@ public class Student extends User {
     public Student(Normocontroller normocontroller, String email, String password, boolean isVerified,
                    String firstName, String middleName, String lastName, University university, AcademicGroup academicGroup,
                    int documentsLimit) {
-        this.normocontroller = normocontroller;
+        super();
         super.email = email;
         super.password = password;
         super.isVerified = isVerified;
@@ -25,9 +25,10 @@ public class Student extends User {
         super.middleName = middleName;
         super.lastName = lastName;
         super.university = university;
+
+        this.normocontroller = normocontroller;
         this.academicGroup = academicGroup;
         this.documentsLimit = documentsLimit;
-        this.role = Role.STUDENT;
     }
 
     @ManyToOne
@@ -46,7 +47,7 @@ public class Student extends User {
     @Setter
     private int documentsLimit;
 
-    private Role role;
+    private final Role role = Role.STUDENT;
 
     @Override
     public Role getRole() {

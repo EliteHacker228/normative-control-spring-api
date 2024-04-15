@@ -45,9 +45,6 @@ public class NormativeControlApiApplication {
     @PostConstruct
     @Transactional
     protected void initDatabase() {
-        if(universitiesRepository.existsUniversityByName("УрФУ им. первого президента России Б. Н. Ельцина"))
-            return;
-
         University UrFU = new University("УрФУ им. первого президента России Б. Н. Ельцина");
         universitiesRepository.save(UrFU);
 
@@ -88,6 +85,18 @@ public class NormativeControlApiApplication {
                 .firstName("Антон")
                 .middleName("Валерьевич")
                 .lastName("Левченко")
+                .isVerified(true)
+                .university(UrFU)
+                .documentsLimit(30)
+                .build();
+        normocontrollersRepository.save(normocontroller);
+
+        normocontroller = Normocontroller.builder()
+                .email("N.M.Markov@urfu.me")
+                .password("normocontroller_password")
+                .firstName("Николай")
+                .middleName("Мирославович")
+                .lastName("Марков")
                 .isVerified(true)
                 .university(UrFU)
                 .documentsLimit(30)

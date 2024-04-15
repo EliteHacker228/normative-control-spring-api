@@ -23,10 +23,9 @@ public class Admin extends User {
         super.middleName = middleName;
         super.lastName = lastName;
         super.university = university;
-        this.role = Role.ADMIN;
     }
 
-    private Role role;
+    private Role role = Role.ADMIN;
 
     @Override
     public Role getRole() {
