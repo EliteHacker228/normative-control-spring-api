@@ -7,6 +7,8 @@ import org.hibernate.annotations.OnDeleteAction;
 import ru.maeasoftoworks.normativecontrol.api.domain.universities.AcademicGroup;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
 
+import java.util.Date;
+
 @Entity(name = "documents")
 @NoArgsConstructor
 @ToString
@@ -56,4 +58,8 @@ public class Document {
     @Column(name = "comment")
     @Setter
     private String comment = "";
+
+    @Column(name = "verification_date")
+    @Setter
+    private Date verificationDate = new Date();
 }

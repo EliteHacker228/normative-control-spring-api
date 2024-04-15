@@ -32,8 +32,8 @@ public class DocumentsController {
 
     @GetMapping
     public List<Document> getDocuments(@RequestHeader("Authorization") String bearerToken) {
-        Admin admin = (Admin) jwtService.getUserFromAuthorizationHeader(bearerToken);
-        return documentsService.getDocuments(admin);
+        User user = jwtService.getUserFromAuthorizationHeader(bearerToken);
+        return documentsService.getDocuments(user);
     }
 
     @PostMapping

@@ -40,14 +40,14 @@ public class DocumentsService {
     private final S3 s3;
     private final MqPublisher mqPublisher;
 
-    public List<Document> getDocuments(Admin admin) {
-        University university = admin.getUniversity();
-        List<User> users = usersRepository.findUsersByUniversity(university);
-        List<Document> result = new ArrayList<>();
-        for (User user : users) {
-            result.addAll(documentsRepository.findDocumentsByUser(user));
-        }
-        return result;
+    public List<Document> getDocuments(User user) {
+//        List<User> users = usersRepository.findUsersByUniversity(university);
+//        List<Document> result = new ArrayList<>();
+//        for (User user : users) {
+//            result.addAll(documentsRepository.findDocumentsByUser(user));
+//        }
+//        return result;
+        return documentsRepository.findDocumentsByUser(user);
     }
 
     @Transactional
