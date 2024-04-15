@@ -9,7 +9,6 @@ public class UpdateUserDto {
     private String firstName;
     private String middleName;
     private String lastName;
-    private Long universityId;
     private Long academicGroupId;
     private Long normocontrollerId;
 }

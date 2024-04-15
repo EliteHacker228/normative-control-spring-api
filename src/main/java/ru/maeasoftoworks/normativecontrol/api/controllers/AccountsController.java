@@ -11,6 +11,7 @@ import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserDocumentsLi
 import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserEmailDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserPasswordDto;
+import ru.maeasoftoworks.normativecontrol.api.dto.auth.AuthJwtPair;
 import ru.maeasoftoworks.normativecontrol.api.services.AccountsService;
 import ru.maeasoftoworks.normativecontrol.api.services.JwtService;
 
@@ -64,9 +65,9 @@ public class AccountsController {
     }
 
     @PatchMapping("/{user_id}/email")
-    public User updateUserEmail(@RequestHeader("Authorization") String authorizationHeader,
-                                @PathVariable("user_id") Long userId,
-                                @RequestBody UpdateUserEmailDto updateUserEmailDto) {
+    public AuthJwtPair updateUserEmail(@RequestHeader("Authorization") String authorizationHeader,
+                                       @PathVariable("user_id") Long userId,
+                                       @RequestBody UpdateUserEmailDto updateUserEmailDto) {
         User user = jwtService.getUserFromAuthorizationHeader(authorizationHeader);
         User userToUpdateEmail = accountsService.getOwnUserOrAnyAsAdminById(user, userId);
         return accountsService.updateUserEmail(userToUpdateEmail, updateUserEmailDto);

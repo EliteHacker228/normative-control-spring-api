@@ -76,6 +76,7 @@ public class JwtService {
                 .and()
                 .issuer(normativeControlApiDomain)
                 .subject(user.getEmail())
+                .claim("id", user.getId())
                 .claim("role", user.getRole())
                 .issuedAt(tokenIssuingDate)
                 .expiration(tokenExpirationDate)

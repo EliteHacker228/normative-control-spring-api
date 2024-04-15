@@ -10,6 +10,7 @@ import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserDocumentsLi
 import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserEmailDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserPasswordDto;
+import ru.maeasoftoworks.normativecontrol.api.dto.auth.AuthJwtPair;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.FieldNotPresents;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.ResourceDoesNotExists;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.UnauthorizedException;
@@ -28,6 +29,7 @@ public class AccountsService {
     private final UniversitiesRepository universitiesRepository;
     private final AcademicGroupsRepository academicGroupsRepository;
     private final NormocontrollersRepository normocontrollersRepository;
+    private final JwtService jwtService;
 
     public List<User> getUsersForAdmin(Admin admin) {
         List<User> foundUsers = usersRepository.findUsersByUniversity(admin.getUniversity());
@@ -55,21 +57,13 @@ public class AccountsService {
         user.setMiddleName(updateUserDto.getMiddleName());
         user.setLastName(updateUserDto.getLastName());
 
-        if (user.getUniversity().getId() != updateUserDto.getUniversityId()) {
-            University university = universitiesRepository.findUniversityById(updateUserDto.getUniversityId());
-            if (university == null)
-                throw new ResourceDoesNotExists("University with id " + updateUserDto.getUniversityId()
-                        + " does not exists");
-            user.setUniversity(university);
-        }
-
         if (user.getRole() == Role.STUDENT) {
             Student student = (Student) user;
 
             if (student.getAcademicGroup().getId() != updateUserDto.getAcademicGroupId()) {
                 AcademicGroup academicGroup = academicGroupsRepository.findAcademicGroupById(updateUserDto.getAcademicGroupId());
                 if (academicGroup == null)
-                    throw new ResourceDoesNotExists("Academic group with id " + updateUserDto.getUniversityId()
+                    throw new ResourceDoesNotExists("Academic group with id " + updateUserDto.getAcademicGroupId()
                             + " does not exists");
                 student.setAcademicGroup(academicGroup);
             }
@@ -77,7 +71,7 @@ public class AccountsService {
             if (student.getNormocontroller().getId() != updateUserDto.getNormocontrollerId()) {
                 Normocontroller normocontroller = normocontrollersRepository.findNormocontrollerById(updateUserDto.getNormocontrollerId());
                 if (normocontroller == null)
-                    throw new ResourceDoesNotExists("Normocontroller with id " + updateUserDto.getUniversityId()
+                    throw new ResourceDoesNotExists("Normocontroller with id " + updateUserDto.getNormocontrollerId()
                             + " does not exists");
                 student.setNormocontroller(normocontroller);
             }
@@ -95,10 +89,11 @@ public class AccountsService {
     }
 
     @Transactional
-    public User updateUserEmail(User user, UpdateUserEmailDto updateUserEmailDto) {
+    public AuthJwtPair updateUserEmail(User user, UpdateUserEmailDto updateUserEmailDto) {
         user.setEmail(updateUserEmailDto.getEmail());
         usersRepository.save(user);
-        return user;
+        return new AuthJwtPair(jwtService.generateAccessTokenForUser(user).getCompactToken(),
+                jwtService.generateRefreshTokenForUser(user).getCompactToken());
     }
 
     @Transactional

@@ -18,7 +18,7 @@ spring:
 jwt:
   accessToken:
     key: 267e3dad2f5e22ea927180c740f6c0092d79ac61089845bc25a487f101554808
-    lifetimeInSeconds: 900 # accessToken's lifetime is 15 minutes (900 seconds)
+    lifetimeInSeconds: 2592000 # refreshToken's lifetime is 30 days (2592000 seconds)
   refreshToken:
     key: 2e82817a3fe3eb81717c5afdf8f33da3425fbeb81a059f4b377e359adaa66e2e
     lifetimeInSeconds: 2592000 # refreshToken's lifetime is 30 days (2592000 seconds)
