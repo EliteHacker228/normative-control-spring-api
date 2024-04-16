@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Document;
+import ru.maeasoftoworks.normativecontrol.api.domain.documents.DocumentVerdict;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Result;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.VerificationStatus;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Admin;
@@ -68,11 +69,14 @@ public class DocumentsController {
 
     @GetMapping("/{document_id}")
     @SneakyThrows
-    public ResponseEntity<byte[]> getDocument(@RequestHeader("Authorization") String bearerToken,
+    public ResponseEntity getDocument(@RequestHeader("Authorization") String bearerToken,
                                               @PathVariable("document_id") Long documentId,
                                               @RequestParam(name = "type") String documentType) {
 
         User user = jwtService.getUserFromAuthorizationHeader(bearerToken);
+        if(documentType.equals("node"))
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(documentsService.getDocumentNode(user, documentId));
+
         byte[] documentBytes = documentsService.getDocument(user, documentId, documentType);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(documentBytes);
     }
@@ -91,5 +95,12 @@ public class DocumentsController {
                                      @PathVariable("document_id") Long documentId) {
         User user = jwtService.getUserFromAuthorizationHeader(bearerToken);
         return documentsService.reportOnDocument(documentId);
+    }
+
+    @PatchMapping("/{document_id}/verdict")
+    public Document makeVerdict(@RequestHeader("Authorization") String bearerToken,
+                                @PathVariable("document_id") Long documentId,
+                                @RequestBody DocumentVerdictDto documentVerdictDto) {
+        return documentsService.makeVerdictOnDocument(documentId, documentVerdictDto);
     }
 }

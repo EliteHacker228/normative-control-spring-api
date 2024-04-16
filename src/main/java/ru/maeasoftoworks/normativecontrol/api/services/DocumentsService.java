@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Document;
+import ru.maeasoftoworks.normativecontrol.api.domain.documents.DocumentVerdict;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Result;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.VerificationStatus;
 import ru.maeasoftoworks.normativecontrol.api.domain.universities.AcademicGroup;
@@ -20,10 +21,7 @@ import ru.maeasoftoworks.normativecontrol.api.dto.documents.DocumentVerdictDto;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.UnauthorizedException;
 import ru.maeasoftoworks.normativecontrol.api.mq.Message;
 import ru.maeasoftoworks.normativecontrol.api.mq.MqPublisher;
-import ru.maeasoftoworks.normativecontrol.api.repositories.AcademicGroupsRepository;
-import ru.maeasoftoworks.normativecontrol.api.repositories.DocumentsRepository;
-import ru.maeasoftoworks.normativecontrol.api.repositories.ResultsRepository;
-import ru.maeasoftoworks.normativecontrol.api.repositories.UsersRepository;
+import ru.maeasoftoworks.normativecontrol.api.repositories.*;
 import ru.maeasoftoworks.normativecontrol.api.s3.S3;
 
 import java.io.ByteArrayOutputStream;
@@ -36,18 +34,30 @@ public class DocumentsService {
     private final DocumentsRepository documentsRepository;
     private final ResultsRepository resultsRepository;
     private final UsersRepository usersRepository;
+    private final StudentsRepository studentsRepository;
     private final AcademicGroupsRepository academicGroupsRepository;
     private final S3 s3;
     private final MqPublisher mqPublisher;
 
     public List<Document> getDocuments(User user) {
+        if(user.getRole() == Role.STUDENT)
+            return documentsRepository.findDocumentsByUser(user);
+        else if(user.getRole() == Role.NORMOCONTROLLER) {
+            List<Student> students = studentsRepository.findStudentsByNormocontrollerId(user.getId());
+            List<Document> result = new ArrayList<>();
+            for (Student student : students) {
+                result.addAll(documentsRepository.findDocumentsByUser(student));
+            }
+            return result;
+        }
+
+        return List.of();
 //        List<User> users = usersRepository.findUsersByUniversity(university);
 //        List<Document> result = new ArrayList<>();
 //        for (User user : users) {
 //            result.addAll(documentsRepository.findDocumentsByUser(user));
 //        }
 //        return result;
-        return documentsRepository.findDocumentsByUser(user);
     }
 
     @Transactional
@@ -94,12 +104,20 @@ public class DocumentsService {
 
     @SneakyThrows
     public byte[] getDocument(User user, Long documentId, String documentType){
+        Document targetDocument = documentsRepository.findDocumentById(documentId);
+        user = targetDocument.getUser();
         String documentPath = user.getEmail() + "/" + documentId + "/result." + documentType;
         try (ByteArrayOutputStream result = s3.getObject(documentPath)) {
             byte[] bytes = result.toByteArray();
             return bytes;
         }
     }
+
+    public Document getDocumentNode(User user, Long documentId){
+        Document targetDocument = documentsRepository.findDocumentById(documentId);
+        return targetDocument;
+    }
+
 
     @Transactional
     public void deleteDocument(Admin admin, Long documentId) {
@@ -127,6 +145,14 @@ public class DocumentsService {
     public Document reportOnDocument(Long documentId) {
         Document document = documentsRepository.findDocumentById(documentId);
         document.setReported(true);
+        documentsRepository.save(document);
+        return document;
+    }
+
+    @Transactional
+    public Document makeVerdictOnDocument(Long documentId, DocumentVerdictDto documentVerdictDto) {
+        Document document = documentsRepository.findDocumentById(documentId);
+        document.setDocumentVerdict(documentVerdictDto.getVerdict());
         documentsRepository.save(document);
         return document;
     }
