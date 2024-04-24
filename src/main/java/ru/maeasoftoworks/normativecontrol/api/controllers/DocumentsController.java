@@ -16,7 +16,6 @@ import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
 import ru.maeasoftoworks.normativecontrol.api.dto.documents.CreateDocumentDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.documents.DocumentVerdictDto;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.UnauthorizedException;
-import ru.maeasoftoworks.normativecontrol.api.s3.S3;
 import ru.maeasoftoworks.normativecontrol.api.services.DocumentsService;
 import ru.maeasoftoworks.normativecontrol.api.services.JwtService;
 
@@ -29,7 +28,6 @@ import java.util.List;
 public class DocumentsController {
     private final DocumentsService documentsService;
     private final JwtService jwtService;
-    private final S3 s3;
 
     @GetMapping
     public List<Document> getDocuments(@RequestHeader("Authorization") String bearerToken) {
