@@ -88,14 +88,14 @@ public class DocumentsService {
         }
 
         documentsRepository.save(document);
-        String documentName = user.getEmail() + "/" + document.getId() + "/source.docx";
+        String documentName = user.getId() + "/" + document.getId() + "/source.docx";
         s3.putObject(createDocumentDto.getDocument().getInputStream(), documentName);
 
         Result result = new Result(document, VerificationStatus.PENDING);
         resultsRepository.save(result);
 
-        String docxResultName = user.getEmail() + "/" + document.getId() + "/result.docx";
-        String htmlResultName = user.getEmail() + "/" + document.getId() + "/result.html";
+        String docxResultName = user.getId() + "/" + document.getId() + "/result.docx";
+        String htmlResultName = user.getId() + "/" + document.getId() + "/result.html";
         Message message = new Message(document.getId(), documentName, docxResultName, htmlResultName);
         mqPublisher.publishToVerify(message.getAsJsonString());
 
@@ -106,7 +106,7 @@ public class DocumentsService {
     public byte[] getDocument(User user, Long documentId, String documentType){
         Document targetDocument = documentsRepository.findDocumentById(documentId);
         user = targetDocument.getUser();
-        String documentPath = user.getEmail() + "/" + documentId + "/result." + documentType;
+        String documentPath = user.getId() + "/" + documentId + "/result." + documentType;
         try (ByteArrayOutputStream result = s3.getObject(documentPath)) {
             byte[] bytes = result.toByteArray();
             return bytes;
