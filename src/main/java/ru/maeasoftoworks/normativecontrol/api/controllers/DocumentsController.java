@@ -58,7 +58,6 @@ public class DocumentsController {
     @GetMapping("/{document_id}/status")
     public ResponseEntity<JSONObject> getDocumentsVerificationStatus(@RequestHeader("Authorization") String bearerToken,
                                                                      @PathVariable("document_id") Long documentId) {
-        User user = jwtService.getUserFromAuthorizationHeader(bearerToken);
         VerificationStatus status = documentsService.getDocumentsVerificationStatus(documentId);
         JSONObject response = new JSONObject();
         response.put("status", status.name());
@@ -84,14 +83,12 @@ public class DocumentsController {
     public Document setVerdictOnDocument(@RequestHeader("Authorization") String bearerToken,
                                          @PathVariable("document_id") Long documentId,
                                          @RequestBody DocumentVerdictDto documentVerdictDto) {
-        User user = jwtService.getUserFromAuthorizationHeader(bearerToken);
         return documentsService.setVerdictOnDocument(documentId, documentVerdictDto);
     }
 
     @PatchMapping("/{document_id}/report")
     public Document reportOnDocument(@RequestHeader("Authorization") String bearerToken,
                                      @PathVariable("document_id") Long documentId) {
-        User user = jwtService.getUserFromAuthorizationHeader(bearerToken);
         return documentsService.reportOnDocument(documentId);
     }
 
