@@ -71,7 +71,6 @@ public class NormativeControlApiApplication {
                 .middleName("Валерьевич")
                 .lastName("Левченко")
                 .isVerified(true)
-                .documentsLimit(30)
                 .build();
         normocontrollersRepository.save(normocontroller);
 
@@ -82,7 +81,6 @@ public class NormativeControlApiApplication {
                 .middleName("Мирославович")
                 .lastName("Марков")
                 .isVerified(true)
-                .documentsLimit(30)
                 .build();
         normocontrollersRepository.save(normocontroller);
 

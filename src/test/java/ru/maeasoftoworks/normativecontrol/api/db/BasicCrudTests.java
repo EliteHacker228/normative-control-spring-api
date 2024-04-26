@@ -78,7 +78,6 @@ public class BasicCrudTests {
                     .middleName("Валерьевич")
                     .lastName("Левченко")
                     .isVerified(true)
-                    .documentsLimit(30)
                     .build();
             normocontrollersRepository.save(normocontroller);
 
@@ -89,7 +88,6 @@ public class BasicCrudTests {
                     .middleName("Тимофеевич")
                     .lastName("Охотский")
                     .isVerified(true)
-                    .documentsLimit(30)
                     .build();
             normocontrollersRepository.save(normocontroller);
 

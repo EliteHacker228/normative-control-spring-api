@@ -11,19 +11,14 @@ public class Normocontroller extends User {
 
     @Builder
     public Normocontroller(String email, String password, boolean isVerified, String firstName,
-                           String middleName, String lastName, int documentsLimit) {
+                           String middleName, String lastName) {
         super.email = email;
         super.password = password;
         super.isVerified = isVerified;
         super.firstName = firstName;
         super.middleName = middleName;
         super.lastName = lastName;
-        this.documentsLimit = documentsLimit;
     }
-
-    @Column(name = "documents_limit")
-    @Setter
-    private int documentsLimit;
 
     private final Role role = Role.NORMOCONTROLLER;
 

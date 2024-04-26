@@ -105,11 +105,6 @@ public class AccountsService {
             student.setDocumentsLimit(updateUserDocumentsLimitDto.getDocumentsLimit());
             usersRepository.save(student);
             return student;
-        } else if (user.getRole() == Role.NORMOCONTROLLER) {
-            Normocontroller normocontroller = (Normocontroller) user;
-            normocontroller.setDocumentsLimit(updateUserDocumentsLimitDto.getDocumentsLimit());
-            usersRepository.save(normocontroller);
-            return normocontroller;
         } else {
             throw new FieldNotPresents("This user doesn't have «documents limit» field");
         }
