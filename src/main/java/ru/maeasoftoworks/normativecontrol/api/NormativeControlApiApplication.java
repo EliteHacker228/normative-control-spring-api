@@ -7,11 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import ru.maeasoftoworks.normativecontrol.api.domain.documents.Document;
-import ru.maeasoftoworks.normativecontrol.api.domain.documents.Result;
-import ru.maeasoftoworks.normativecontrol.api.domain.documents.VerificationStatus;
-import ru.maeasoftoworks.normativecontrol.api.domain.universities.AcademicGroup;
-import ru.maeasoftoworks.normativecontrol.api.domain.universities.University;
+import ru.maeasoftoworks.normativecontrol.api.domain.academical.AcademicGroup;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Admin;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Normocontroller;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Student;
@@ -22,9 +18,6 @@ import ru.maeasoftoworks.normativecontrol.api.repositories.*;
 @RequiredArgsConstructor
 @Slf4j
 public class NormativeControlApiApplication {
-
-    @Autowired
-    private UniversitiesRepository universitiesRepository;
     @Autowired
     private AdminsRepository adminsRepository;
     @Autowired
@@ -45,12 +38,6 @@ public class NormativeControlApiApplication {
     @PostConstruct
     @Transactional
     protected void initDatabase() {
-        University UrFU = new University("УрФУ им. первого президента России Б. Н. Ельцина");
-        universitiesRepository.save(UrFU);
-
-        University RGGPU = new University("ФГАОУ ВО «РГППУ»");
-        universitiesRepository.save(RGGPU);
-
         Admin admin = Admin.builder()
                 .email("P.O.Kurchatov@urfu.me")
                 .password("admin_password")
@@ -58,7 +45,6 @@ public class NormativeControlApiApplication {
                 .middleName("Олегович")
                 .lastName("Курчатов")
                 .isVerified(true)
-                .university(UrFU)
                 .build();
         adminsRepository.save(admin);
 
@@ -69,14 +55,13 @@ public class NormativeControlApiApplication {
                 .middleName("Николаевич")
                 .lastName("Митькин")
                 .isVerified(true)
-                .university(RGGPU)
                 .build();
         adminsRepository.save(admin);
 
-        AcademicGroup RI_400015 = new AcademicGroup(UrFU, "РИ-400015");
+        AcademicGroup RI_400015 = new AcademicGroup("РИ-400015");
         academicGroupsRepository.save(RI_400015);
 
-        AcademicGroup RI_400016 = new AcademicGroup(UrFU, "РИ-400016");
+        AcademicGroup RI_400016 = new AcademicGroup("РИ-400016");
         academicGroupsRepository.save(RI_400016);
 
         Normocontroller normocontroller = Normocontroller.builder()
@@ -86,7 +71,6 @@ public class NormativeControlApiApplication {
                 .middleName("Валерьевич")
                 .lastName("Левченко")
                 .isVerified(true)
-                .university(UrFU)
                 .documentsLimit(30)
                 .build();
         normocontrollersRepository.save(normocontroller);
@@ -98,7 +82,6 @@ public class NormativeControlApiApplication {
                 .middleName("Мирославович")
                 .lastName("Марков")
                 .isVerified(true)
-                .university(UrFU)
                 .documentsLimit(30)
                 .build();
         normocontrollersRepository.save(normocontroller);
@@ -111,7 +94,6 @@ public class NormativeControlApiApplication {
                 .lastName("Шарапов")
                 .isVerified(true)
                 .academicGroup(RI_400015)
-                .university(UrFU)
                 .normocontroller(normocontroller)
                 .documentsLimit(5)
                 .build();

@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import ru.maeasoftoworks.normativecontrol.api.domain.universities.AcademicGroup;
+import ru.maeasoftoworks.normativecontrol.api.domain.academical.AcademicGroup;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Normocontroller;
 
 import java.util.Date;

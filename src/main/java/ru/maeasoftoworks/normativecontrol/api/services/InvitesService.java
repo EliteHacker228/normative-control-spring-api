@@ -3,14 +3,13 @@ package ru.maeasoftoworks.normativecontrol.api.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.maeasoftoworks.normativecontrol.api.domain.invites.Invite;
-import ru.maeasoftoworks.normativecontrol.api.domain.universities.AcademicGroup;
+import ru.maeasoftoworks.normativecontrol.api.domain.academical.AcademicGroup;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Normocontroller;
 import ru.maeasoftoworks.normativecontrol.api.dto.invites.InviteDto;
 import ru.maeasoftoworks.normativecontrol.api.repositories.AcademicGroupsRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.InvitesRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.NormocontrollersRepository;
 
-import java.util.Date;
 import java.util.List;
 
 @Component

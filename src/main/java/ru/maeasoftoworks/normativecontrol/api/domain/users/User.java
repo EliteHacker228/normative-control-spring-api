@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import ru.maeasoftoworks.normativecontrol.api.domain.universities.University;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
@@ -41,11 +40,6 @@ public abstract class User {
     @Column(name = "last_name")
     @Setter
     protected String lastName;
-
-    @ManyToOne
-    @JoinColumn(name = "university_id")
-    @Setter
-    protected University university;
 
     public abstract Role getRole();
 }

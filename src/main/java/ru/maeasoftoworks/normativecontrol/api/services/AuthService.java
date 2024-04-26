@@ -5,8 +5,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.maeasoftoworks.normativecontrol.api.domain.universities.AcademicGroup;
-import ru.maeasoftoworks.normativecontrol.api.domain.universities.University;
+import ru.maeasoftoworks.normativecontrol.api.domain.academical.AcademicGroup;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Normocontroller;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Student;
@@ -53,7 +52,6 @@ public class AuthService {
         if (registerDto.getRole() == Role.STUDENT) {
             AcademicGroup academicGroup = academicGroupsRepository.findAcademicGroupById(registerDto.getAcademicGroupId());
             Normocontroller normocontroller = normocontrollersRepository.findNormocontrollerById(registerDto.getNormocontrollerId());
-            University university = academicGroup.getUniversity();
 
             Student student = Student.builder()
                     .email(registerDto.getEmail())
@@ -61,7 +59,6 @@ public class AuthService {
                     .firstName(registerDto.getFirstName())
                     .middleName(registerDto.getMiddleName())
                     .academicGroup(academicGroup)
-                    .university(university)
                     .normocontroller(normocontroller)
                     .password(registerDto.getPassword())
                     .documentsLimit(5)

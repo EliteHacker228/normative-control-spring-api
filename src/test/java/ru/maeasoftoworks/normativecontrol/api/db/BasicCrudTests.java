@@ -11,8 +11,7 @@ import org.springframework.test.context.ActiveProfiles;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Document;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Result;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.VerificationStatus;
-import ru.maeasoftoworks.normativecontrol.api.domain.universities.AcademicGroup;
-import ru.maeasoftoworks.normativecontrol.api.domain.universities.University;
+import ru.maeasoftoworks.normativecontrol.api.domain.academical.AcademicGroup;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Admin;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Normocontroller;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Student;
@@ -27,8 +26,6 @@ import java.util.List;
 @Slf4j
 public class BasicCrudTests {
 
-    @Autowired
-    private UniversitiesRepository universitiesRepository;
     @Autowired
     private AdminsRepository adminsRepository;
     @Autowired
@@ -47,10 +44,7 @@ public class BasicCrudTests {
     @Test
     @Transactional
     public void creationOfInstancesForEveryDomainEntityTest(){
-        if(!universitiesRepository.existsUniversityByName("УрФУ им. первого президента России Б. Н. Ельцина")) {
-            University UrFU = new University("УрФУ им. первого президента России Б. Н. Ельцина");
-            universitiesRepository.save(UrFU);
-
+        if(!academicGroupsRepository.existsById(1L)) {
             Admin admin = Admin.builder()
                     .email("P.O.Kurchatov@urfu.me")
                     .password("admin_password")
@@ -58,7 +52,6 @@ public class BasicCrudTests {
                     .middleName("Олегович")
                     .lastName("Курчатов")
                     .isVerified(true)
-                    .university(UrFU)
                     .build();
             adminsRepository.save(admin);
 
@@ -69,14 +62,13 @@ public class BasicCrudTests {
                     .middleName("Дмитриевич")
                     .lastName("Сахаров")
                     .isVerified(true)
-                    .university(UrFU)
                     .build();
             adminsRepository.save(admin);
 
-            AcademicGroup RI_400015 = new AcademicGroup(UrFU, "РИ-400015");
+            AcademicGroup RI_400015 = new AcademicGroup("РИ-400015");
             academicGroupsRepository.save(RI_400015);
 
-            AcademicGroup RI_400016 = new AcademicGroup(UrFU, "РИ-400016");
+            AcademicGroup RI_400016 = new AcademicGroup("РИ-400016");
             academicGroupsRepository.save(RI_400016);
 
             Normocontroller normocontroller = Normocontroller.builder()
@@ -86,7 +78,6 @@ public class BasicCrudTests {
                     .middleName("Валерьевич")
                     .lastName("Левченко")
                     .isVerified(true)
-                    .university(UrFU)
                     .documentsLimit(30)
                     .build();
             normocontrollersRepository.save(normocontroller);
@@ -98,7 +89,6 @@ public class BasicCrudTests {
                     .middleName("Тимофеевич")
                     .lastName("Охотский")
                     .isVerified(true)
-                    .university(UrFU)
                     .documentsLimit(30)
                     .build();
             normocontrollersRepository.save(normocontroller);
@@ -110,7 +100,6 @@ public class BasicCrudTests {
                     .middleName("Анатольевич")
                     .lastName("Шарапов")
                     .isVerified(true)
-                    .university(UrFU)
                     .academicGroup(RI_400015)
                     .normocontroller(normocontroller)
                     .documentsLimit(5)
@@ -137,7 +126,6 @@ public class BasicCrudTests {
                     .middleName("Сергеевич")
                     .lastName("Жеглов")
                     .isVerified(true)
-                    .university(UrFU)
                     .academicGroup(RI_400015)
                     .normocontroller(normocontroller)
                     .documentsLimit(5)
@@ -154,42 +142,37 @@ public class BasicCrudTests {
                     .academicGroup(RI_400016)
                     .normocontroller(normocontroller)
                     .documentsLimit(5)
-                    .university(UrFU)
                     .build();
             usersRepository.save(student);
+
+            List<Admin> admins = adminsRepository.findAll();
+            Assertions.assertTrue(admins.toArray().length >= 1);
+            logCollection(admins);
+
+            List<AcademicGroup> academicGroups = academicGroupsRepository.findAll();
+            Assertions.assertTrue(academicGroups.toArray().length >= 1);
+            logCollection(academicGroups);
+
+            List<Normocontroller> normocontrollers = normocontrollersRepository.findAll();
+            Assertions.assertTrue(normocontrollers.toArray().length >= 1);
+            logCollection(normocontrollers);
+
+            List<Student> students = studentsRepository.findAll();
+            Assertions.assertTrue(students.toArray().length >= 1);
+            logCollection(students);
+
+            List<User> users = usersRepository.findAll();
+            Assertions.assertTrue(users.toArray().length >= 1);
+            logCollection(users);
+
+            List<Document> documents = documentsRepository.findAll();
+            Assertions.assertTrue(documents.toArray().length >= 1);
+            logCollection(documents);
+
+            List<Result> results = resultsRepository.findAll();
+            Assertions.assertTrue(results.toArray().length >= 1);
+            logCollection(results);
         }
-
-        List<University> universities = universitiesRepository.findAll();
-        Assertions.assertTrue(universities.toArray().length >= 1);
-        logCollection(universities);
-
-        List<Admin> admins = adminsRepository.findAll();
-        Assertions.assertTrue(admins.toArray().length >= 1);
-        logCollection(admins);
-
-        List<AcademicGroup> academicGroups = academicGroupsRepository.findAll();
-        Assertions.assertTrue(academicGroups.toArray().length >= 1);
-        logCollection(academicGroups);
-
-        List<Normocontroller> normocontrollers = normocontrollersRepository.findAll();
-        Assertions.assertTrue(normocontrollers.toArray().length >= 1);
-        logCollection(normocontrollers);
-
-        List<Student> students = studentsRepository.findAll();
-        Assertions.assertTrue(students.toArray().length >= 1);
-        logCollection(students);
-
-        List<User> users = usersRepository.findAll();
-        Assertions.assertTrue(users.toArray().length >= 1);
-        logCollection(users);
-
-        List<Document> documents = documentsRepository.findAll();
-        Assertions.assertTrue(documents.toArray().length >= 1);
-        logCollection(documents);
-
-        List<Result> results = resultsRepository.findAll();
-        Assertions.assertTrue(results.toArray().length >= 1);
-        logCollection(results);
     }
 
     private void logCollection(Collection collection){

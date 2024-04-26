@@ -4,8 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import ru.maeasoftoworks.normativecontrol.api.domain.universities.AcademicGroup;
-import ru.maeasoftoworks.normativecontrol.api.domain.universities.University;
+import ru.maeasoftoworks.normativecontrol.api.domain.academical.AcademicGroup;
 
 @Entity(name = "students")
 @NoArgsConstructor
@@ -15,7 +14,7 @@ public class Student extends User {
 
     @Builder
     public Student(Normocontroller normocontroller, String email, String password, boolean isVerified,
-                   String firstName, String middleName, String lastName, University university, AcademicGroup academicGroup,
+                   String firstName, String middleName, String lastName, AcademicGroup academicGroup,
                    int documentsLimit) {
         super();
         super.email = email;
@@ -24,7 +23,6 @@ public class Student extends User {
         super.firstName = firstName;
         super.middleName = middleName;
         super.lastName = lastName;
-        super.university = university;
 
         this.normocontroller = normocontroller;
         this.academicGroup = academicGroup;

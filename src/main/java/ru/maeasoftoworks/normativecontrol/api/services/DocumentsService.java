@@ -3,15 +3,11 @@ package ru.maeasoftoworks.normativecontrol.api.services;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Document;
-import ru.maeasoftoworks.normativecontrol.api.domain.documents.DocumentVerdict;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Result;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.VerificationStatus;
-import ru.maeasoftoworks.normativecontrol.api.domain.universities.AcademicGroup;
-import ru.maeasoftoworks.normativecontrol.api.domain.universities.University;
+import ru.maeasoftoworks.normativecontrol.api.domain.academical.AcademicGroup;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Admin;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Student;
@@ -52,12 +48,6 @@ public class DocumentsService {
         }
 
         return List.of();
-//        List<User> users = usersRepository.findUsersByUniversity(university);
-//        List<Document> result = new ArrayList<>();
-//        for (User user : users) {
-//            result.addAll(documentsRepository.findDocumentsByUser(user));
-//        }
-//        return result;
     }
 
     @Transactional
@@ -66,8 +56,6 @@ public class DocumentsService {
         Document document;
         if (user.getRole() == Role.NORMOCONTROLLER) {
             AcademicGroup academicGroup = academicGroupsRepository.findAcademicGroupById(createDocumentDto.getAcademicGroupId());
-            if (academicGroup.getUniversity() != user.getUniversity())
-                throw new UnauthorizedException("You don't have access to this resource");
             document = Document.builder()
                     .user(user)
                     .studentName(createDocumentDto.getStudentName())
@@ -122,8 +110,6 @@ public class DocumentsService {
     @Transactional
     public void deleteDocument(Admin admin, Long documentId) {
         Document document = documentsRepository.findDocumentById(documentId);
-        if (admin.getUniversity() != document.getUser().getUniversity())
-            throw new UnauthorizedException("You don't have access to this resource");
         documentsRepository.delete(document);
     }
 

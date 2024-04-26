@@ -3,8 +3,7 @@ package ru.maeasoftoworks.normativecontrol.api.services;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.maeasoftoworks.normativecontrol.api.domain.universities.AcademicGroup;
-import ru.maeasoftoworks.normativecontrol.api.domain.universities.University;
+import ru.maeasoftoworks.normativecontrol.api.domain.academical.AcademicGroup;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.*;
 import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserDocumentsLimitDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserDto;
@@ -12,12 +11,11 @@ import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserEmailDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserPasswordDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.auth.AuthJwtPair;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.FieldNotPresents;
-import ru.maeasoftoworks.normativecontrol.api.exceptions.ResourceDoesNotExists;
+import ru.maeasoftoworks.normativecontrol.api.exceptions.ResourceNotFoundException;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.UnauthorizedException;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.UserDoesNotExistsException;
 import ru.maeasoftoworks.normativecontrol.api.repositories.AcademicGroupsRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.NormocontrollersRepository;
-import ru.maeasoftoworks.normativecontrol.api.repositories.UniversitiesRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.UsersRepository;
 
 import java.util.List;
@@ -26,13 +24,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AccountsService {
     private final UsersRepository usersRepository;
-    private final UniversitiesRepository universitiesRepository;
     private final AcademicGroupsRepository academicGroupsRepository;
     private final NormocontrollersRepository normocontrollersRepository;
     private final JwtService jwtService;
 
     public List<User> getUsersForAdmin(Admin admin) {
-        List<User> foundUsers = usersRepository.findUsersByUniversity(admin.getUniversity());
+        List<User> foundUsers = usersRepository.findAll();
         return foundUsers.stream().filter(user -> user.getRole() != Role.ADMIN || user == admin).toList();
     }
 
@@ -41,8 +38,6 @@ public class AccountsService {
 
         if (target == null)
             throw new UserDoesNotExistsException("User with id " + targetId + " does not exists");
-        if (target.getUniversity() != actor.getUniversity())
-            throw new UnauthorizedException("You are not authorized to access this resource");
         if (actor.getRole() != Role.ADMIN && actor != target)
             throw new UnauthorizedException("You are not authorized to access this resource");
         if (actor.getRole() == Role.ADMIN && target.getRole() == Role.ADMIN && actor != target)
@@ -63,7 +58,7 @@ public class AccountsService {
             if (student.getAcademicGroup().getId() != updateUserDto.getAcademicGroupId()) {
                 AcademicGroup academicGroup = academicGroupsRepository.findAcademicGroupById(updateUserDto.getAcademicGroupId());
                 if (academicGroup == null)
-                    throw new ResourceDoesNotExists("Academic group with id " + updateUserDto.getAcademicGroupId()
+                    throw new ResourceNotFoundException("Academic group with id " + updateUserDto.getAcademicGroupId()
                             + " does not exists");
                 student.setAcademicGroup(academicGroup);
             }
@@ -71,7 +66,7 @@ public class AccountsService {
             if (student.getNormocontroller().getId() != updateUserDto.getNormocontrollerId()) {
                 Normocontroller normocontroller = normocontrollersRepository.findNormocontrollerById(updateUserDto.getNormocontrollerId());
                 if (normocontroller == null)
-                    throw new ResourceDoesNotExists("Normocontroller with id " + updateUserDto.getNormocontrollerId()
+                    throw new ResourceNotFoundException("Normocontroller with id " + updateUserDto.getNormocontrollerId()
                             + " does not exists");
                 student.setNormocontroller(normocontroller);
             }
