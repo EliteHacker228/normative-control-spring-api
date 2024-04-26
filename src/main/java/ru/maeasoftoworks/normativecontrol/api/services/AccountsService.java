@@ -29,8 +29,7 @@ public class AccountsService {
     private final JwtService jwtService;
 
     public List<User> getUsersForAdmin(Admin admin) {
-        List<User> foundUsers = usersRepository.findAll();
-        return foundUsers.stream().filter(user -> user.getRole() != Role.ADMIN || user == admin).toList();
+        return usersRepository.findAll();
     }
 
     public User getOwnUserOrAnyAsAdminById(User actor, Long targetId) {
