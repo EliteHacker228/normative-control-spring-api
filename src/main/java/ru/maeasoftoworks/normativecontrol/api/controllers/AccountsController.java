@@ -5,7 +5,6 @@ import net.minidev.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.maeasoftoworks.normativecontrol.api.domain.users.Admin;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
 import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserDocumentsLimitDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserDto;
@@ -29,72 +28,55 @@ public class AccountsController {
 
     // Администратор может просмотреть аккаунты всех студентов и нормоконтролеров в своём университете
     @GetMapping
-    public List<User> getAllUsersAsAdmin(@RequestHeader("Authorization") String authorizationHeader) {
-        Admin admin = (Admin) jwtService.getUserFromAuthorizationHeader(authorizationHeader);
-        return accountsService.getUsersForAdmin(admin);
+    public List<User> getAllUsers() {
+        return accountsService.getUsers();
     }
 
     // Администратор может получить данные о любом аккаунте из университета, к которому приписан
     // Другие пользователи - только данные о своём аккаунте
     @GetMapping("/{user_id}")
-    public User getUser(@RequestHeader("Authorization") String authorizationHeader, @PathVariable("user_id") Long userId) {
-        User user = jwtService.getUserFromAuthorizationHeader(authorizationHeader);
-        return accountsService.getOwnUserOrAnyAsAdminById(user, userId);
+    public User getUserById(@RequestHeader("Authorization") String authorizationHeader, @PathVariable("user_id") Long userId) {
+        return accountsService.getUserById(userId);
     }
 
     // Администратор может обновить данные любого аккаунта в своём университете, кроме аккаунта другого администратора
     // Другие пользователи - только данные своего аккаунта
     @PatchMapping("/{user_id}")
-    public User updateUser(@RequestHeader("Authorization") String authorizationHeader,
-                           @PathVariable("user_id") Long userId,
-                           @RequestBody UpdateUserDto updateUserDto) {
-        User user = jwtService.getUserFromAuthorizationHeader(authorizationHeader);
-        User userToUpdate = accountsService.getOwnUserOrAnyAsAdminById(user, userId);
-        return accountsService.updateUser(userToUpdate, updateUserDto);
+    public User updateUserById(@PathVariable("user_id") Long userId,
+                               @RequestBody UpdateUserDto updateUserDto) {
+        return accountsService.updateUserById(userId, updateUserDto);
     }
 
     @DeleteMapping("/{user_id}")
-    public JSONObject deleteUser(@RequestHeader("Authorization") String authorizationHeader,
-                                 @PathVariable("user_id") Long userId) {
-        User user = jwtService.getUserFromAuthorizationHeader(authorizationHeader);
-        User userToDelete = accountsService.getOwnUserOrAnyAsAdminById(user, userId);
-        accountsService.deleteUser(userToDelete);
+    public JSONObject deleteUser(@PathVariable("user_id") Long userId) {
+        accountsService.deleteUserById(userId);
         JSONObject response = new JSONObject();
         response.put("message", "User with id " + userId + " deleted successfully");
         return response;
     }
 
     @PatchMapping("/{user_id}/email")
-    public AuthJwtPair updateUserEmail(@RequestHeader("Authorization") String authorizationHeader,
-                                       @PathVariable("user_id") Long userId,
+    public AuthJwtPair updateUserEmail(@PathVariable("user_id") Long userId,
                                        @RequestBody UpdateUserEmailDto updateUserEmailDto) {
-        User user = jwtService.getUserFromAuthorizationHeader(authorizationHeader);
-        User userToUpdateEmail = accountsService.getOwnUserOrAnyAsAdminById(user, userId);
-        return accountsService.updateUserEmail(userToUpdateEmail, updateUserEmailDto);
+        return accountsService.updateUserEmailById(userId, updateUserEmailDto);
     }
 
     @PatchMapping("/{user_id}/password")
-    public User updateUserEmail(@RequestHeader("Authorization") String authorizationHeader,
-                                @PathVariable("user_id") Long userId,
+    public User updateUserEmail(@PathVariable("user_id") Long userId,
                                 @RequestBody UpdateUserPasswordDto updateUserPasswordDto) {
-        User user = jwtService.getUserFromAuthorizationHeader(authorizationHeader);
-        User userToUpdateEmail = accountsService.getOwnUserOrAnyAsAdminById(user, userId);
-        return accountsService.updateUserPassword(userToUpdateEmail, updateUserPasswordDto);
+        return accountsService.updateUserPasswordById(userId, updateUserPasswordDto);
     }
 
     @PatchMapping("/{user_id}/documents-limit")
-    public User updateUserEmail(@RequestHeader("Authorization") String authorizationHeader,
-                                @PathVariable("user_id") Long userId,
+    public User updateUserEmail(@PathVariable("user_id") Long userId,
                                 @RequestBody UpdateUserDocumentsLimitDto updateUserDocumentsLimitDto) {
-        User user = jwtService.getUserFromAuthorizationHeader(authorizationHeader);
-        User userToUpdateEmail = accountsService.getOwnUserOrAnyAsAdminById(user, userId);
-        return accountsService.updateUserDocumentsLimit(userToUpdateEmail, updateUserDocumentsLimitDto);
+        return accountsService.updateUserDocumentsLimitById(userId, updateUserDocumentsLimitDto);
     }
 
+    // TODO: Реализовать функционал подтверждения действий
     @DeleteMapping("/{user_id}/verifications/{verification_link_id}")
-    public ResponseEntity<JSONObject> verifyUserAction(@RequestHeader("Authorization") String authorizationHeader,
-                                                       @PathVariable("user_id") Long userId,
-                                                       @PathVariable("verification_link_id") Long verificationLinkId) {
+    public ResponseEntity<JSONObject> verifyUserAction(@PathVariable("user_id") Long userId,
+                                                       @PathVariable("verification_link_id") String verificationLinkId) {
         JSONObject response = new JSONObject();
         response.put("message", "Verification functional is not implemented yet");
         return ResponseEntity

@@ -12,12 +12,11 @@ import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserPasswordDto
 import ru.maeasoftoworks.normativecontrol.api.dto.auth.AuthJwtPair;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.FieldNotPresents;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.ResourceNotFoundException;
-import ru.maeasoftoworks.normativecontrol.api.exceptions.UnauthorizedException;
-import ru.maeasoftoworks.normativecontrol.api.exceptions.UserDoesNotExistsException;
 import ru.maeasoftoworks.normativecontrol.api.repositories.AcademicGroupsRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.NormocontrollersRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.UsersRepository;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 @Service
@@ -28,25 +27,33 @@ public class AccountsService {
     private final NormocontrollersRepository normocontrollersRepository;
     private final JwtService jwtService;
 
-    public List<User> getUsersForAdmin(Admin admin) {
+    // Доступна только админу
+    public List<User> getUsers() {
         return usersRepository.findAll();
     }
 
-    public User getOwnUserOrAnyAsAdminById(User actor, Long targetId) {
+    // Доступна админу - для всех аккаунтов
+    // Остальным - только для своего
+    public User getUserById(Long targetId) {
         User target = usersRepository.findUsersById(targetId);
 
-        if (target == null)
-            throw new UserDoesNotExistsException("User with id " + targetId + " does not exists");
-        if (actor.getRole() != Role.ADMIN && actor != target)
-            throw new UnauthorizedException("You are not authorized to access this resource");
-        if (actor.getRole() == Role.ADMIN && target.getRole() == Role.ADMIN && actor != target)
-            throw new UnauthorizedException("You are not authorized to access this resource");
+        if (target == null) {
+            String message = MessageFormat.format("User with id {0} not found", targetId);
+            throw new ResourceNotFoundException(message);
+        }
 
         return target;
     }
 
     @Transactional
-    public User updateUser(User user, UpdateUserDto updateUserDto) {
+    public User updateUserById(Long userId, UpdateUserDto updateUserDto) {
+        User user = usersRepository.findUsersById(userId);
+
+        if (user == null) {
+            String message = MessageFormat.format("User with id {0} not found", userId);
+            throw new ResourceNotFoundException(message);
+        }
+
         user.setFirstName(updateUserDto.getFirstName());
         user.setMiddleName(updateUserDto.getMiddleName());
         user.setLastName(updateUserDto.getLastName());
@@ -78,12 +85,24 @@ public class AccountsService {
     }
 
     @Transactional
-    public void deleteUser(User user) {
+    public void deleteUserById(Long userId) {
+        User user = usersRepository.findUsersById(userId);
+
+        if (user == null) {
+            String message = MessageFormat.format("User with id {0} not found", userId);
+            throw new ResourceNotFoundException(message);
+        }
+
         usersRepository.delete(user);
     }
 
     @Transactional
-    public AuthJwtPair updateUserEmail(User user, UpdateUserEmailDto updateUserEmailDto) {
+    public AuthJwtPair updateUserEmailById(Long userId, UpdateUserEmailDto updateUserEmailDto) {
+        User user = usersRepository.findUsersById(userId);
+        if (user == null) {
+            String message = MessageFormat.format("User with id {0} not found", userId);
+            throw new ResourceNotFoundException(message);
+        }
         user.setEmail(updateUserEmailDto.getEmail());
         usersRepository.save(user);
         return new AuthJwtPair(jwtService.generateAccessTokenForUser(user).getCompactToken(),
@@ -91,14 +110,24 @@ public class AccountsService {
     }
 
     @Transactional
-    public User updateUserPassword(User user, UpdateUserPasswordDto updateUserPasswordDto) {
+    public User updateUserPasswordById(Long userId, UpdateUserPasswordDto updateUserPasswordDto) {
+        User user = usersRepository.findUsersById(userId);
+        if (user == null) {
+            String message = MessageFormat.format("User with id {0} not found", userId);
+            throw new ResourceNotFoundException(message);
+        }
         user.setPassword(updateUserPasswordDto.getPassword());
         usersRepository.save(user);
         return user;
     }
 
     @Transactional
-    public User updateUserDocumentsLimit(User user, UpdateUserDocumentsLimitDto updateUserDocumentsLimitDto) {
+    public User updateUserDocumentsLimitById(Long userId, UpdateUserDocumentsLimitDto updateUserDocumentsLimitDto) {
+        User user = usersRepository.findUsersById(userId);
+        if (user == null) {
+            String message = MessageFormat.format("User with id {0} not found", userId);
+            throw new ResourceNotFoundException(message);
+        }
         if (user.getRole() == Role.STUDENT) {
             Student student = (Student) user;
             student.setDocumentsLimit(updateUserDocumentsLimitDto.getDocumentsLimit());
