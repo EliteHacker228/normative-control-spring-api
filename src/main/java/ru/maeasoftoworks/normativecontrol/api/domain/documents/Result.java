@@ -19,14 +19,24 @@ public class Result {
 
     public Result(Document document, VerificationStatus verificationStatus) {
         this.document = document;
-        this.verificationStatus = verificationStatus;
+        this.verificationStatus = verificationStatus.name();
     }
 
     @OneToOne
-    @JoinColumn(name = "document_id")
+    @PrimaryKeyJoinColumn
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Document document;
 
-    @Column(name = "verification_status")
-    private VerificationStatus verificationStatus;
+    @Column(name = "status")
+    private String verificationStatus;
+
+    @Column(name = "description")
+    private String description = "";
+
+    @Column(name = "mistake_count")
+    private int mistakeCount;
+
+    public VerificationStatus getVerificationStatus(){
+        return VerificationStatus.valueOf(this.verificationStatus);
+    }
 }
