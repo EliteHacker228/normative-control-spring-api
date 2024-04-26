@@ -74,14 +74,20 @@ public class AcademicalService {
     @Transactional
     public void deleteAcademicGroupById(Long academicGroupId) {
         AcademicGroup academicGroup = academicGroupsRepository.findAcademicGroupById(academicGroupId);
+        if (academicGroup == null) {
+            String message = MessageFormat.format("Academic group with id {0} not found", academicGroupId);
+            throw new ResourceNotFoundException(message);
+        }
         academicGroupsRepository.delete(academicGroup);
     }
 
     // Доступна админам и нормоконтролёрам
     public List<Student> getStudentsFromAcademicGroup(Long academicGroupId) {
         AcademicGroup academicGroup = academicGroupsRepository.findAcademicGroupById(academicGroupId);
-        if (academicGroup == null)
-            throw new ResourceNotFoundException("Academic group with id " + academicGroupId + "does not exists");
+        if (academicGroup == null) {
+            String message = MessageFormat.format("Academic group with id {0} not found", academicGroupId);
+            throw new ResourceNotFoundException(message);
+        }
         return studentsRepository.findStudentsByAcademicGroup(academicGroup);
     }
 }
