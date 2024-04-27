@@ -56,8 +56,8 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                         .requestMatchers("/auth/**").anonymous()
 
                         .requestMatchers("/accounts").hasRole(Role.ADMIN.name())
-                        .requestMatchers("/accounts/{account_id}").access(accountsAccessRule)
                         .requestMatchers("/accounts/*/documents-limit").hasRole(Role.ADMIN.name())
+                        .requestMatchers("/accounts/{account_id}/**").access(accountsAccessRule)
                         .requestMatchers("/accounts/**").authenticated()
 
                         .requestMatchers("/academical/**").permitAll()
