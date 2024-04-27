@@ -2,13 +2,9 @@ package ru.maeasoftoworks.normativecontrol.api.controllers;
 
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONObject;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.maeasoftoworks.normativecontrol.api.domain.invites.Invite;
-import ru.maeasoftoworks.normativecontrol.api.domain.users.Normocontroller;
-import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
-import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
 import ru.maeasoftoworks.normativecontrol.api.dto.invites.InviteDto;
 import ru.maeasoftoworks.normativecontrol.api.services.InvitesService;
 import ru.maeasoftoworks.normativecontrol.api.services.JwtService;
@@ -34,11 +30,8 @@ public class InvitesController {
     }
 
     @PostMapping
-    public Invite createInvite(@RequestHeader("Authorization") String bearerToken, @RequestBody InviteDto inviteDto) {
-        User user = jwtService.getUserFromAuthorizationHeader(bearerToken);
-        if (user.getRole() != Role.NORMOCONTROLLER)
-            throw new RuntimeException("Unauthorized");
-        return invitesService.createInviteAsNormocontrollerFromInviteDto((Normocontroller) user, inviteDto);
+    public Invite createInvite(@RequestBody InviteDto inviteDto) {
+        return invitesService.createInviteFromInviteDto(inviteDto);
     }
 
     @DeleteMapping("/{invite_id}")

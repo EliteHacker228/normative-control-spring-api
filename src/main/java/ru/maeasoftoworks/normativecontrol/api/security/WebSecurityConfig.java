@@ -31,11 +31,12 @@ import java.util.List;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 @Slf4j
-public class WebSecurityConfig implements WebMvcConfigurer {
+public class WebSecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final UserDetailsService userDetailsService;
 
     private final AccessRule accountsAccessRule;
+    private final AccessRule invitesAccessRule;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -67,7 +68,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                         .requestMatchers("/academical/groups/{group_id}/students").hasAnyRole(Role.NORMOCONTROLLER.name(), Role.ADMIN.name())
                         .requestMatchers("/academical/**").permitAll()
 
-                        .requestMatchers("/invites/**").hasAnyRole(Role.NORMOCONTROLLER.name(), Role.ADMIN.name())
+                        .requestMatchers("/invites/**").access(invitesAccessRule)
 
                         .requestMatchers("/documents/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/documents").hasRole(Role.STUDENT.name())

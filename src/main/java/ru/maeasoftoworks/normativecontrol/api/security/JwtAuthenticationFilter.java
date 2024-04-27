@@ -19,6 +19,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import ru.maeasoftoworks.normativecontrol.api.repositories.UsersRepository;
+import ru.maeasoftoworks.normativecontrol.api.security.cachedrequest.CachedBodyHttpServletRequest;
 import ru.maeasoftoworks.normativecontrol.api.services.JwtService;
 
 import java.io.IOException;
@@ -40,6 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
 
         log.info("Request in filter");
+
 
         var authHeader = request.getHeader(HEADER_NAME);
         if (StringUtils.isEmpty(authHeader) || !authHeader.toLowerCase().startsWith(BEARER_PREFIX.toLowerCase())) {
@@ -78,7 +80,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         log.info(SecurityContextHolder.getContext().getAuthentication().getName());
-        filterChain.doFilter(request, response);
+
+        CachedBodyHttpServletRequest cachedBodyHttpServletRequest =
+                new CachedBodyHttpServletRequest(request);
+
+        filterChain.doFilter(cachedBodyHttpServletRequest, response);
     }
 
 
