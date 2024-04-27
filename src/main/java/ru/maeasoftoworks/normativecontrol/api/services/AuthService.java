@@ -41,7 +41,7 @@ public class AuthService {
                 jwtService.generateRefreshTokenForUser(user).getCompactToken());
     }
 
-    // TODO: Сделать регистрацию нормоконтролеров
+    // TODO: Разделить на 2 метода
     @Transactional
     public AuthJwtPair register(RegisterDto registerDto) {
         if (usersRepository.existsUserByEmail(registerDto.getEmail()))
@@ -61,6 +61,7 @@ public class AuthService {
                     .academicGroup(academicGroup)
                     .normocontroller(normocontroller)
                     .password(registerDto.getPassword())
+                    .isVerified(false)
                     .documentsLimit(5)
                     .build();
 
@@ -69,6 +70,23 @@ public class AuthService {
             studentsRepository.save(student);
             return new AuthJwtPair(jwtService.generateAccessTokenForUser(student).getCompactToken(),
                     jwtService.generateRefreshTokenForUser(student).getCompactToken());
+        }
+
+        if (registerDto.getRole() == Role.NORMOCONTROLLER) {
+
+            Normocontroller normocontroller = Normocontroller.builder()
+                    .email(registerDto.getEmail())
+                    .password(registerDto.getPassword())
+                    .firstName(registerDto.getFirstName())
+                    .middleName(registerDto.getMiddleName())
+                    .lastName(registerDto.getLastName())
+                    .isVerified(false)
+                    .build();
+            log.info(normocontroller.toString());
+
+            normocontrollersRepository.save(normocontroller);
+            return new AuthJwtPair(jwtService.generateAccessTokenForUser(normocontroller).getCompactToken(),
+                    jwtService.generateRefreshTokenForUser(normocontroller).getCompactToken());
         }
 
         throw new RuntimeException("Registration failed");
