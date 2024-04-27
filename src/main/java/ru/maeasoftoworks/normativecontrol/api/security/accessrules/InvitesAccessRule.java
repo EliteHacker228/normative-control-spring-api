@@ -37,7 +37,7 @@ public class InvitesAccessRule implements AccessRule {
         User user = jwt.getUser();
          if(user.getRole() == Role.ADMIN)
             return new AuthorizationDecision(true);
-        if(user.getId() == inviteDto.getOwnerId())
+        if(user.getRole() == Role.NORMOCONTROLLER && user.getId() == inviteDto.getOwnerId())
             return new AuthorizationDecision(true);
         return new AuthorizationDecision(false);
     }
