@@ -81,10 +81,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         log.info(SecurityContextHolder.getContext().getAuthentication().getName());
 
-        CachedBodyHttpServletRequest cachedBodyHttpServletRequest =
-                new CachedBodyHttpServletRequest(request);
+        if(request.getRequestURI().contains("invites")){
+            CachedBodyHttpServletRequest cachedBodyHttpServletRequest =
+                    new CachedBodyHttpServletRequest(request);
 
-        filterChain.doFilter(cachedBodyHttpServletRequest, response);
+            filterChain.doFilter(cachedBodyHttpServletRequest, response);
+            return;
+        }
+
+        filterChain.doFilter(request, response);
     }
 
 

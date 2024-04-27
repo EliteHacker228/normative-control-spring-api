@@ -18,7 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
@@ -36,7 +35,8 @@ public class WebSecurityConfig {
     private final UserDetailsService userDetailsService;
 
     private final AccessRule accountsAccessRule;
-    private final AccessRule invitesAccessRule;
+    private final AccessRule invitesCreationAccessRule;
+    private final AccessRule invitesDeletionAccessRule;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -68,7 +68,10 @@ public class WebSecurityConfig {
                         .requestMatchers("/academical/groups/{group_id}/students").hasAnyRole(Role.NORMOCONTROLLER.name(), Role.ADMIN.name())
                         .requestMatchers("/academical/**").permitAll()
 
-                        .requestMatchers("/invites/**").access(invitesAccessRule)
+                        .requestMatchers(HttpMethod.GET, "/invites").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/invites").access(invitesCreationAccessRule)
+                        .requestMatchers(HttpMethod.GET,"/invites/{invite_id}").permitAll()
+                        .requestMatchers(HttpMethod.DELETE,"/invites/{invite_id}").access(invitesDeletionAccessRule)
 
                         .requestMatchers("/documents/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/documents").hasRole(Role.STUDENT.name())
