@@ -60,11 +60,12 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                         .requestMatchers("/accounts/{account_id}/**").access(accountsAccessRule)
                         .requestMatchers("/accounts/**").authenticated()
 
-                        .requestMatchers("/academical/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/academical/groups").permitAll()
                         .requestMatchers(HttpMethod.POST,"/academical/groups").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.PATCH,"/academical/groups").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.DELETE,"/academical/groups").hasRole(Role.ADMIN.name())
-                        .requestMatchers("/academical/groups/students").hasAnyRole(Role.NORMOCONTROLLER.name(), Role.ADMIN.name())
+                        .requestMatchers("/academical/groups/{group_id}/students").hasAnyRole(Role.NORMOCONTROLLER.name(), Role.ADMIN.name())
+                        .requestMatchers("/academical/**").permitAll()
 
                         .requestMatchers("/invites/**").hasAnyRole(Role.NORMOCONTROLLER.name(), Role.ADMIN.name())
 
