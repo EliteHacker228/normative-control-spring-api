@@ -28,7 +28,6 @@ public class AuthController {
 
     @PostMapping("/register/student")
     private ResponseEntity registerStudent(@RequestBody RegisterDto registerDto) {
-        // TODO: Перенести эксепшн в сервис
         try {
             registerDto.setRole(Role.STUDENT);
             AuthJwtPair authJwtPair = authService.register(registerDto);
@@ -44,8 +43,10 @@ public class AuthController {
     private ResponseEntity registerNormocontroller(@RequestBody RegisterDto registerDto) {
         try {
             registerDto.setRole(Role.NORMOCONTROLLER);
-            AuthJwtPair authJwtPair = authService.register(registerDto);
-            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(authJwtPair);
+            authService.register(registerDto);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("message", "Normocontroller " + registerDto.getEmail() + " registered successfully");
+            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(jsonObject.toJSONString());
         } catch (UserAlreadyExistsException e) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("message", "Email " + registerDto.getEmail() + " is already in use");

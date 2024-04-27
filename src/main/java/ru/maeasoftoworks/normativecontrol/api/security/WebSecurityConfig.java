@@ -22,6 +22,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
+import ru.maeasoftoworks.normativecontrol.api.security.accessrules.AccessRule;
 
 import java.util.List;
 
@@ -33,6 +34,8 @@ import java.util.List;
 public class WebSecurityConfig implements WebMvcConfigurer {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final UserDetailsService userDetailsService;
+
+    private final AccessRule accountsAccessRule;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -49,12 +52,13 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                 }))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/register/normocontroller").hasRole(Role.ADMIN.name())
-                        .requestMatchers("/auth/**").anonymous()
                         .requestMatchers("/auth/tokens").authenticated()
+                        .requestMatchers("/auth/**").anonymous()
 
                         .requestMatchers("/accounts").hasRole(Role.ADMIN.name())
-                        .requestMatchers("/accounts/**").authenticated()
+                        .requestMatchers("/accounts/{account_id}").access(accountsAccessRule)
                         .requestMatchers("/accounts/*/documents-limit").hasRole(Role.ADMIN.name())
+                        .requestMatchers("/accounts/**").authenticated()
 
                         .requestMatchers("/academical/**").permitAll()
                         .requestMatchers(HttpMethod.POST,"/academical/groups").hasRole(Role.ADMIN.name())
