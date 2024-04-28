@@ -65,13 +65,7 @@ public class BasicCrudTests {
                     .build();
             adminsRepository.save(admin);
 
-            AcademicGroup RI_400015 = new AcademicGroup("РИ-400015");
-            academicGroupsRepository.save(RI_400015);
-
-            AcademicGroup RI_400016 = new AcademicGroup("РИ-400016");
-            academicGroupsRepository.save(RI_400016);
-
-            Normocontroller normocontroller = Normocontroller.builder()
+            Normocontroller levchenko = Normocontroller.builder()
                     .email("A.V.Levchenko@urfu.me")
                     .password("normocontroller_password")
                     .firstName("Антон")
@@ -79,9 +73,9 @@ public class BasicCrudTests {
                     .lastName("Левченко")
                     .isVerified(true)
                     .build();
-            normocontrollersRepository.save(normocontroller);
+            normocontrollersRepository.save(levchenko);
 
-            normocontroller = Normocontroller.builder()
+            Normocontroller okhotskiy = Normocontroller.builder()
                     .email("D.T.Okhotskiy@urfu.me")
                     .password("normocontroller_password")
                     .firstName("Дмитрий")
@@ -89,7 +83,16 @@ public class BasicCrudTests {
                     .lastName("Охотский")
                     .isVerified(true)
                     .build();
-            normocontrollersRepository.save(normocontroller);
+            normocontrollersRepository.save(okhotskiy);
+
+            AcademicGroup RI_400012 = new AcademicGroup("РИ-400012", levchenko);
+            academicGroupsRepository.save(RI_400012);
+
+            AcademicGroup RI_400015 = new AcademicGroup("РИ-400015", levchenko);
+            academicGroupsRepository.save(RI_400015);
+
+            AcademicGroup RI_400016 = new AcademicGroup("РИ-400016", okhotskiy);
+            academicGroupsRepository.save(RI_400016);
 
             Student student = Student.builder()
                     .email("I.A.Sharapov@urfu.me")
@@ -99,7 +102,7 @@ public class BasicCrudTests {
                     .lastName("Шарапов")
                     .isVerified(true)
                     .academicGroup(RI_400015)
-                    .normocontroller(normocontroller)
+                    .normocontroller(levchenko)
                     .documentsLimit(5)
                     .build();
             studentsRepository.save(student);
@@ -125,7 +128,7 @@ public class BasicCrudTests {
                     .lastName("Жеглов")
                     .isVerified(true)
                     .academicGroup(RI_400015)
-                    .normocontroller(normocontroller)
+                    .normocontroller(okhotskiy)
                     .documentsLimit(5)
                     .build();
             usersRepository.save(student);
@@ -138,7 +141,7 @@ public class BasicCrudTests {
                     .lastName("Зайцев")
                     .isVerified(true)
                     .academicGroup(RI_400016)
-                    .normocontroller(normocontroller)
+                    .normocontroller(okhotskiy)
                     .documentsLimit(5)
                     .build();
             usersRepository.save(student);

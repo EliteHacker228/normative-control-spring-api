@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import ru.maeasoftoworks.normativecontrol.api.domain.users.Normocontroller;
 
 @Entity(name = "academic_groups")
 @NoArgsConstructor
@@ -20,7 +21,16 @@ public class AcademicGroup {
         this.name = name;
     }
 
+    public AcademicGroup(String name, Normocontroller normocontroller) {
+        this.name = name;
+        this.normocontroller = normocontroller;
+    }
+
     @Column(name = "name", unique = true)
     @Setter
     private String name;
+
+    @ManyToOne
+    @JoinColumn(name = "normocontroller_id")
+    private Normocontroller normocontroller;
 }

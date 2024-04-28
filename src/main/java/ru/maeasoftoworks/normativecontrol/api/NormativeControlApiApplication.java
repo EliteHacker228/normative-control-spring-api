@@ -58,13 +58,7 @@ public class NormativeControlApiApplication {
                 .build();
         adminsRepository.save(admin);
 
-        AcademicGroup RI_400015 = new AcademicGroup("РИ-400015");
-        academicGroupsRepository.save(RI_400015);
-
-        AcademicGroup RI_400016 = new AcademicGroup("РИ-400016");
-        academicGroupsRepository.save(RI_400016);
-
-        Normocontroller normocontroller = Normocontroller.builder()
+        Normocontroller markov = Normocontroller.builder()
                 .email("N.M.Markov@urfu.me")
                 .password("normocontroller_password")
                 .firstName("Николай")
@@ -72,9 +66,9 @@ public class NormativeControlApiApplication {
                 .lastName("Марков")
                 .isVerified(true)
                 .build();
-        normocontrollersRepository.save(normocontroller);
+        normocontrollersRepository.save(markov);
 
-        normocontroller = Normocontroller.builder()
+        Normocontroller levchenko = Normocontroller.builder()
                 .email("A.V.Levchenko@urfu.me")
                 .password("normocontroller_password")
                 .firstName("Антон")
@@ -82,7 +76,13 @@ public class NormativeControlApiApplication {
                 .lastName("Левченко")
                 .isVerified(true)
                 .build();
-        normocontrollersRepository.save(normocontroller);
+        normocontrollersRepository.save(levchenko);
+
+        AcademicGroup RI_400015 = new AcademicGroup("РИ-400015", levchenko);
+        academicGroupsRepository.save(RI_400015);
+
+        AcademicGroup RI_400016 = new AcademicGroup("РИ-400016", markov);
+        academicGroupsRepository.save(RI_400016);
 
         Student student = Student.builder()
                 .email("I.A.Sharapov@urfu.me")
@@ -92,7 +92,7 @@ public class NormativeControlApiApplication {
                 .lastName("Шарапов")
                 .isVerified(true)
                 .academicGroup(RI_400015)
-                .normocontroller(normocontroller)
+                .normocontroller(levchenko)
                 .documentsLimit(5)
                 .build();
         studentsRepository.save(student);
