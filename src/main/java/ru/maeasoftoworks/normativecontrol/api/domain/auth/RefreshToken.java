@@ -1,10 +1,7 @@
 package ru.maeasoftoworks.normativecontrol.api.domain.auth;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
 
 import java.util.Date;
@@ -33,11 +30,14 @@ public class RefreshToken {
     private User user;
 
     @Column(name = "token")
+    @Setter
     private String token;
 
     @Column(name = "created_at")
+    @Setter
     private Date createdAt;
 
     @Column(name = "expires_at")
+    @Setter
     private Date expiresAt;
 }

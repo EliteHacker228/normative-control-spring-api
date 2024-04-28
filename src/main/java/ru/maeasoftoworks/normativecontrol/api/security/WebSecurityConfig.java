@@ -58,7 +58,7 @@ public class WebSecurityConfig {
                 }))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/register/normocontroller").hasRole(Role.ADMIN.name())
-                        .requestMatchers("/auth/tokens").authenticated()
+                        .requestMatchers("/auth/tokens").permitAll()
                         .requestMatchers("/auth/**").anonymous()
 
                         .requestMatchers("/accounts").hasRole(Role.ADMIN.name())
