@@ -105,7 +105,7 @@ public class BasicCrudTests {
             studentsRepository.save(student);
 
             Document document = Document.builder()
-                    .user(student)
+                    .student(student)
                     .fileName("И.А.Шарапов РИ-400015 ВКР")
                     .academicGroup(RI_400015)
                     .studentName("Шарапов И.А.")

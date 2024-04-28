@@ -7,14 +7,12 @@ import org.springframework.stereotype.Service;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Document;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Result;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.VerificationStatus;
-import ru.maeasoftoworks.normativecontrol.api.domain.academical.AcademicGroup;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Admin;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Student;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
 import ru.maeasoftoworks.normativecontrol.api.dto.documents.CreateDocumentDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.documents.DocumentVerdictDto;
-import ru.maeasoftoworks.normativecontrol.api.exceptions.UnauthorizedException;
 import ru.maeasoftoworks.normativecontrol.api.mq.Message;
 import ru.maeasoftoworks.normativecontrol.api.mq.MqPublisher;
 import ru.maeasoftoworks.normativecontrol.api.repositories.*;
@@ -36,15 +34,17 @@ public class DocumentsService {
     private final MqPublisher mqPublisher;
 
     public List<Document> getDocuments(User user) {
-        if(user.getRole() == Role.STUDENT)
-            return documentsRepository.findDocumentsByUser(user);
-        else if(user.getRole() == Role.NORMOCONTROLLER) {
+        if (user.getRole() == Role.STUDENT)
+            return documentsRepository.findDocumentsByStudent((Student) user);
+        else if (user.getRole() == Role.NORMOCONTROLLER) {
             List<Student> students = studentsRepository.findStudentsByNormocontrollerId(user.getId());
             List<Document> result = new ArrayList<>();
             for (Student student : students) {
-                result.addAll(documentsRepository.findDocumentsByUser(student));
+                result.addAll(documentsRepository.findDocumentsByStudent(student));
             }
             return result;
+        } else if (user.getRole() == Role.ADMIN) {
+            return documentsRepository.findAll();
         }
 
         return List.of();
@@ -52,28 +52,16 @@ public class DocumentsService {
 
     @Transactional
     @SneakyThrows
-    public Result createDocument(User user, CreateDocumentDto createDocumentDto) {
-        Document document;
-        if (user.getRole() == Role.NORMOCONTROLLER) {
-            AcademicGroup academicGroup = academicGroupsRepository.findAcademicGroupById(createDocumentDto.getAcademicGroupId());
-            document = Document.builder()
-                    .user(user)
-                    .studentName(createDocumentDto.getStudentName())
-                    .academicGroup(academicGroup)
-                    .fileName(normalizeFileName(createDocumentDto.getDocumentName()))
-                    .isReported(false)
-                    .comment(null)
-                    .build();
-        } else {
-            document = Document.builder()
-                    .user(user)
-                    .studentName(getShortenedNameForUser(user))
-                    .academicGroup(((Student) user).getAcademicGroup())
-                    .fileName(normalizeFileName(createDocumentDto.getDocumentName()))
-                    .isReported(false)
-                    .comment(null)
-                    .build();
-        }
+    public Result createDocument(User user1, CreateDocumentDto createDocumentDto) {
+        Student user = (Student) user1;
+        Document document = Document.builder()
+                .student(user)
+                .studentName(getShortenedNameForUser(user))
+                .academicGroup(user.getAcademicGroup())
+                .fileName(normalizeFileName(createDocumentDto.getDocumentName()))
+                .isReported(false)
+                .comment(null)
+                .build();
 
         documentsRepository.save(document);
         String documentName = user.getId() + "/" + document.getId() + "/source.docx";
@@ -91,9 +79,9 @@ public class DocumentsService {
     }
 
     @SneakyThrows
-    public byte[] getDocument(User user, Long documentId, String documentType){
+    public byte[] getDocument(User user, Long documentId, String documentType) {
         Document targetDocument = documentsRepository.findDocumentById(documentId);
-        user = targetDocument.getUser();
+        user = targetDocument.getStudent();
         String documentPath = user.getId() + "/" + documentId + "/result." + documentType;
         try (ByteArrayOutputStream result = s3.getObject(documentPath)) {
             byte[] bytes = result.toByteArray();
@@ -101,7 +89,7 @@ public class DocumentsService {
         }
     }
 
-    public Document getDocumentNode(User user, Long documentId){
+    public Document getDocumentNode(User user, Long documentId) {
         Document targetDocument = documentsRepository.findDocumentById(documentId);
         return targetDocument;
     }
@@ -150,8 +138,8 @@ public class DocumentsService {
         return lastName + " " + firstnameInitial + "." + middlenameInitial + ".";
     }
 
-    private String normalizeFileName(String fileName){
-        if(fileName.endsWith(".docx"))
+    private String normalizeFileName(String fileName) {
+        if (fileName.endsWith(".docx"))
             return fileName;
         else
             return fileName + ".docx";

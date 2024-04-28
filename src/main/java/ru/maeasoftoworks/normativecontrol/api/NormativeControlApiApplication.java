@@ -65,21 +65,21 @@ public class NormativeControlApiApplication {
         academicGroupsRepository.save(RI_400016);
 
         Normocontroller normocontroller = Normocontroller.builder()
-                .email("A.V.Levchenko@urfu.me")
-                .password("normocontroller_password")
-                .firstName("Антон")
-                .middleName("Валерьевич")
-                .lastName("Левченко")
-                .isVerified(true)
-                .build();
-        normocontrollersRepository.save(normocontroller);
-
-        normocontroller = Normocontroller.builder()
                 .email("N.M.Markov@urfu.me")
                 .password("normocontroller_password")
                 .firstName("Николай")
                 .middleName("Мирославович")
                 .lastName("Марков")
+                .isVerified(true)
+                .build();
+        normocontrollersRepository.save(normocontroller);
+
+        normocontroller = Normocontroller.builder()
+                .email("A.V.Levchenko@urfu.me")
+                .password("normocontroller_password")
+                .firstName("Антон")
+                .middleName("Валерьевич")
+                .lastName("Левченко")
                 .isVerified(true)
                 .build();
         normocontrollersRepository.save(normocontroller);

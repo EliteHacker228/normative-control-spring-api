@@ -5,7 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import ru.maeasoftoworks.normativecontrol.api.domain.academical.AcademicGroup;
-import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
+import ru.maeasoftoworks.normativecontrol.api.domain.users.Student;
 
 import java.util.Date;
 
@@ -20,8 +20,8 @@ public class Document {
     private long id;
 
     @Builder
-    public Document(User user, String studentName, AcademicGroup academicGroup, String fileName, boolean isReported, String comment) {
-        this.user = user;
+    public Document(Student student, String studentName, AcademicGroup academicGroup, String fileName, boolean isReported, String comment) {
+        this.student = student;
         this.studentName = studentName;
         this.academicGroup = academicGroup;
         this.fileName = fileName;
@@ -31,7 +31,7 @@ public class Document {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private Student student;
 
     @Column(name = "student_name")
     private String studentName;

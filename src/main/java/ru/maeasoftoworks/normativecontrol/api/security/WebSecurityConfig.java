@@ -38,6 +38,11 @@ public class WebSecurityConfig {
     private final AccessRule invitesCreationAccessRule;
     private final AccessRule invitesDeletionAccessRule;
 
+    private final AccessRule documentAccessRule;
+    private final AccessRule documentPatchAccessRule;
+    private final AccessRule documentReportAccessRule;
+    private final AccessRule documentVerdictAccessRule;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -61,21 +66,29 @@ public class WebSecurityConfig {
                         .requestMatchers("/accounts/{account_id}/**").access(accountsAccessRule)
                         .requestMatchers("/accounts/**").authenticated()
 
-                        .requestMatchers(HttpMethod.GET,"/academical/groups").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/academical/groups").hasRole(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.PATCH,"/academical/groups").hasRole(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.DELETE,"/academical/groups").hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/academical/groups").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/academical/groups").hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.PATCH, "/academical/groups").hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.DELETE, "/academical/groups").hasRole(Role.ADMIN.name())
                         .requestMatchers("/academical/groups/{group_id}/students").hasAnyRole(Role.NORMOCONTROLLER.name(), Role.ADMIN.name())
                         .requestMatchers("/academical/**").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/invites").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/invites").access(invitesCreationAccessRule)
-                        .requestMatchers(HttpMethod.GET,"/invites/{invite_id}").permitAll()
-                        .requestMatchers(HttpMethod.DELETE,"/invites/{invite_id}").access(invitesDeletionAccessRule)
+                        .requestMatchers(HttpMethod.POST, "/invites").access(invitesCreationAccessRule)
+                        .requestMatchers(HttpMethod.GET, "/invites/{invite_id}").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/invites/{invite_id}").access(invitesDeletionAccessRule)
 
-                        .requestMatchers("/documents/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/documents").hasRole(Role.STUDENT.name())
                         .requestMatchers(HttpMethod.GET, "/documents").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/documents").hasRole(Role.STUDENT.name())
+                        .requestMatchers(HttpMethod.GET, "/documents").hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/documents/{document_id}").access(documentAccessRule)
+                        .requestMatchers(HttpMethod.DELETE, "/documents/{document_id}").hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/documents/{document_id}/status").access(documentAccessRule)
+                        .requestMatchers(HttpMethod.PATCH, "/documents/{document_id}").access(documentPatchAccessRule)
+                        .requestMatchers(HttpMethod.PATCH,"/documents/{document_id}/report").access(documentReportAccessRule)
+                        .requestMatchers(HttpMethod.PATCH,"/documents/{document_id}/verdict").access(documentVerdictAccessRule)
+                        .requestMatchers("/documents/**").authenticated()
 
                         .requestMatchers("/error", "/error/**").permitAll())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
