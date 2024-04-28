@@ -8,10 +8,12 @@ import org.springframework.stereotype.Component;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Document;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
+import ru.maeasoftoworks.normativecontrol.api.exceptions.ResourceNotFoundException;
 import ru.maeasoftoworks.normativecontrol.api.services.DocumentsService;
 import ru.maeasoftoworks.normativecontrol.api.services.JwtService;
 import ru.maeasoftoworks.normativecontrol.api.utils.jwt.Jwt;
 
+import java.text.MessageFormat;
 import java.util.function.Supplier;
 
 // Доступ только нормоконтролёру-проверяющему
@@ -31,6 +33,10 @@ public class DocumentVerdictAccessRule implements AccessRule {
         User user = jwt.getUser();
 
         Document document = documentsService.getDocumentNode(user, documentId);
+        if (document == null) {
+            String message = MessageFormat.format("Document with id {0} not found", documentId);
+            throw new ResourceNotFoundException(message);
+        }
 
         if (user.getRole() == Role.NORMOCONTROLLER && user.getId() == document.getStudent().getNormocontroller().getId())
             return new AuthorizationDecision(true);

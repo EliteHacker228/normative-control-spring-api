@@ -20,6 +20,10 @@ spring:
   jackson:
     time-zone: Asia/Yekaterinburg
 
+server:
+  error:
+    include-stacktrace: never
+
 jwt:
   accessToken:
     key: 267e3dad2f5e22ea927180c740f6c0092d79ac61089845bc25a487f101554808
