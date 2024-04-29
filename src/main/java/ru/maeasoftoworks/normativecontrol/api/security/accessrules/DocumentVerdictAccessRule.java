@@ -38,7 +38,7 @@ public class DocumentVerdictAccessRule implements AccessRule {
             throw new ResourceNotFoundException(message);
         }
 
-        if (user.getRole() == Role.NORMOCONTROLLER && user.getId() == document.getStudent().getNormocontroller().getId())
+        if (user.getRole() == Role.NORMOCONTROLLER && user.getId() == document.getStudent().getAcademicGroup().getNormocontroller().getId())
             return new AuthorizationDecision(true);
 
         return new AuthorizationDecision(false);    }

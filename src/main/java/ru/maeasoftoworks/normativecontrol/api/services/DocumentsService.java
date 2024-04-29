@@ -37,7 +37,7 @@ public class DocumentsService {
         if (user.getRole() == Role.STUDENT)
             return documentsRepository.findDocumentsByStudent((Student) user);
         else if (user.getRole() == Role.NORMOCONTROLLER) {
-            List<Student> students = studentsRepository.findStudentsByNormocontrollerId(user.getId());
+            List<Student> students = studentsRepository.findStudentsByAcademicGroupNormocontrollerId(user.getId());
             List<Document> result = new ArrayList<>();
             for (Student student : students) {
                 result.addAll(documentsRepository.findDocumentsByStudent(student));

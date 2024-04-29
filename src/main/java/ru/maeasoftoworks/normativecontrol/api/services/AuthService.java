@@ -87,7 +87,6 @@ public class AuthService {
                     .firstName(registerDto.getFirstName())
                     .middleName(registerDto.getMiddleName())
                     .academicGroup(academicGroup)
-                    .normocontroller(normocontroller)
                     .password(registerDto.getPassword())
                     .isVerified(false)
                     .documentsLimit(5)

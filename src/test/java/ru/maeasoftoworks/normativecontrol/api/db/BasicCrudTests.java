@@ -102,7 +102,6 @@ public class BasicCrudTests {
                     .lastName("Шарапов")
                     .isVerified(true)
                     .academicGroup(RI_400015)
-                    .normocontroller(levchenko)
                     .documentsLimit(5)
                     .build();
             studentsRepository.save(student);
@@ -128,7 +127,6 @@ public class BasicCrudTests {
                     .lastName("Жеглов")
                     .isVerified(true)
                     .academicGroup(RI_400015)
-                    .normocontroller(okhotskiy)
                     .documentsLimit(5)
                     .build();
             usersRepository.save(student);
@@ -141,7 +139,6 @@ public class BasicCrudTests {
                     .lastName("Зайцев")
                     .isVerified(true)
                     .academicGroup(RI_400016)
-                    .normocontroller(okhotskiy)
                     .documentsLimit(5)
                     .build();
             usersRepository.save(student);

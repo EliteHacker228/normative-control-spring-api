@@ -13,7 +13,7 @@ import ru.maeasoftoworks.normativecontrol.api.domain.academical.AcademicGroup;
 public class Student extends User {
 
     @Builder
-    public Student(Normocontroller normocontroller, String email, String password, boolean isVerified,
+    public Student(String email, String password, boolean isVerified,
                    String firstName, String middleName, String lastName, AcademicGroup academicGroup,
                    int documentsLimit) {
         super();
@@ -23,17 +23,9 @@ public class Student extends User {
         super.firstName = firstName;
         super.middleName = middleName;
         super.lastName = lastName;
-
-        this.normocontroller = normocontroller;
         this.academicGroup = academicGroup;
         this.documentsLimit = documentsLimit;
     }
-
-    @ManyToOne
-    @OnDelete(action = OnDeleteAction.SET_NULL)
-    @JoinColumn(name = "normocontroller_id")
-    @Setter
-    private Normocontroller normocontroller;
 
     @ManyToOne
     @OnDelete(action = OnDeleteAction.SET_NULL)

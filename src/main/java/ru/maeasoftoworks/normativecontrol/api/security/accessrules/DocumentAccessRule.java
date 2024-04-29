@@ -38,7 +38,7 @@ public class DocumentAccessRule implements AccessRule {
             return new AuthorizationDecision(true);
         if (user.getRole() == Role.STUDENT && user.getId() == document.getStudent().getId())
             return new AuthorizationDecision(true);
-        if (user.getRole() == Role.NORMOCONTROLLER && user.getId() == document.getStudent().getNormocontroller().getId())
+        if (user.getRole() == Role.NORMOCONTROLLER && user.getId() == document.getStudent().getAcademicGroup().getNormocontroller().getId())
             return new AuthorizationDecision(true);
 
         return new AuthorizationDecision(false);

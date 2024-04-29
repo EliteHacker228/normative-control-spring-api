@@ -69,14 +69,6 @@ public class AccountsService {
                 student.setAcademicGroup(academicGroup);
             }
 
-            if (student.getNormocontroller().getId() != updateUserDto.getNormocontrollerId()) {
-                Normocontroller normocontroller = normocontrollersRepository.findNormocontrollerById(updateUserDto.getNormocontrollerId());
-                if (normocontroller == null)
-                    throw new ResourceNotFoundException("Normocontroller with id " + updateUserDto.getNormocontrollerId()
-                            + " does not exists");
-                student.setNormocontroller(normocontroller);
-            }
-
             usersRepository.save(student);
             return student;
         }
