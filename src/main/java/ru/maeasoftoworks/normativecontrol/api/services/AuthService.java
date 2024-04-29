@@ -79,7 +79,6 @@ public class AuthService {
 
         if (registerDto.getRole() == Role.STUDENT) {
             AcademicGroup academicGroup = academicGroupsRepository.findAcademicGroupById(registerDto.getAcademicGroupId());
-            Normocontroller normocontroller = normocontrollersRepository.findNormocontrollerById(registerDto.getNormocontrollerId());
 
             Student student = Student.builder()
                     .email(registerDto.getEmail())

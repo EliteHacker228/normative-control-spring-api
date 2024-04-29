@@ -15,6 +15,5 @@ public class RegisterDto {
     private String middleName;
     private String lastName;
     private Long academicGroupId;
-    private Long normocontrollerId;
     private Role role;
 }
