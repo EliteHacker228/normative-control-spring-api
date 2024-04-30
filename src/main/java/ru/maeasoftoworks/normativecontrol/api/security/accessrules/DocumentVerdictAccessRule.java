@@ -26,6 +26,14 @@ public class DocumentVerdictAccessRule implements AccessRule {
 
     @Override
     public AuthorizationDecision check(Supplier<Authentication> authentication, RequestAuthorizationContext ctx) {
+        try {
+            return tryCheck(authentication, ctx);
+        } catch (Exception e) {
+            return new AuthorizationDecision(false);
+        }
+    }
+
+    private AuthorizationDecision tryCheck(Supplier<Authentication> authenticationSupplier, RequestAuthorizationContext ctx) {
         Long documentId = Long.parseLong(ctx.getVariables().get("document_id"));
 
         String accessToken = ctx.getRequest().getHeader("Authorization").substring(("Bearer ").length());
@@ -41,5 +49,6 @@ public class DocumentVerdictAccessRule implements AccessRule {
         if (user.getRole() == Role.NORMOCONTROLLER && user.getId() == document.getStudent().getAcademicGroup().getNormocontroller().getId())
             return new AuthorizationDecision(true);
 
-        return new AuthorizationDecision(false);    }
+        return new AuthorizationDecision(false);
+    }
 }

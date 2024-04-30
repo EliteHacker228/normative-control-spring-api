@@ -21,7 +21,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
-import ru.maeasoftoworks.normativecontrol.api.security.accessrules.AccessRule;
+import ru.maeasoftoworks.normativecontrol.api.security.accessrules.*;
 
 import java.util.List;
 
@@ -34,14 +34,14 @@ public class WebSecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final UserDetailsService userDetailsService;
 
-    private final AccessRule accountsAccessRule;
-    private final AccessRule invitesCreationAccessRule;
-    private final AccessRule invitesDeletionAccessRule;
+    private final AccountsAccessRule accountsAccessRule;
+    private final InvitesCreationAccessRule invitesCreationAccessRule;
+    private final InvitesDeletionAccessRule invitesDeletionAccessRule;
 
-    private final AccessRule documentAccessRule;
-    private final AccessRule documentPatchAccessRule;
-    private final AccessRule documentReportAccessRule;
-    private final AccessRule documentVerdictAccessRule;
+    private final DocumentAccessRule documentAccessRule;
+    private final DocumentPatchAccessRule documentPatchAccessRule;
+    private final DocumentReportAccessRule documentReportAccessRule;
+    private final DocumentVerdictAccessRule documentVerdictAccessRule;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

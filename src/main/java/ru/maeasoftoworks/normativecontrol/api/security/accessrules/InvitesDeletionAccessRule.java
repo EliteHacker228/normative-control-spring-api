@@ -1,8 +1,6 @@
 package ru.maeasoftoworks.normativecontrol.api.security.accessrules;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.core.Authentication;
@@ -11,7 +9,6 @@ import org.springframework.stereotype.Component;
 import ru.maeasoftoworks.normativecontrol.api.domain.invites.Invite;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
-import ru.maeasoftoworks.normativecontrol.api.dto.invites.InviteDto;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.ResourceNotFoundException;
 import ru.maeasoftoworks.normativecontrol.api.services.InvitesService;
 import ru.maeasoftoworks.normativecontrol.api.services.JwtService;
@@ -29,8 +26,15 @@ public class InvitesDeletionAccessRule implements AccessRule {
     private final InvitesService invitesService;
 
     @Override
-    @SneakyThrows
-    public AuthorizationDecision check(Supplier<Authentication> authenticationSupplier, RequestAuthorizationContext ctx) {
+    public AuthorizationDecision check(Supplier<Authentication> authentication, RequestAuthorizationContext ctx) {
+        try {
+            return tryCheck(authentication, ctx);
+        } catch (Exception e) {
+            return new AuthorizationDecision(false);
+        }
+    }
+
+    private AuthorizationDecision tryCheck(Supplier<Authentication> authentication, RequestAuthorizationContext ctx) {
         Integer inviteId = Integer.parseInt(ctx.getVariables().get("invite_id"));
         Invite invite = invitesService.getInviteById(inviteId);
         if (invite == null) {
@@ -42,9 +46,9 @@ public class InvitesDeletionAccessRule implements AccessRule {
 
         Jwt jwt = jwtService.getJwtFromAccessTokenString(accessToken);
         User user = jwt.getUser();
-        if(user.getRole() == Role.ADMIN)
+        if (user.getRole() == Role.ADMIN)
             return new AuthorizationDecision(true);
-        if(user.getRole() == Role.NORMOCONTROLLER && user.getId() == invite.getOwner().getId())
+        if (user.getRole() == Role.NORMOCONTROLLER && user.getId() == invite.getOwner().getId())
             return new AuthorizationDecision(true);
         return new AuthorizationDecision(false);
     }

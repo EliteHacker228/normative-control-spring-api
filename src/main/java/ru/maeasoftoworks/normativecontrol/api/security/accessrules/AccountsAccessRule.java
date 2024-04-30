@@ -21,17 +21,22 @@ public class AccountsAccessRule implements AccessRule {
     private final JwtService jwtService;
 
     @Override
-    public AuthorizationDecision check(Supplier<Authentication> authenticationSupplier, RequestAuthorizationContext ctx) {
+    public AuthorizationDecision check(Supplier<Authentication> authentication, RequestAuthorizationContext ctx) {
+        try {
+            return tryCheck(authentication, ctx);
+        } catch (Exception e) {
+            return new AuthorizationDecision(false);
+        }
+    }
+
+    private AuthorizationDecision tryCheck(Supplier<Authentication> authenticationSupplier, RequestAuthorizationContext ctx) {
         Long accountId = Long.parseLong(ctx.getVariables().get("account_id"));
-
-        log.info(ctx.getRequest().getRequestURI());
-
         String accessToken = ctx.getRequest().getHeader("Authorization").substring(("Bearer ").length());
         Jwt jwt = jwtService.getJwtFromAccessTokenString(accessToken);
         User user = jwt.getUser();
-        if(user.getRole() == Role.ADMIN)
+        if (user.getRole() == Role.ADMIN)
             return new AuthorizationDecision(true);
-        if(user.getId() == accountId)
+        if (user.getId() == accountId)
             return new AuthorizationDecision(true);
         return new AuthorizationDecision(false);
     }
