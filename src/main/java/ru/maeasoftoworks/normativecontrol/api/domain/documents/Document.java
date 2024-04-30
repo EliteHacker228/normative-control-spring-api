@@ -20,10 +20,8 @@ public class Document {
     private long id;
 
     @Builder
-    public Document(Student student, String studentName, AcademicGroup academicGroup, String fileName, boolean isReported, String comment) {
+    public Document(Student student, String fileName, boolean isReported, String comment) {
         this.student = student;
-        this.studentName = studentName;
-        this.academicGroup = academicGroup;
         this.fileName = fileName;
         this.isReported = isReported;
         this.comment = comment;
@@ -32,15 +30,6 @@ public class Document {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private Student student;
-
-    @Column(name = "student_name")
-    private String studentName;
-
-    @ManyToOne
-    @OnDelete(action = OnDeleteAction.SET_NULL)
-    @JoinColumn(name = "academic_group_id")
-    @Setter
-    private AcademicGroup academicGroup;
 
     @Column(name = "file_name")
     private String fileName;

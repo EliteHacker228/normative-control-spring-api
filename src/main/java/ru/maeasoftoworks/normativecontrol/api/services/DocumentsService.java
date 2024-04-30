@@ -22,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO: Возвращать 404 если ресурс не найден
 @Service
 @RequiredArgsConstructor
 public class DocumentsService {
@@ -56,8 +57,6 @@ public class DocumentsService {
         Student user = (Student) user1;
         Document document = Document.builder()
                 .student(user)
-                .studentName(getShortenedNameForUser(user))
-                .academicGroup(user.getAcademicGroup())
                 .fileName(normalizeFileName(createDocumentDto.getDocumentName()))
                 .isReported(false)
                 .comment(null)
