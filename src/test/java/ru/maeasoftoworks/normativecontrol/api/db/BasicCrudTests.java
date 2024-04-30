@@ -109,8 +109,6 @@ public class BasicCrudTests {
             Document document = Document.builder()
                     .student(student)
                     .fileName("И.А.Шарапов РИ-400015 ВКР")
-                    .academicGroup(RI_400015)
-                    .studentName("Шарапов И.А.")
                     .isReported(false)
                     .comment("")
                     .build();
