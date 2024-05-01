@@ -109,7 +109,7 @@ public class DocumentsService {
     public Document setVerdictOnDocument(Long documentId, DocumentVerdictDto documentVerdictDto) {
         Document document = documentsRepository.findDocumentById(documentId);
         document.setDocumentVerdict(documentVerdictDto.getVerdict());
-        document.setComment(documentVerdictDto.getMessage());
+        document.setComment(documentVerdictDto.getComment());
         documentsRepository.save(document);
         return document;
     }
@@ -126,6 +126,7 @@ public class DocumentsService {
     public Document makeVerdictOnDocument(Long documentId, DocumentVerdictDto documentVerdictDto) {
         Document document = documentsRepository.findDocumentById(documentId);
         document.setDocumentVerdict(documentVerdictDto.getVerdict());
+        document.setComment(documentVerdictDto.getComment());
         documentsRepository.save(document);
         return document;
     }

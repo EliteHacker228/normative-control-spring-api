@@ -8,5 +8,5 @@ import ru.maeasoftoworks.normativecontrol.api.domain.documents.DocumentVerdict;
 @Setter
 public class DocumentVerdictDto {
     private DocumentVerdict verdict;
-    private String message;
+    private String comment;
 }
