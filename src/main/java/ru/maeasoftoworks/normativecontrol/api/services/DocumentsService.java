@@ -21,6 +21,7 @@ import ru.maeasoftoworks.normativecontrol.api.s3.S3;
 
 import java.io.ByteArrayOutputStream;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,19 +64,24 @@ public class DocumentsService {
             students.addAll(foundStudents);
         }
 
-        String csvHeader = "ФИО,Группа,Название работы,Результат проверки,Количество попыток";
+        String csvHeader = "ФИО,Группа,Название работы,Результат проверки,Дата первой загрузки,Количество попыток";
         List<String> documentsCsv = new ArrayList<>();
         documentsCsv.add(csvHeader);
         for (Student student : students) {
             List<Document> documents = documentsRepository.findDocumentsByStudent(student);
+            if(documents.isEmpty())
+                break;
             Document document = documents.getFirst();
             String fio = MessageFormat.format("{0} {1} {2}", student.getLastName(), student.getFirstName(), student.getMiddleName());
             String academicGroupName = student.getAcademicGroup().getName();
             String documentName = document.getFileName();
             String verificationResult = document.getDocumentVerdict().name();
+
+            SimpleDateFormat sf = new SimpleDateFormat("HH:mm dd.MM.yyyy");
+            String firstUploadingDateTime = sf.format(document.getVerificationDate());
             String attempts = documentsRepository.countAllByStudentId(document.getStudent().getId()).toString();
 
-            String csvRow = MessageFormat.format("{0},{1},{2},{3},{4}", fio, academicGroupName, documentName, verificationResult, attempts);
+            String csvRow = MessageFormat.format("{0},{1},{2},{3},{4},{5}", fio, academicGroupName, documentName, verificationResult,firstUploadingDateTime ,attempts);
             documentsCsv.add(csvRow);
         }
 
