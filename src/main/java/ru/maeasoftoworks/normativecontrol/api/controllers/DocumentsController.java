@@ -35,6 +35,12 @@ public class DocumentsController {
         return documentsService.getDocuments(user);
     }
 
+    @GetMapping("/csv")
+    public String getDocumentsCsv(@RequestHeader("Authorization") String bearerToken) {
+        User user = jwtService.getUserFromAuthorizationHeader(bearerToken);
+        return documentsService.getDocumentsCsv(user);
+    }
+
     @PostMapping
     public Result createDocument(@RequestHeader("Authorization") String bearerToken,
                                  @ModelAttribute CreateDocumentDto createDocumentDto) {

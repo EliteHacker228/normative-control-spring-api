@@ -10,4 +10,6 @@ public interface DocumentsRepository extends JpaRepository<Document, Long> {
     List<Document> findDocumentsByStudent(Student student);
 
     Document findDocumentById(Long documentId);
+
+    Integer countAllByStudentId(Long studentId);
 }

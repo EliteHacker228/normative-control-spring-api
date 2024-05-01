@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
+import ru.maeasoftoworks.normativecontrol.api.domain.academical.AcademicGroup;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Document;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Result;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.VerificationStatus;
@@ -19,6 +20,7 @@ import ru.maeasoftoworks.normativecontrol.api.repositories.*;
 import ru.maeasoftoworks.normativecontrol.api.s3.S3;
 
 import java.io.ByteArrayOutputStream;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +51,35 @@ public class DocumentsService {
         }
 
         return List.of();
+    }
+
+    public String getDocumentsCsv(User user) {
+        List<Student> students = new ArrayList<>();
+        if (user.getRole() == Role.NORMOCONTROLLER) {
+            List<Student> foundStudents = studentsRepository.findStudentsByAcademicGroupNormocontrollerId(user.getId());
+            students.addAll(foundStudents);
+        } else if (user.getRole() == Role.ADMIN) {
+            List<Student> foundStudents = studentsRepository.findAll();
+            students.addAll(foundStudents);
+        }
+
+        String csvHeader = "ФИО,Группа,Название работы,Результат проверки,Количество попыток";
+        List<String> documentsCsv = new ArrayList<>();
+        documentsCsv.add(csvHeader);
+        for (Student student : students) {
+            List<Document> documents = documentsRepository.findDocumentsByStudent(student);
+            Document document = documents.getFirst();
+            String fio = MessageFormat.format("{0} {1} {2}", student.getLastName(), student.getFirstName(), student.getMiddleName());
+            String academicGroupName = student.getAcademicGroup().getName();
+            String documentName = document.getFileName();
+            String verificationResult = document.getDocumentVerdict().name();
+            String attempts = documentsRepository.countAllByStudentId(document.getStudent().getId()).toString();
+
+            String csvRow = MessageFormat.format("{0},{1},{2},{3},{4}", fio, academicGroupName, documentName, verificationResult, attempts);
+            documentsCsv.add(csvRow);
+        }
+
+        return String.join("\n", documentsCsv);
     }
 
     @Transactional
