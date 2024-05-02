@@ -1,5 +1,6 @@
 package ru.maeasoftoworks.normativecontrol.api.controllers;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONObject;
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    private AuthJwtPair login(@RequestBody LoginData loginData) {
+    private AuthJwtPair login(@RequestBody @Valid LoginData loginData) {
         return authService.login(loginData);
     }
 
