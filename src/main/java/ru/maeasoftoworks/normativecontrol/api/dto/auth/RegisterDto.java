@@ -28,6 +28,5 @@ public class RegisterDto {
     private String lastName;
     @NotNull
     private Long academicGroupId;
-    @NotNull
     private Role role;
 }
