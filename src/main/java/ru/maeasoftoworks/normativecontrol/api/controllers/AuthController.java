@@ -28,7 +28,7 @@ public class AuthController {
     }
 
     @PostMapping("/register/student")
-    private ResponseEntity registerStudent(@RequestBody RegisterDto registerDto) {
+    private ResponseEntity registerStudent(@RequestBody @Valid RegisterDto registerDto) {
         try {
             registerDto.setRole(Role.STUDENT);
             AuthJwtPair authJwtPair = authService.register(registerDto);
