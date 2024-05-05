@@ -38,53 +38,54 @@ public class NormativeControlApiApplication {
     @PostConstruct
     @Transactional
     protected void initDatabase() {
-        Admin admin = Admin.builder()
-                .email("P.O.Kurchatov@urfu.me")
-                .password("admin_password")
-                .fullName("Курчатов Павел Олегович")
-                .isVerified(true)
-                .build();
-        adminsRepository.save(admin);
+        if (!adminsRepository.existsById(1L)) {
+            Admin admin = Admin.builder()
+                    .email("P.O.Kurchatov@urfu.me")
+                    .password("admin_password")
+                    .fullName("Курчатов Павел Олегович")
+                    .isVerified(true)
+                    .build();
+            adminsRepository.save(admin);
 
-        admin = Admin.builder()
-                .email("A.N.Mitkin@urfu.me")
-                .password("admin_password")
-                .fullName("Митькин Алексей Николаевич")
-                .isVerified(true)
-                .build();
-        adminsRepository.save(admin);
+            admin = Admin.builder()
+                    .email("A.N.Mitkin@urfu.me")
+                    .password("admin_password")
+                    .fullName("Митькин Алексей Николаевич")
+                    .isVerified(true)
+                    .build();
+            adminsRepository.save(admin);
 
-        Normocontroller markov = Normocontroller.builder()
-                .email("N.M.Markov@urfu.me")
-                .password("normocontroller_password")
-                .fullName("Марков Николай Мирославович")
-                .isVerified(true)
-                .build();
-        normocontrollersRepository.save(markov);
+            Normocontroller markov = Normocontroller.builder()
+                    .email("N.M.Markov@urfu.me")
+                    .password("normocontroller_password")
+                    .fullName("Марков Николай Мирославович")
+                    .isVerified(true)
+                    .build();
+            normocontrollersRepository.save(markov);
 
-        Normocontroller levchenko = Normocontroller.builder()
-                .email("A.V.Levchenko@urfu.me")
-                .password("normocontroller_password")
-                .fullName("Левченко Антон Валерьевич")
-                .isVerified(true)
-                .build();
-        normocontrollersRepository.save(levchenko);
+            Normocontroller levchenko = Normocontroller.builder()
+                    .email("A.V.Levchenko@urfu.me")
+                    .password("normocontroller_password")
+                    .fullName("Левченко Антон Валерьевич")
+                    .isVerified(true)
+                    .build();
+            normocontrollersRepository.save(levchenko);
 
-        AcademicGroup RI_400015 = new AcademicGroup("РИ-400015", levchenko);
-        academicGroupsRepository.save(RI_400015);
+            AcademicGroup RI_400015 = new AcademicGroup("РИ-400015", levchenko);
+            academicGroupsRepository.save(RI_400015);
 
-        AcademicGroup RI_400016 = new AcademicGroup("РИ-400016", markov);
-        academicGroupsRepository.save(RI_400016);
+            AcademicGroup RI_400016 = new AcademicGroup("РИ-400016", markov);
+            academicGroupsRepository.save(RI_400016);
 
-        Student student = Student.builder()
-                .email("I.A.Sharapov@urfu.me")
-                .password("student_password")
-                .fullName("Шарапов Игорь Анатольевич")
-                .isVerified(true)
-                .academicGroup(RI_400015)
-                .documentsLimit(5)
-                .build();
-        studentsRepository.save(student);
+            Student student = Student.builder()
+                    .email("I.A.Sharapov@urfu.me")
+                    .password("student_password")
+                    .fullName("Шарапов Игорь Анатольевич")
+                    .isVerified(true)
+                    .academicGroup(RI_400015)
+                    .documentsLimit(5)
+                    .build();
+            studentsRepository.save(student);
 
 //        Document document = Document.builder()
 //                .user(student)
@@ -98,5 +99,6 @@ public class NormativeControlApiApplication {
 
 //        Result result = new Result(document, VerificationStatus.PENDING);
 //        resultsRepository.save(result);
+        }
     }
 }
