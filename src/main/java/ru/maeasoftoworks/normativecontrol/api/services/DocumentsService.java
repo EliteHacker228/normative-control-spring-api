@@ -13,6 +13,7 @@ import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Student;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
 import ru.maeasoftoworks.normativecontrol.api.dto.documents.CreateDocumentDto;
+import ru.maeasoftoworks.normativecontrol.api.dto.documents.DocumentReportDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.documents.DocumentVerdictDto;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.ResourceNotFoundException;
 import ru.maeasoftoworks.normativecontrol.api.mq.Message;
@@ -25,6 +26,7 @@ import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 // TODO: Возвращать 404 если ресурс не найден
 @Service
@@ -165,9 +167,23 @@ public class DocumentsService {
     }
 
     @Transactional
-    public Document reportOnDocument(Long documentId) {
+    public Document reportOnDocument(Long documentId, DocumentReportDto documentReportDto) {
         Document document = documentsRepository.findDocumentById(documentId);
-        document.setReported(true);
+        if(!document.isReported())
+            document.setReported(true);
+        Set<String> reportedMistakes = document.getReportedMistakesIds();
+        reportedMistakes.add(documentReportDto.getMistakeId());
+        documentsRepository.save(document);
+        return document;
+    }
+
+    @Transactional
+    public Document unreportOnDocument(Long documentId, DocumentReportDto documentReportDto) {
+        Document document = documentsRepository.findDocumentById(documentId);
+        Set<String> reportedMistakes = document.getReportedMistakesIds();
+        reportedMistakes.remove(documentReportDto.getMistakeId());
+        if(reportedMistakes.isEmpty())
+            document.setReported(false);
         documentsRepository.save(document);
         return document;
     }

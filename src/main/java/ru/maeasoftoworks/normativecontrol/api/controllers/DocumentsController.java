@@ -14,6 +14,7 @@ import ru.maeasoftoworks.normativecontrol.api.domain.users.Admin;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
 import ru.maeasoftoworks.normativecontrol.api.dto.documents.CreateDocumentDto;
+import ru.maeasoftoworks.normativecontrol.api.dto.documents.DocumentReportDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.documents.DocumentVerdictDto;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.UnauthorizedException;
 import ru.maeasoftoworks.normativecontrol.api.services.DocumentsService;
@@ -92,10 +93,18 @@ public class DocumentsController {
         return documentsService.setVerdictOnDocument(documentId, documentVerdictDto);
     }
 
-    @PatchMapping("/{document_id}/report")
+    @PostMapping("/{document_id}/report")
     public Document reportOnDocument(@RequestHeader("Authorization") String bearerToken,
-                                     @PathVariable("document_id") Long documentId) {
-        return documentsService.reportOnDocument(documentId);
+                                     @PathVariable("document_id") Long documentId,
+                                     @RequestBody DocumentReportDto documentReportDto) {
+        return documentsService.reportOnDocument(documentId, documentReportDto);
+    }
+
+    @DeleteMapping("/{document_id}/report")
+    public Document unreportOnDocument(@RequestHeader("Authorization") String bearerToken,
+                                     @PathVariable("document_id") Long documentId,
+                                     @RequestBody DocumentReportDto documentReportDto) {
+        return documentsService.unreportOnDocument(documentId, documentReportDto);
     }
 
     @PatchMapping("/{document_id}/verdict")

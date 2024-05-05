@@ -8,6 +8,8 @@ import ru.maeasoftoworks.normativecontrol.api.domain.academical.AcademicGroup;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Student;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity(name = "documents")
 @NoArgsConstructor
@@ -38,9 +40,9 @@ public class Document {
     @Setter
     private boolean isReported = false;
 
-    @Column(name = "reported_mistakes_ids")
+    @ElementCollection(targetClass = String.class)
     @Setter
-    private String reportedMistakesIds = "[]";
+    private Set<String> reportedMistakesIds = new HashSet<>();
 
     @Column(name = "status")
     @Setter

@@ -87,8 +87,10 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/documents/{document_id}").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.GET, "/documents/{document_id}/status").access(documentAccessRule)
                         .requestMatchers(HttpMethod.PATCH, "/documents/{document_id}").access(documentPatchAccessRule)
-                        .requestMatchers(HttpMethod.PATCH,"/documents/{document_id}/report").access(documentReportAccessRule)
-                        .requestMatchers(HttpMethod.PATCH,"/documents/{document_id}/verdict").access(documentVerdictAccessRule)
+                        .requestMatchers(HttpMethod.POST,"/documents/{document_id}/report").access(documentReportAccessRule)
+                        .requestMatchers(HttpMethod.DELETE,"/documents/{document_id}/report").access(documentReportAccessRule)
+                        .requestMatchers(HttpMethod.POST,"/documents/{document_id}/verdict").access(documentVerdictAccessRule)
+                        .requestMatchers(HttpMethod.DELETE,"/documents/{document_id}/verdict").access(documentVerdictAccessRule)
                         .requestMatchers("/documents/**").authenticated()
 
                         .requestMatchers("/error", "/error/**").permitAll())
