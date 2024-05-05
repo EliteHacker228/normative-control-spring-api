@@ -23,6 +23,7 @@ spring:
 server:
   error:
     include-stacktrace: never
+  port: 8080
   servlet:
     context-path: /api
 

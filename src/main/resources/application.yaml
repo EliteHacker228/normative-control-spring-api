@@ -23,6 +23,7 @@ spring:
 server:
   error:
     include-stacktrace: never
+  port: ${API_PORT}
   servlet:
     context-path: ${API_PREFIX}
 

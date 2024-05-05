@@ -22,6 +22,7 @@ ENV S3_ENDPOINT # http://localhost:9000
 ENV S3_REGION US-EAST-1
 ENV S3_SECRET_ACCESS_KEY # xqtc6gXpKy0OIZVVSeinxDd7dd0pbDsOEtU7huJX
 ENV API_PREFIX # /api
+ENV API_PORT # 8080
 
 COPY --from=build /app/sources/build/libs/*.jar /app/built/app.jar
 ENTRYPOINT java -jar app/built/app.jar
