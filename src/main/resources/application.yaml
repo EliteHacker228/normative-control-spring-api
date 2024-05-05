@@ -23,6 +23,8 @@ spring:
 server:
   error:
     include-stacktrace: never
+  servlet:
+    context-path: ${API_PREFIX}
 
 jwt:
   accessToken:
