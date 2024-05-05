@@ -152,9 +152,9 @@ public class DocumentsService {
         documentsRepository.delete(document);
     }
 
-    public VerificationStatus getDocumentsVerificationStatus(Long documentId) {
+    public Result getDocumentsVerificationStatus(Long documentId) {
         Document document = documentsRepository.findDocumentById(documentId);
-        return resultsRepository.findResultByDocument(document).getVerificationStatus();
+        return resultsRepository.findResultByDocument(document);
     }
 
     @Transactional

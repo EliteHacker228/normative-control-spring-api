@@ -63,12 +63,10 @@ public class DocumentsController {
     }
 
     @GetMapping("/{document_id}/status")
-    public ResponseEntity<JSONObject> getDocumentsVerificationStatus(@RequestHeader("Authorization") String bearerToken,
+    public Result getDocumentsVerificationStatus(@RequestHeader("Authorization") String bearerToken,
                                                                      @PathVariable("document_id") Long documentId) {
-        VerificationStatus status = documentsService.getDocumentsVerificationStatus(documentId);
-        JSONObject response = new JSONObject();
-        response.put("status", status.name());
-        return ResponseEntity.ok().body(response);
+        Result result = documentsService.getDocumentsVerificationStatus(documentId);
+        return result;
     }
 
     @GetMapping("/{document_id}")
