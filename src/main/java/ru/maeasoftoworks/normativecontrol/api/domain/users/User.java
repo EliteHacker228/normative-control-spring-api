@@ -29,17 +29,9 @@ public abstract class User {
     @Setter
     protected boolean isVerified;
 
-    @Column(name = "first_name")
+    @Column(name = "full_name")
     @Setter
-    protected String firstName;
-
-    @Column(name = "middle_name")
-    @Setter
-    protected String middleName;
-
-    @Column(name = "last_name")
-    @Setter
-    protected String lastName;
+    protected String fullName;
 
     public abstract Role getRole();
 }

@@ -48,9 +48,7 @@ public class BasicCrudTests {
             Admin admin = Admin.builder()
                     .email("P.O.Kurchatov@urfu.me")
                     .password("admin_password")
-                    .firstName("Павел")
-                    .middleName("Олегович")
-                    .lastName("Курчатов")
+                    .fullName("Курчатов Павел Олегович")
                     .isVerified(true)
                     .build();
             adminsRepository.save(admin);
@@ -58,9 +56,7 @@ public class BasicCrudTests {
             admin = Admin.builder()
                     .email("M.D.Sakharov@urfu.me")
                     .password("admin_password")
-                    .firstName("Михаил")
-                    .middleName("Дмитриевич")
-                    .lastName("Сахаров")
+                    .fullName("Сахаров Михаил Дмитриевич")
                     .isVerified(true)
                     .build();
             adminsRepository.save(admin);
@@ -68,9 +64,7 @@ public class BasicCrudTests {
             Normocontroller levchenko = Normocontroller.builder()
                     .email("A.V.Levchenko@urfu.me")
                     .password("normocontroller_password")
-                    .firstName("Антон")
-                    .middleName("Валерьевич")
-                    .lastName("Левченко")
+                    .fullName("Левченко Антон Валерьевич")
                     .isVerified(true)
                     .build();
             normocontrollersRepository.save(levchenko);
@@ -78,9 +72,7 @@ public class BasicCrudTests {
             Normocontroller okhotskiy = Normocontroller.builder()
                     .email("D.T.Okhotskiy@urfu.me")
                     .password("normocontroller_password")
-                    .firstName("Дмитрий")
-                    .middleName("Тимофеевич")
-                    .lastName("Охотский")
+                    .fullName("Охотский Дмитрий Тимофеевич")
                     .isVerified(true)
                     .build();
             normocontrollersRepository.save(okhotskiy);
@@ -97,9 +89,7 @@ public class BasicCrudTests {
             Student student = Student.builder()
                     .email("I.A.Sharapov@urfu.me")
                     .password("student_password")
-                    .firstName("Игорь")
-                    .middleName("Анатольевич")
-                    .lastName("Шарапов")
+                    .fullName("Шарапов Игорь Анатольевич")
                     .isVerified(true)
                     .academicGroup(RI_400015)
                     .documentsLimit(5)
@@ -120,9 +110,7 @@ public class BasicCrudTests {
             student = Student.builder()
                     .email("M.S.Jeglov@urfu.me")
                     .password("student_password")
-                    .firstName("Михаил")
-                    .middleName("Сергеевич")
-                    .lastName("Жеглов")
+                    .fullName("Жеглов Михаил Сергеевич")
                     .isVerified(true)
                     .academicGroup(RI_400015)
                     .documentsLimit(5)
@@ -132,9 +120,7 @@ public class BasicCrudTests {
             student = Student.builder()
                     .email("K.L.Zaycev@urfu.me")
                     .password("student_password")
-                    .firstName("Константин")
-                    .middleName("Леонидович")
-                    .lastName("Зайцев")
+                    .fullName("Зайцев Константин Леонидович")
                     .isVerified(true)
                     .academicGroup(RI_400016)
                     .documentsLimit(5)

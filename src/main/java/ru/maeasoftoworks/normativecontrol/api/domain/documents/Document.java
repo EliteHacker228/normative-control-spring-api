@@ -38,6 +38,10 @@ public class Document {
     @Setter
     private boolean isReported = false;
 
+    @Column(name = "reported_mistakes_ids")
+    @Setter
+    private String reportedMistakesIds = "[]";
+
     @Column(name = "status")
     @Setter
     private DocumentVerdict documentVerdict = DocumentVerdict.NOT_CHECKED;

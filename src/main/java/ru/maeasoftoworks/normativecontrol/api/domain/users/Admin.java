@@ -13,14 +13,11 @@ import lombok.ToString;
 public class Admin extends User {
 
     @Builder
-    public Admin(String email, String password, boolean isVerified, String firstName, String middleName,
-                 String lastName) {
+    public Admin(String email, String password, boolean isVerified, String fullName) {
         super.email = email;
         super.password = password;
         super.isVerified = isVerified;
-        super.firstName = firstName;
-        super.middleName = middleName;
-        super.lastName = lastName;
+        super.fullName = fullName;
     }
 
     private Role role = Role.ADMIN;

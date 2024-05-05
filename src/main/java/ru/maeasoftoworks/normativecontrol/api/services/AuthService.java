@@ -82,9 +82,7 @@ public class AuthService {
 
             Student student = Student.builder()
                     .email(registerDto.getEmail())
-                    .lastName(registerDto.getLastName())
-                    .firstName(registerDto.getFirstName())
-                    .middleName(registerDto.getMiddleName())
+                    .fullName(registerDto.getFullName())
                     .academicGroup(academicGroup)
                     .password(registerDto.getPassword())
                     .isVerified(false)
@@ -115,9 +113,7 @@ public class AuthService {
             Normocontroller normocontroller = Normocontroller.builder()
                     .email(registerDto.getEmail())
                     .password(registerDto.getPassword())
-                    .firstName(registerDto.getFirstName())
-                    .middleName(registerDto.getMiddleName())
-                    .lastName(registerDto.getLastName())
+                    .fullName(registerDto.getFullName())
                     .isVerified(false)
                     .build();
             log.info(normocontroller.toString());

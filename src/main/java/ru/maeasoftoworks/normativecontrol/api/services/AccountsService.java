@@ -54,9 +54,7 @@ public class AccountsService {
             throw new ResourceNotFoundException(message);
         }
 
-        user.setFirstName(updateUserDto.getFirstName());
-        user.setMiddleName(updateUserDto.getMiddleName());
-        user.setLastName(updateUserDto.getLastName());
+        user.setFullName(updateUserDto.getFullName());
 
         if (user.getRole() == Role.STUDENT) {
             Student student = (Student) user;

@@ -9,7 +9,5 @@ import lombok.Setter;
 @Builder
 public class NormocontrollerDto {
     private Long id;
-    private String lastName;
-    private String firstName;
-    private String middleName;
+    private String fullName;
 }

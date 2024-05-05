@@ -19,13 +19,7 @@ public class RegisterDto {
     private String password;
     @NotNull
     @NotEmpty
-    private String firstName;
-    @NotNull
-    @NotEmpty
-    private String middleName;
-    @NotNull
-    @NotEmpty
-    private String lastName;
+    private String fullName;
     @NotNull
     private Long academicGroupId;
     private Role role;

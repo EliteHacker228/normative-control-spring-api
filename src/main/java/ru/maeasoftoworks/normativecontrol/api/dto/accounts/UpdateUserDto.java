@@ -6,8 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UpdateUserDto {
-    private String firstName;
-    private String middleName;
-    private String lastName;
+    private String fullName;
     private Long academicGroupId;
 }

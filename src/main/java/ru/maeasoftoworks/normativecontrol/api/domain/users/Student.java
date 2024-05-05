@@ -14,15 +14,13 @@ public class Student extends User {
 
     @Builder
     public Student(String email, String password, boolean isVerified,
-                   String firstName, String middleName, String lastName, AcademicGroup academicGroup,
+                   String fullName, AcademicGroup academicGroup,
                    int documentsLimit) {
         super();
         super.email = email;
         super.password = password;
         super.isVerified = isVerified;
-        super.firstName = firstName;
-        super.middleName = middleName;
-        super.lastName = lastName;
+        super.fullName = fullName;
         this.academicGroup = academicGroup;
         this.documentsLimit = documentsLimit;
     }

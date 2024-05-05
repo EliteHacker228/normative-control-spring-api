@@ -31,9 +31,7 @@ public class AcademicGroupsController {
                 .stream()
                 .map(normocontroller -> NormocontrollerDto.builder()
                         .id(normocontroller.getId())
-                        .firstName(normocontroller.getFirstName())
-                        .middleName(normocontroller.getMiddleName())
-                        .lastName(normocontroller.getLastName())
+                        .fullName(normocontroller.getFullName())
                         .build())
                 .toList();
     }

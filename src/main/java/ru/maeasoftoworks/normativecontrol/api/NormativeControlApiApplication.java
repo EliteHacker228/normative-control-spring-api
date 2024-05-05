@@ -41,9 +41,7 @@ public class NormativeControlApiApplication {
         Admin admin = Admin.builder()
                 .email("P.O.Kurchatov@urfu.me")
                 .password("admin_password")
-                .firstName("Павел")
-                .middleName("Олегович")
-                .lastName("Курчатов")
+                .fullName("Курчатов Павел Олегович")
                 .isVerified(true)
                 .build();
         adminsRepository.save(admin);
@@ -51,9 +49,7 @@ public class NormativeControlApiApplication {
         admin = Admin.builder()
                 .email("A.N.Mitkin@urfu.me")
                 .password("admin_password")
-                .firstName("Алексей")
-                .middleName("Николаевич")
-                .lastName("Митькин")
+                .fullName("Митькин Алексей Николаевич")
                 .isVerified(true)
                 .build();
         adminsRepository.save(admin);
@@ -61,9 +57,7 @@ public class NormativeControlApiApplication {
         Normocontroller markov = Normocontroller.builder()
                 .email("N.M.Markov@urfu.me")
                 .password("normocontroller_password")
-                .firstName("Николай")
-                .middleName("Мирославович")
-                .lastName("Марков")
+                .fullName("Марков Николай Мирославович")
                 .isVerified(true)
                 .build();
         normocontrollersRepository.save(markov);
@@ -71,9 +65,7 @@ public class NormativeControlApiApplication {
         Normocontroller levchenko = Normocontroller.builder()
                 .email("A.V.Levchenko@urfu.me")
                 .password("normocontroller_password")
-                .firstName("Антон")
-                .middleName("Валерьевич")
-                .lastName("Левченко")
+                .fullName("Левченко Антон Валерьевич")
                 .isVerified(true)
                 .build();
         normocontrollersRepository.save(levchenko);
@@ -87,9 +79,7 @@ public class NormativeControlApiApplication {
         Student student = Student.builder()
                 .email("I.A.Sharapov@urfu.me")
                 .password("student_password")
-                .firstName("Игорь")
-                .middleName("Анатольевич")
-                .lastName("Шарапов")
+                .fullName("Шарапов Игорь Анатольевич")
                 .isVerified(true)
                 .academicGroup(RI_400015)
                 .documentsLimit(5)

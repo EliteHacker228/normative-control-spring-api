@@ -14,6 +14,7 @@ import ru.maeasoftoworks.normativecontrol.api.domain.users.Student;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
 import ru.maeasoftoworks.normativecontrol.api.dto.documents.CreateDocumentDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.documents.DocumentVerdictDto;
+import ru.maeasoftoworks.normativecontrol.api.exceptions.ResourceNotFoundException;
 import ru.maeasoftoworks.normativecontrol.api.mq.Message;
 import ru.maeasoftoworks.normativecontrol.api.mq.MqPublisher;
 import ru.maeasoftoworks.normativecontrol.api.repositories.*;
@@ -38,17 +39,23 @@ public class DocumentsService {
     private final MqPublisher mqPublisher;
 
     public List<Document> getDocuments(User user) {
-        if (user.getRole() == Role.STUDENT)
-            return documentsRepository.findDocumentsByStudent((Student) user);
+        if (user.getRole() == Role.STUDENT) {
+            return documentsRepository.findDocumentsByStudent((Student) user).stream()
+                    .filter(document -> resultsRepository.findResultByDocument(document).getVerificationStatus() != VerificationStatus.ERROR).toList();
+        }
         else if (user.getRole() == Role.NORMOCONTROLLER) {
             List<Student> students = studentsRepository.findStudentsByAcademicGroupNormocontrollerId(user.getId());
             List<Document> result = new ArrayList<>();
             for (Student student : students) {
-                result.addAll(documentsRepository.findDocumentsByStudent(student));
+                List<Document> documents = documentsRepository.findDocumentsByStudent(student).stream()
+                        .filter(document -> resultsRepository.findResultByDocument(document).getVerificationStatus() != VerificationStatus.ERROR).toList();
+                result.addAll(documents);
             }
             return result;
         } else if (user.getRole() == Role.ADMIN) {
-            return documentsRepository.findAll();
+            List<Document> documents = documentsRepository.findAll().stream()
+                    .filter(document -> resultsRepository.findResultByDocument(document).getVerificationStatus() != VerificationStatus.ERROR).toList();
+            return documents;
         }
 
         return List.of();
@@ -64,24 +71,25 @@ public class DocumentsService {
             students.addAll(foundStudents);
         }
 
-        String csvHeader = "ФИО,Группа,Название работы,Результат проверки,Дата и время первой загрузки,Количество попыток";
+        String csvHeader = "ФИО,Группа,Название работы,Результат проверки,Дата и время   первой загрузки,Количество попыток";
         List<String> documentsCsv = new ArrayList<>();
         documentsCsv.add(csvHeader);
         for (Student student : students) {
-            List<Document> documents = documentsRepository.findDocumentsByStudent(student);
-            if(documents.isEmpty())
+            List<Document> documents = documentsRepository.findAll().stream()
+                    .filter(document -> resultsRepository.findResultByDocument(document).getVerificationStatus() != VerificationStatus.ERROR).toList();
+            if (documents.isEmpty())
                 break;
             Document document = documents.getFirst();
-            String fio = MessageFormat.format("{0} {1} {2}", student.getLastName(), student.getFirstName(), student.getMiddleName());
+            String fio = student.getFullName();
             String academicGroupName = student.getAcademicGroup().getName();
             String documentName = document.getFileName();
             String verificationResult = document.getDocumentVerdict().name();
 
             SimpleDateFormat sf = new SimpleDateFormat("HH:mm dd.MM.yyyy");
             String firstUploadingDateTime = sf.format(document.getVerificationDate());
-            String attempts = documentsRepository.countAllByStudentId(document.getStudent().getId()).toString();
+            String attempts = String.valueOf(documents.stream().count());
 
-            String csvRow = MessageFormat.format("{0},{1},{2},{3},{4},{5}", fio, academicGroupName, documentName, verificationResult,firstUploadingDateTime ,attempts);
+            String csvRow = MessageFormat.format("{0},{1},{2},{3},{4},{5}", fio, academicGroupName, documentName, verificationResult, firstUploadingDateTime, attempts);
             documentsCsv.add(csvRow);
         }
 
@@ -117,10 +125,15 @@ public class DocumentsService {
     @SneakyThrows
     public byte[] getDocument(User user, Long documentId, String documentType) {
         Document targetDocument = documentsRepository.findDocumentById(documentId);
+        Result result = resultsRepository.findResultByDocument(targetDocument);
+        if(result.getVerificationStatus() == VerificationStatus.ERROR) {
+            String message = MessageFormat.format("Document with id {0} does not exists", documentId);
+            throw new ResourceNotFoundException(message);
+        }
         user = targetDocument.getStudent();
         String documentPath = user.getId() + "/" + documentId + "/result." + documentType;
-        try (ByteArrayOutputStream result = s3.getObject(documentPath)) {
-            byte[] bytes = result.toByteArray();
+        try (ByteArrayOutputStream resultBytes = s3.getObject(documentPath)) {
+            byte[] bytes = resultBytes.toByteArray();
             return bytes;
         }
     }
@@ -166,13 +179,6 @@ public class DocumentsService {
         document.setComment(documentVerdictDto.getComment());
         documentsRepository.save(document);
         return document;
-    }
-
-    private String getShortenedNameForUser(User user) {
-        String lastName = user.getLastName();
-        String firstnameInitial = String.valueOf(user.getFirstName().charAt(0));
-        String middlenameInitial = String.valueOf(user.getMiddleName().charAt(0));
-        return lastName + " " + firstnameInitial + "." + middlenameInitial + ".";
     }
 
     private String normalizeFileName(String fileName) {
