@@ -7,9 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Document;
-import ru.maeasoftoworks.normativecontrol.api.domain.documents.DocumentVerdict;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Result;
-import ru.maeasoftoworks.normativecontrol.api.domain.documents.VerificationStatus;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Admin;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
@@ -20,7 +18,6 @@ import ru.maeasoftoworks.normativecontrol.api.exceptions.UnauthorizedException;
 import ru.maeasoftoworks.normativecontrol.api.services.DocumentsService;
 import ru.maeasoftoworks.normativecontrol.api.services.JwtService;
 
-import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 @RestController
@@ -63,10 +60,9 @@ public class DocumentsController {
     }
 
     @GetMapping("/{document_id}/status")
-    public Result getDocumentsVerificationStatus(@RequestHeader("Authorization") String bearerToken,
-                                                                     @PathVariable("document_id") Long documentId) {
-        Result result = documentsService.getDocumentsVerificationStatus(documentId);
-        return result;
+    public Result getDocumentVerificationStatus(@RequestHeader("Authorization") String bearerToken,
+                                                @PathVariable("document_id") Long documentId) {
+        return documentsService.getDocumentVerificationStatus(documentId);
     }
 
     @GetMapping("/{document_id}")

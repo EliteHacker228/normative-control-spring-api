@@ -1,5 +1,6 @@
 package ru.maeasoftoworks.normativecontrol.api.domain.documents;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
@@ -28,6 +29,12 @@ public class Document {
         this.isReported = isReported;
         this.comment = comment;
     }
+
+    @OneToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @Setter
+    @JsonIgnore
+    private Result result;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

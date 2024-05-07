@@ -6,4 +6,5 @@ import ru.maeasoftoworks.normativecontrol.api.domain.documents.Result;
 
 public interface ResultsRepository extends JpaRepository<Result, Long> {
     Result findResultByDocument(Document document);
+    Result findResultByDocumentId(Long documentId);
 }

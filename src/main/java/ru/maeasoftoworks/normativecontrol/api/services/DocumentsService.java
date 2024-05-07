@@ -4,7 +4,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
-import ru.maeasoftoworks.normativecontrol.api.domain.academical.AcademicGroup;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Document;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Result;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.VerificationStatus;
@@ -109,12 +108,15 @@ public class DocumentsService {
                 .comment(null)
                 .build();
 
+        Result result = new Result(document, VerificationStatus.PENDING);
+        document.setResult(result);
         documentsRepository.save(document);
+
+        result.setDocument(document);
+        resultsRepository.save(result);
+
         String documentName = user.getId() + "/" + document.getId() + "/source.docx";
         s3.putObject(createDocumentDto.getDocument().getInputStream(), documentName);
-
-        Result result = new Result(document, VerificationStatus.PENDING);
-        resultsRepository.save(result);
 
         String docxResultName = user.getId() + "/" + document.getId() + "/result.docx";
         String htmlResultName = user.getId() + "/" + document.getId() + "/result.html";
@@ -145,6 +147,10 @@ public class DocumentsService {
         return targetDocument;
     }
 
+    public Result getResultNode(Long documentId) {
+        return resultsRepository.findResultByDocumentId(documentId);
+    }
+
 
     @Transactional
     public void deleteDocument(Admin admin, Long documentId) {
@@ -152,7 +158,7 @@ public class DocumentsService {
         documentsRepository.delete(document);
     }
 
-    public Result getDocumentsVerificationStatus(Long documentId) {
+    public Result getDocumentVerificationStatus(Long documentId) {
         Document document = documentsRepository.findDocumentById(documentId);
         return resultsRepository.findResultByDocument(document);
     }

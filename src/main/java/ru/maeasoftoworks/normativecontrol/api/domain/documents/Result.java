@@ -1,8 +1,10 @@
 package ru.maeasoftoworks.normativecontrol.api.domain.documents;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -25,6 +27,7 @@ public class Result {
     @OneToOne
     @PrimaryKeyJoinColumn
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @Setter
     private Document document;
 
     @Column(name = "status")
