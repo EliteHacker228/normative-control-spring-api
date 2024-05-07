@@ -99,7 +99,7 @@ public class DocumentsService {
 
     @Transactional
     @SneakyThrows
-    public Result createDocument(User user1, CreateDocumentDto createDocumentDto) {
+    public Document createDocument(User user1, CreateDocumentDto createDocumentDto) {
         Student user = (Student) user1;
         Document document = Document.builder()
                 .student(user)
@@ -123,7 +123,7 @@ public class DocumentsService {
         Message message = new Message(document.getId(), documentName, docxResultName, htmlResultName);
         mqPublisher.publishToVerify(message.getAsJsonString());
 
-        return result;
+        return document;
     }
 
     @SneakyThrows

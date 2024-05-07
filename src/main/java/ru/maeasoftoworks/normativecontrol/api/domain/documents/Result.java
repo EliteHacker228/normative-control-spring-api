@@ -28,6 +28,7 @@ public class Result {
     @PrimaryKeyJoinColumn
     @OnDelete(action = OnDeleteAction.CASCADE)
     @Setter
+    @JsonIgnore
     private Document document;
 
     @Column(name = "status")

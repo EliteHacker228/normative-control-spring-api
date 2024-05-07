@@ -33,7 +33,6 @@ public class Document {
     @OneToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
     @Setter
-    @JsonIgnore
     private Result result;
 
     @ManyToOne

@@ -40,7 +40,7 @@ public class DocumentsController {
     }
 
     @PostMapping
-    public Result createDocument(@RequestHeader("Authorization") String bearerToken,
+    public Document createDocument(@RequestHeader("Authorization") String bearerToken,
                                  @ModelAttribute CreateDocumentDto createDocumentDto) {
         User user = jwtService.getUserFromAuthorizationHeader(bearerToken);
         // TODO: Перенести эту логику в Spring Security
