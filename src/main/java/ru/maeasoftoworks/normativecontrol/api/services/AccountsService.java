@@ -11,10 +11,12 @@ import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserEmailDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserPasswordDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.auth.AuthJwtPair;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.FieldNotPresents;
+import ru.maeasoftoworks.normativecontrol.api.exceptions.PasswordsMismatchException;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.ResourceNotFoundException;
 import ru.maeasoftoworks.normativecontrol.api.repositories.AcademicGroupsRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.NormocontrollersRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.UsersRepository;
+import ru.maeasoftoworks.normativecontrol.api.utils.hashing.Sha256;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -106,7 +108,10 @@ public class AccountsService {
             String message = MessageFormat.format("User with id {0} not found", userId);
             throw new ResourceNotFoundException(message);
         }
-        user.setPassword(updateUserPasswordDto.getPassword());
+        if (!user.getPassword().equals(Sha256.getStringSha256(updateUserPasswordDto.getOldPassword()))) {
+            throw new PasswordsMismatchException("Old password is wrong");
+        }
+        user.setPassword(Sha256.getStringSha256(updateUserPasswordDto.getNewPassword()));
         usersRepository.save(user);
         return user;
     }

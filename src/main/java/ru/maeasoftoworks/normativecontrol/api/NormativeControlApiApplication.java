@@ -12,6 +12,7 @@ import ru.maeasoftoworks.normativecontrol.api.domain.users.Admin;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Normocontroller;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Student;
 import ru.maeasoftoworks.normativecontrol.api.repositories.*;
+import ru.maeasoftoworks.normativecontrol.api.utils.hashing.Sha256;
 
 //@SpringBootApplication(exclude = {org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class})
 @SpringBootApplication
@@ -41,7 +42,7 @@ public class NormativeControlApiApplication {
         if (!adminsRepository.existsById(1L)) {
             Admin admin = Admin.builder()
                     .email("P.O.Kurchatov@urfu.me")
-                    .password("admin_password")
+                    .password(Sha256.getStringSha256("admin_password"))
                     .fullName("Курчатов Павел Олегович")
                     .isVerified(true)
                     .build();
@@ -49,7 +50,7 @@ public class NormativeControlApiApplication {
 
             admin = Admin.builder()
                     .email("A.N.Mitkin@urfu.me")
-                    .password("admin_password")
+                    .password(Sha256.getStringSha256("admin_password"))
                     .fullName("Митькин Алексей Николаевич")
                     .isVerified(true)
                     .build();
@@ -57,7 +58,7 @@ public class NormativeControlApiApplication {
 
             Normocontroller markov = Normocontroller.builder()
                     .email("N.M.Markov@urfu.me")
-                    .password("normocontroller_password")
+                    .password(Sha256.getStringSha256("normocontroller_password"))
                     .fullName("Марков Николай Мирославович")
                     .isVerified(true)
                     .build();
@@ -65,7 +66,7 @@ public class NormativeControlApiApplication {
 
             Normocontroller levchenko = Normocontroller.builder()
                     .email("A.V.Levchenko@urfu.me")
-                    .password("normocontroller_password")
+                    .password(Sha256.getStringSha256("normocontroller_password"))
                     .fullName("Левченко Антон Валерьевич")
                     .isVerified(true)
                     .build();
@@ -79,7 +80,7 @@ public class NormativeControlApiApplication {
 
             Student student = Student.builder()
                     .email("I.A.Sharapov@urfu.me")
-                    .password("student_password")
+                    .password(Sha256.getStringSha256("student_password"))
                     .fullName("Шарапов Игорь Анатольевич")
                     .isVerified(true)
                     .academicGroup(RI_400015)

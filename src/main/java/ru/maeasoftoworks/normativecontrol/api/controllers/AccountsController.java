@@ -1,5 +1,6 @@
 package ru.maeasoftoworks.normativecontrol.api.controllers;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONObject;
 import org.springframework.http.HttpStatus;
@@ -57,13 +58,13 @@ public class AccountsController {
 
     @PatchMapping("/{user_id}/email")
     public AuthJwtPair updateUserEmail(@PathVariable("user_id") Long userId,
-                                       @RequestBody UpdateUserEmailDto updateUserEmailDto) {
+                                       @RequestBody @Valid UpdateUserEmailDto updateUserEmailDto) {
         return accountsService.updateUserEmailById(userId, updateUserEmailDto);
     }
 
     @PatchMapping("/{user_id}/password")
     public User updateUserEmail(@PathVariable("user_id") Long userId,
-                                @RequestBody UpdateUserPasswordDto updateUserPasswordDto) {
+                                @RequestBody @Valid UpdateUserPasswordDto updateUserPasswordDto) {
         return accountsService.updateUserPasswordById(userId, updateUserPasswordDto);
     }
 

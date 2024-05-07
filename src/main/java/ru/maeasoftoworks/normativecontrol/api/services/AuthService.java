@@ -16,6 +16,7 @@ import ru.maeasoftoworks.normativecontrol.api.dto.auth.LoginData;
 import ru.maeasoftoworks.normativecontrol.api.dto.auth.RegisterDto;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.*;
 import ru.maeasoftoworks.normativecontrol.api.repositories.*;
+import ru.maeasoftoworks.normativecontrol.api.utils.hashing.Sha256;
 import ru.maeasoftoworks.normativecontrol.api.utils.jwt.Jwt;
 
 import java.text.MessageFormat;
@@ -37,7 +38,7 @@ public class AuthService {
         User user = usersRepository.findUserByEmail(loginData.getEmail());
         if (user == null)
             throw new UserDoesNotExistsException("User with e-mail " + loginData.getEmail() + " does not exists");
-        if (!user.getPassword().equals(loginData.getPassword()))
+        if (!user.getPassword().equals(Sha256.getStringSha256(loginData.getPassword())))
             throw new WrongPasswordException("Given password is incorrect");
 
         RefreshToken previousRefreshToken = refreshTokensRepository.findRefreshTokenByUserId(user.getId());
@@ -84,7 +85,7 @@ public class AuthService {
                     .email(registerDto.getEmail())
                     .fullName(registerDto.getFullName())
                     .academicGroup(academicGroup)
-                    .password(registerDto.getPassword())
+                    .password(Sha256.getStringSha256(registerDto.getPassword()))
                     .isVerified(false)
                     .documentsLimit(5)
                     .build();
@@ -112,7 +113,7 @@ public class AuthService {
 
             Normocontroller normocontroller = Normocontroller.builder()
                     .email(registerDto.getEmail())
-                    .password(registerDto.getPassword())
+                    .password(Sha256.getStringSha256(registerDto.getPassword()))
                     .fullName(registerDto.getFullName())
                     .isVerified(false)
                     .build();

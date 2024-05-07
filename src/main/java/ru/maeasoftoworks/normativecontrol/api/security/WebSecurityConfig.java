@@ -22,6 +22,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.core.userdetails.UserDetailsService;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
 import ru.maeasoftoworks.normativecontrol.api.security.accessrules.*;
+import ru.maeasoftoworks.normativecontrol.api.utils.hashing.Sha256;
 
 import java.util.List;
 
@@ -106,12 +107,12 @@ public class WebSecurityConfig {
         return new PasswordEncoder() {
             @Override
             public String encode(CharSequence rawPassword) {
-                return rawPassword.toString();
+                return Sha256.getStringSha256(rawPassword.toString());
             }
 
             @Override
             public boolean matches(CharSequence rawPassword, String encodedPassword) {
-                return rawPassword.toString().equals(encodedPassword);
+                return Sha256.getStringSha256(rawPassword.toString()).equals(encodedPassword);
             }
         };
     }
