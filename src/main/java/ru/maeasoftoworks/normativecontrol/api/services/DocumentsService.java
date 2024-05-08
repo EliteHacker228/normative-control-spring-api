@@ -84,11 +84,9 @@ public class DocumentsService {
         List<String> documentsCsv = new ArrayList<>();
         documentsCsv.add(csvHeader);
         for (Student student : students) {
-            List<Document> documents = documentsRepository.findAll().stream()
-                    .filter(document -> resultsRepository.findResultByDocument(document).getVerificationStatus() != VerificationStatus.ERROR).toList();
-            if (documents.isEmpty())
+            Document document = documentsRepository.findTopByStudentIdOrderByVerificationDateDesc(student.getId());
+            if (document == null || document.getResult().getVerificationStatus() == VerificationStatus.ERROR)
                 break;
-            Document document = documents.getFirst();
             String fio = student.getFullName();
             String academicGroupName = student.getAcademicGroup().getName();
             String documentName = document.getFileName();
@@ -96,7 +94,7 @@ public class DocumentsService {
 
             SimpleDateFormat sf = new SimpleDateFormat("HH:mm dd.MM.yyyy");
             String firstUploadingDateTime = sf.format(document.getVerificationDate());
-            String attempts = String.valueOf(documents.stream().count());
+            String attempts = String.valueOf(documentsRepository.countAllByStudentId(student.getId()));
 
             String csvRow = MessageFormat.format("{0},{1},{2},{3},{4},{5}", fio, academicGroupName, documentName, verificationResult, firstUploadingDateTime, attempts);
             documentsCsv.add(csvRow);
