@@ -120,7 +120,7 @@ public class DocumentsService {
 
         String docxResultName = user.getId() + "/" + document.getId() + "/result.docx";
         String htmlResultName = user.getId() + "/" + document.getId() + "/result.html";
-        Message message = new Message(document.getId(), documentName, docxResultName, htmlResultName);
+        Message message = new Message(user.getId(), document.getId());
         mqPublisher.publishToVerify(message.getAsJsonString());
 
         return document;

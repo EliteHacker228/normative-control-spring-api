@@ -12,15 +12,12 @@ import static java.util.Map.entry;
 
 @Getter
 public class Message {
-    private String id;
-    private String source;
-    private Map<String, String> results = new HashMap<>();
+    private Long userId;
+    private Long documentId;
 
-    public Message(Long id, String sourceName, String docxResultName, String htmlResultName) {
-        this.id = String.valueOf(id);
-        this.source = sourceName;
-        this.results.put("docx", docxResultName);
-        this.results.put("html", htmlResultName);
+    public Message(Long userId, Long documentId) {
+        this.userId = userId;
+        this.documentId = documentId;
     }
 
     @SneakyThrows
