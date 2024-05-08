@@ -7,10 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Document;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Result;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.VerificationStatus;
-import ru.maeasoftoworks.normativecontrol.api.domain.users.Admin;
-import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
-import ru.maeasoftoworks.normativecontrol.api.domain.users.Student;
-import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
+import ru.maeasoftoworks.normativecontrol.api.domain.users.*;
 import ru.maeasoftoworks.normativecontrol.api.dto.documents.CreateDocumentDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.documents.DocumentReportDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.documents.DocumentVerdictDto;
@@ -43,8 +40,7 @@ public class DocumentsService {
         if (user.getRole() == Role.STUDENT) {
             return documentsRepository.findDocumentsByStudent((Student) user).stream()
                     .filter(document -> resultsRepository.findResultByDocument(document).getVerificationStatus() != VerificationStatus.ERROR).toList();
-        }
-        else if (user.getRole() == Role.NORMOCONTROLLER) {
+        } else if (user.getRole() == Role.NORMOCONTROLLER) {
             List<Student> students = studentsRepository.findStudentsByAcademicGroupNormocontrollerId(user.getId());
             List<Document> result = new ArrayList<>();
             for (Student student : students) {
@@ -60,6 +56,18 @@ public class DocumentsService {
         }
 
         return List.of();
+    }
+
+    public List<Document> getActualDocuments(Normocontroller normocontroller) {
+        List<Student> pupils = studentsRepository.findStudentsByAcademicGroupNormocontrollerId(normocontroller.getId());
+        List<Document> result = new ArrayList<>();
+        for (Student pupil : pupils) {
+            Document pupilsActualDocument = documentsRepository.findTopByStudentIdOrderByVerificationDateDesc(pupil.getId());
+            if(pupilsActualDocument == null)
+                continue;
+            result.add(pupilsActualDocument);
+        }
+        return result;
     }
 
     public String getDocumentsCsv(User user) {
@@ -130,7 +138,7 @@ public class DocumentsService {
     public byte[] getDocument(User user, Long documentId, String documentType) {
         Document targetDocument = documentsRepository.findDocumentById(documentId);
         Result result = resultsRepository.findResultByDocument(targetDocument);
-        if(result.getVerificationStatus() == VerificationStatus.ERROR) {
+        if (result.getVerificationStatus() == VerificationStatus.ERROR) {
             String message = MessageFormat.format("Document with id {0} does not exists", documentId);
             throw new ResourceNotFoundException(message);
         }
@@ -175,7 +183,7 @@ public class DocumentsService {
     @Transactional
     public Document reportOnDocument(Long documentId, DocumentReportDto documentReportDto) {
         Document document = documentsRepository.findDocumentById(documentId);
-        if(!document.isReported())
+        if (!document.isReported())
             document.setReported(true);
         Set<String> reportedMistakes = document.getReportedMistakesIds();
         reportedMistakes.add(documentReportDto.getMistakeId());
@@ -188,7 +196,7 @@ public class DocumentsService {
         Document document = documentsRepository.findDocumentById(documentId);
         Set<String> reportedMistakes = document.getReportedMistakesIds();
         reportedMistakes.remove(documentReportDto.getMistakeId());
-        if(reportedMistakes.isEmpty())
+        if (reportedMistakes.isEmpty())
             document.setReported(false);
         documentsRepository.save(document);
         return document;

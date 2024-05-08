@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Document;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Result;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Admin;
+import ru.maeasoftoworks.normativecontrol.api.domain.users.Normocontroller;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
 import ru.maeasoftoworks.normativecontrol.api.dto.documents.CreateDocumentDto;
@@ -31,6 +32,12 @@ public class DocumentsController {
     public List<Document> getDocuments(@RequestHeader("Authorization") String bearerToken) {
         User user = jwtService.getUserFromAuthorizationHeader(bearerToken);
         return documentsService.getDocuments(user);
+    }
+
+    @GetMapping("/actual")
+    public List<Document> getActualDocuments(@RequestHeader("Authorization") String bearerToken) {
+        Normocontroller normocontroller = (Normocontroller) jwtService.getUserFromAuthorizationHeader(bearerToken);
+        return documentsService.getActualDocuments(normocontroller);
     }
 
     @GetMapping("/csv")
@@ -101,7 +108,7 @@ public class DocumentsController {
         return documentsService.unreportOnDocument(documentId, documentReportDto);
     }
 
-    @PatchMapping("/{document_id}/verdict")
+    @PostMapping("/{document_id}/verdict")
     public Document makeVerdict(@RequestHeader("Authorization") String bearerToken,
                                 @PathVariable("document_id") Long documentId,
                                 @RequestBody DocumentVerdictDto documentVerdictDto) {
