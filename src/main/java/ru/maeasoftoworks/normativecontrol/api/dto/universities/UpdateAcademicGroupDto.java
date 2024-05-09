@@ -7,4 +7,5 @@ import lombok.Setter;
 @Setter
 public class UpdateAcademicGroupDto {
     private String name;
+    private Long normocontrollerId;
 }

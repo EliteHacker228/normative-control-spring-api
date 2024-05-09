@@ -59,7 +59,13 @@ public class AcademicalService {
             String message = MessageFormat.format("Academic group with id {0} not found", academicGroupId);
             throw new ResourceNotFoundException(message);
         }
+        Normocontroller normocontroller = normocontrollersRepository.findNormocontrollerById(updateAcademicGroupDto.getNormocontrollerId());
+        if (normocontroller == null) {
+            String message = MessageFormat.format("Normocontroller with id {0} not found", updateAcademicGroupDto.getNormocontrollerId());
+            throw new ResourceNotFoundException(message);
+        }
         academicGroup.setName(updateAcademicGroupDto.getName());
+        academicGroup.setNormocontroller(normocontroller);
         academicGroupsRepository.save(academicGroup);
         return academicGroup;
     }

@@ -32,5 +32,6 @@ public class AcademicGroup {
 
     @ManyToOne
     @JoinColumn(name = "normocontroller_id")
+    @Setter
     private Normocontroller normocontroller;
 }
