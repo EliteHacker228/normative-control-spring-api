@@ -44,7 +44,18 @@ public class NormativeControlApiApplication {
     @PostConstruct
     @Transactional
     protected void initDatabase() {
-        if (!environment.acceptsProfiles(Profiles.of("dev"))) {
+        if (environment.acceptsProfiles(Profiles.of("default"))) {
+            log.info("DEFAULT PROFILE ACTIVE");
+            if(!adminsRepository.existsAdminByEmail("ncadmin10052024@urfu.me")){
+                log.info("CREATING ADMIN ACCOUNT");
+                Admin admin = Admin.builder()
+                        .email("ncadmin10052024@urfu.me")
+                        .password(Sha256.getStringSha256("bgXfyEyXCGRYsxutbZqAemnTzXDNpZVCDVjiIltCByFkvACejcpJCSGSZSztEFiV"))
+                        .fullName("Попов Александр Степанович")
+                        .isVerified(true)
+                        .build();
+                adminsRepository.save(admin);
+            }
             return;
         }
 
