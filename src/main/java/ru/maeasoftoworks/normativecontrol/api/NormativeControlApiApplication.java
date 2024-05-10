@@ -7,6 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import ru.maeasoftoworks.normativecontrol.api.domain.academical.AcademicGroup;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Admin;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Normocontroller;
@@ -31,6 +34,8 @@ public class NormativeControlApiApplication {
     private DocumentsRepository documentsRepository;
     @Autowired
     private ResultsRepository resultsRepository;
+    @Autowired
+    private Environment environment;
 
     public static void main(String[] args) {
         SpringApplication.run(NormativeControlApiApplication.class, args);
@@ -39,6 +44,10 @@ public class NormativeControlApiApplication {
     @PostConstruct
     @Transactional
     protected void initDatabase() {
+        if (!environment.acceptsProfiles(Profiles.of("dev"))) {
+            return;
+        }
+
         if (!adminsRepository.existsById(1L)) {
             Admin admin = Admin.builder()
                     .email("P.O.Kurchatov@urfu.me")
@@ -87,19 +96,6 @@ public class NormativeControlApiApplication {
                     .documentsLimit(5)
                     .build();
             studentsRepository.save(student);
-
-//        Document document = Document.builder()
-//                .user(student)
-//                .studentName("Шарапов И.А.")
-//                .academicGroup(RI_400015)
-//                .fileName("И.А.Шарапов РИ-400015 ВКР")
-//                .isReported(false)
-//                .comment("")
-//                .build();
-//        documentsRepository.save(document);
-
-//        Result result = new Result(document, VerificationStatus.PENDING);
-//        resultsRepository.save(result);
         }
     }
 }
