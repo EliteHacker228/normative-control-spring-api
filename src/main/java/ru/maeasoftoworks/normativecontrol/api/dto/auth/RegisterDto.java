@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.validator.constraints.Length;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
 import ru.maeasoftoworks.normativecontrol.api.validation.UniversityEmail;
 
@@ -20,6 +21,7 @@ public class RegisterDto {
     private String email;
     @NotNull
     @NotEmpty
+    @Length(min = 8)
     private String password;
     @NotNull
     @NotEmpty
