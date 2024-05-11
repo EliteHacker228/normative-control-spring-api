@@ -16,7 +16,7 @@ spring:
     senderQueueName: to_be_verified
   servlet:
     multipart:
-      max-file-size: 10MB
+      max-file-size: 20MB
   jackson:
     time-zone: Asia/Yekaterinburg
 
