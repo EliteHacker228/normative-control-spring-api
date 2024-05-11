@@ -41,7 +41,7 @@ public class AuthController {
     }
 
     @PostMapping("/register/normocontroller")
-    private ResponseEntity registerNormocontroller(@RequestBody RegisterDto registerDto) {
+    private ResponseEntity registerNormocontroller(@RequestBody @Valid RegisterDto registerDto) {
         try {
             registerDto.setRole(Role.NORMOCONTROLLER);
             authService.register(registerDto);
