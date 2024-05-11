@@ -80,7 +80,7 @@ public class DocumentsService {
             students.addAll(foundStudents);
         }
 
-        String csvHeader = "ФИО,Группа,Название работы,Результат проверки,Дата и время   первой загрузки,Количество попыток";
+        String csvHeader = "ФИО,Группа,Название работы,Результат проверки,Дата и время первой загрузки,Количество попыток";
         List<String> documentsCsv = new ArrayList<>();
         documentsCsv.add(csvHeader);
         for (Student student : students) {
@@ -90,7 +90,7 @@ public class DocumentsService {
             String fio = student.getFullName();
             String academicGroupName = student.getAcademicGroup().getName();
             String documentName = document.getFileName();
-            String verificationResult = document.getDocumentVerdict().name();
+            String verificationResult = document.getDocumentVerdict().getRussianAlias();
 
             SimpleDateFormat sf = new SimpleDateFormat("HH:mm dd.MM.yyyy");
             String firstUploadingDateTime = sf.format(document.getVerificationDate());
