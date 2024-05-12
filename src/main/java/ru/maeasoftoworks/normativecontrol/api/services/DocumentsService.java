@@ -39,19 +39,19 @@ public class DocumentsService {
     public List<Document> getDocuments(User user) {
         if (user.getRole() == Role.STUDENT) {
             return documentsRepository.findDocumentsByStudent((Student) user).stream()
-                    .filter(document -> resultsRepository.findResultByDocument(document).getVerificationStatus() != VerificationStatus.ERROR).toList();
+                    .filter(document -> resultsRepository.findResultByDocument(document).getVerificationStatus() == VerificationStatus.OK).toList();
         } else if (user.getRole() == Role.NORMOCONTROLLER) {
             List<Student> students = studentsRepository.findStudentsByAcademicGroupNormocontrollerId(user.getId());
             List<Document> result = new ArrayList<>();
             for (Student student : students) {
                 List<Document> documents = documentsRepository.findDocumentsByStudent(student).stream()
-                        .filter(document -> resultsRepository.findResultByDocument(document).getVerificationStatus() != VerificationStatus.ERROR).toList();
+                        .filter(document -> resultsRepository.findResultByDocument(document).getVerificationStatus() == VerificationStatus.OK).toList();
                 result.addAll(documents);
             }
             return result;
         } else if (user.getRole() == Role.ADMIN) {
             List<Document> documents = documentsRepository.findAll().stream()
-                    .filter(document -> resultsRepository.findResultByDocument(document).getVerificationStatus() != VerificationStatus.ERROR).toList();
+                    .filter(document -> resultsRepository.findResultByDocument(document).getVerificationStatus() == VerificationStatus.OK).toList();
             return documents;
         }
 
@@ -86,7 +86,7 @@ public class DocumentsService {
         for (Student student : students) {
             Document document = documentsRepository.findTopByStudentIdOrderByVerificationDateDesc(student.getId());
             if (document == null || document.getResult().getVerificationStatus() == VerificationStatus.ERROR)
-                break;
+                continue;
             String fio = student.getFullName();
             String academicGroupName = student.getAcademicGroup().getName();
             String documentName = document.getFileName();
