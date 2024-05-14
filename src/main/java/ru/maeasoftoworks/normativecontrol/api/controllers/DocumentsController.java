@@ -114,7 +114,7 @@ public class DocumentsController {
             responses = {
                     @ApiResponse(description = "Документ загружен успешно", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Document.class))),
                     @ApiResponse(description = "Вы не имеет доступ к данному методу", responseCode = "403", content = @Content(mediaType = "application/json")),
-//                    @ApiResponse(description = "Не верно указаны данные для доступа к методу", responseCode = "400", content = @Content(mediaType = "application/json")),
+                    @ApiResponse(description = "В запросе указаны некорректные данные", responseCode = "400", content = @Content(mediaType = "application/json")),
             })
     @io.swagger.v3.oas.annotations.parameters.RequestBody(content = {
             @Content(
@@ -139,7 +139,7 @@ public class DocumentsController {
                     @ApiResponse(description = "Документы удалён успешно", responseCode = "200", content = @Content(mediaType = "application/json")),
                     @ApiResponse(description = "Документ с указанным ID не найден", responseCode = "404", content = @Content(mediaType = "application/json")),
                     @ApiResponse(description = "Вы не имеет доступ к данному ресурсу", responseCode = "403", content = @Content(mediaType = "application/json")),
-//                    @ApiResponse(description = "Не верно указаны данные для доступа к ресурсу", responseCode = "400", content = @Content(mediaType = "application/json")),
+                    @ApiResponse(description = "В запросе указаны некорректные данные", responseCode = "400", content = @Content(mediaType = "application/json")),
             })
     @io.swagger.v3.oas.annotations.parameters.RequestBody(content = {
             @Content(
@@ -172,7 +172,7 @@ public class DocumentsController {
                     @ApiResponse(description = "Документ получен успешно", responseCode = "200", content = @Content(schema = @Schema(implementation = Result.class))),
                     @ApiResponse(description = "Документа с указанным ID не найден", responseCode = "404", content = @Content(mediaType = "application/json")),
                     @ApiResponse(description = "Вы не имеет доступ к данному ресурсу", responseCode = "403", content = @Content(mediaType = "application/json")),
-//                    @ApiResponse(description = "Не верно указаны данные для доступа к ресурсу", responseCode = "400", content = @Content(mediaType = "application/json")),
+                    @ApiResponse(description = "В запросе указаны некорректные данные", responseCode = "400", content = @Content(mediaType = "application/json")),
             })
     @SecurityRequirement(name = "JWT")
     @GetMapping("/{document_id}")
@@ -201,7 +201,7 @@ public class DocumentsController {
                     @ApiResponse(description = "Статус по документу в составе Result получен успешно", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Result.class))),
                     @ApiResponse(description = "Статус для документа с указанным ID не найден", responseCode = "404", content = @Content(mediaType = "application/json")),
                     @ApiResponse(description = "Вы не имеет доступ к данному ресурсу", responseCode = "403", content = @Content(mediaType = "application/json")),
-//                    @ApiResponse(description = "Не верно указаны данные для доступа к ресурсу", responseCode = "400", content = @Content(mediaType = "application/json")),
+                    @ApiResponse(description = "В запросе указаны некорректные данные", responseCode = "400", content = @Content(mediaType = "application/json")),
             })
     @SecurityRequirement(name = "JWT")
     @GetMapping("/{document_id}/status")
@@ -218,7 +218,7 @@ public class DocumentsController {
                     @ApiResponse(description = "Ошибка в документе отмечена успешно", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Document.class))),
                     @ApiResponse(description = "Документ с указанным ID не найден", responseCode = "404", content = @Content(mediaType = "application/json")),
                     @ApiResponse(description = "Вы не имеет доступ к данному ресурсу", responseCode = "403", content = @Content(mediaType = "application/json")),
-//                    @ApiResponse(description = "Не верно указаны данные для доступа к ресурсу", responseCode = "400", content = @Content(mediaType = "application/json")),
+                    @ApiResponse(description = "В запросе указаны некорректные данные", responseCode = "400", content = @Content(mediaType = "application/json")),
             })
     @SecurityRequirement(name = "JWT")
     @PostMapping("/{document_id}/report")
@@ -235,7 +235,7 @@ public class DocumentsController {
                     @ApiResponse(description = "Ошибка в документе отмечена успешно", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Document.class))),
                     @ApiResponse(description = "Документ с указанным ID не найден", responseCode = "404", content = @Content(mediaType = "application/json")),
                     @ApiResponse(description = "Вы не имеет доступ к данному ресурсу", responseCode = "403", content = @Content(mediaType = "application/json")),
-//                    @ApiResponse(description = "Не верно указаны данные для доступа к ресурсу", responseCode = "400", content = @Content(mediaType = "application/json")),
+                    @ApiResponse(description = "В запросе указаны некорректные данные", responseCode = "400", content = @Content(mediaType = "application/json")),
             })
     @SecurityRequirement(name = "JWT")
     @DeleteMapping("/{document_id}/report")
@@ -252,7 +252,7 @@ public class DocumentsController {
                     @ApiResponse(description = "Вердикт сохранён успешно", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Document.class))),
                     @ApiResponse(description = "Документ с указанным ID не найден", responseCode = "404", content = @Content(mediaType = "application/json")),
                     @ApiResponse(description = "Вы не имеет доступ к данному ресурсу", responseCode = "403", content = @Content(mediaType = "application/json")),
-//                    @ApiResponse(description = "Не верно указаны данные для доступа к ресурсу", responseCode = "400", content = @Content(mediaType = "application/json")),
+                    @ApiResponse(description = "В запросе указаны некорректные данные", responseCode = "400", content = @Content(mediaType = "application/json")),
             })
     @SecurityRequirement(name = "JWT")
     @PostMapping("/{document_id}/verdict")
