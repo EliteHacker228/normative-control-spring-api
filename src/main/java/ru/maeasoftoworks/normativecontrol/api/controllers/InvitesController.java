@@ -1,5 +1,6 @@
 package ru.maeasoftoworks.normativecontrol.api.controllers;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONObject;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/invites")
 @RequiredArgsConstructor
+@Hidden
 public class InvitesController {
 
     private final JwtService jwtService;
