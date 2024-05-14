@@ -198,7 +198,7 @@ public class DocumentsController {
                     в сервис студентами из групп, к которым он приписан. Для студента - вернёт список Result для всех документов,
                     которые он отправлял на проверку.""",
             responses = {
-                    @ApiResponse(description = "Статус по документу в составе Result получени успешно", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Result.class))),
+                    @ApiResponse(description = "Статус по документу в составе Result получен успешно", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Result.class))),
                     @ApiResponse(description = "Статус для документа с указанным ID не найден", responseCode = "404", content = @Content(mediaType = "application/json")),
                     @ApiResponse(description = "Вы не имеет доступ к данному ресурсу", responseCode = "403", content = @Content(mediaType = "application/json")),
                     @ApiResponse(description = "Не верно указаны данные для доступа к ресурсу", responseCode = "400", content = @Content(mediaType = "application/json")),
