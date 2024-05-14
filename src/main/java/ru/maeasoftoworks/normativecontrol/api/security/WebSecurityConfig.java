@@ -85,6 +85,7 @@ public class WebSecurityConfig {
 
                         .requestMatchers(HttpMethod.POST, "/documents").hasRole(Role.STUDENT.name())
                         .requestMatchers(HttpMethod.GET, "/documents").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/documents/all").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.GET, "/documents/actual").hasAnyRole(Role.NORMOCONTROLLER.name())
                         .requestMatchers(HttpMethod.GET, "/documents/csv").hasAnyRole(Role.NORMOCONTROLLER.name(), Role.ADMIN.name())
                         .requestMatchers(HttpMethod.POST, "/documents").hasRole(Role.STUDENT.name())

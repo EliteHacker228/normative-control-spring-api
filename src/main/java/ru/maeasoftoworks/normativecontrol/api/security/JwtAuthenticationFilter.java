@@ -1,5 +1,6 @@
 package ru.maeasoftoworks.normativecontrol.api.security;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -9,6 +10,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -40,19 +42,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
-        log.info("Request in filter");
-
 
         var authHeader = request.getHeader(HEADER_NAME);
         if (StringUtils.isEmpty(authHeader) || !authHeader.toLowerCase().startsWith(BEARER_PREFIX.toLowerCase())) {
+//            FIXME: Сваггер с этим не работает (что?)
+//            response.setStatus(400);
             filterChain.doFilter(request, response);
             return;
         }
 
-        log.info("Request has Bearer access token");
+        String jwt = authHeader.substring(BEARER_PREFIX.length());
+        String username = "";
+        try{
+            username = jwtService.getClaimsFromAccessTokenString(jwt).getPayload().getSubject();
+        }catch (ExpiredJwtException e){
+            response.setStatus(403);
+            filterChain.doFilter(request, response);
+            return;
+        }
 
-        var jwt = authHeader.substring(BEARER_PREFIX.length());
-        var username = jwtService.getClaimsFromAccessTokenString(jwt).getPayload().getSubject();
 
         if (StringUtils.isNotEmpty(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService()

@@ -58,12 +58,17 @@ public class DocumentsService {
         return List.of();
     }
 
+    public List<Document> getAllDocuments() {
+        return documentsRepository.findAll();
+    }
+
     public List<Document> getActualDocuments(Normocontroller normocontroller) {
         List<Student> pupils = studentsRepository.findStudentsByAcademicGroupNormocontrollerId(normocontroller.getId());
         List<Document> result = new ArrayList<>();
         for (Student pupil : pupils) {
-            Document pupilsActualDocument = documentsRepository.findTopByStudentIdOrderByVerificationDateDesc(pupil.getId());
-            if(pupilsActualDocument == null)
+            Document pupilsActualDocument = documentsRepository
+                    .findTopByStudentIdOrderByVerificationDateDesc(pupil.getId());
+            if (pupilsActualDocument == null || pupilsActualDocument.getResult().getVerificationStatus() != VerificationStatus.OK)
                 continue;
             result.add(pupilsActualDocument);
         }
@@ -105,10 +110,9 @@ public class DocumentsService {
 
     @Transactional
     @SneakyThrows
-    public Document createDocument(User user1, CreateDocumentDto createDocumentDto) {
-        Student user = (Student) user1;
+    public Document createDocument(Student student, CreateDocumentDto createDocumentDto) {
         Document document = Document.builder()
-                .student(user)
+                .student(student)
                 .fileName(normalizeFileName(createDocumentDto.getDocumentName()))
                 .isReported(false)
                 .comment(null)
@@ -121,12 +125,12 @@ public class DocumentsService {
         result.setDocument(document);
         resultsRepository.save(result);
 
-        String documentName = user.getId() + "/" + document.getId() + "/source.docx";
+        String documentName = student.getId() + "/" + document.getId() + "/source.docx";
         s3.putObject(createDocumentDto.getDocument().getInputStream(), documentName);
 
-        String docxResultName = user.getId() + "/" + document.getId() + "/result.docx";
-        String htmlResultName = user.getId() + "/" + document.getId() + "/result.html";
-        Message message = new Message(user.getId(), document.getId());
+        String docxResultName = student.getId() + "/" + document.getId() + "/result.docx";
+        String htmlResultName = student.getId() + "/" + document.getId() + "/result.html";
+        Message message = new Message(student.getId(), document.getId());
         mqPublisher.publishToVerify(message.getAsJsonString());
 
         return document;
@@ -161,21 +165,16 @@ public class DocumentsService {
     @Transactional
     public void deleteDocument(Admin admin, Long documentId) {
         Document document = documentsRepository.findDocumentById(documentId);
+        if(document == null){
+            String message = MessageFormat.format("Document with id {0} does not exists", documentId);
+            throw new ResourceNotFoundException(message);
+        }
         documentsRepository.delete(document);
     }
 
     public Result getDocumentVerificationStatus(Long documentId) {
         Document document = documentsRepository.findDocumentById(documentId);
         return resultsRepository.findResultByDocument(document);
-    }
-
-    @Transactional
-    public Document setVerdictOnDocument(Long documentId, DocumentVerdictDto documentVerdictDto) {
-        Document document = documentsRepository.findDocumentById(documentId);
-        document.setDocumentVerdict(documentVerdictDto.getVerdict());
-        document.setComment(documentVerdictDto.getComment());
-        documentsRepository.save(document);
-        return document;
     }
 
     @Transactional
