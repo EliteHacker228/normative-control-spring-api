@@ -48,7 +48,7 @@ public class AuthController {
     }
 
     @Operation(
-            summary = "Регистрация учётной записи нормоконтроёлра",
+            summary = "Регистрация администратором учётной записи нормоконтроёлра",
             description = "Позволяет создать учётную запись студента. E-mail должен принадлежать доменной зоне @urfu.me, @urfu.ru или @at.urfu.ru. fullName должно быть валидным ФИО, состоящим из имени, фамилии (опционально - отчества), записанными кириллицей.",
             responses = {
                     @ApiResponse(description = "Создание учётной записи выполнено успешно", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = AuthJwtPair.class))),
