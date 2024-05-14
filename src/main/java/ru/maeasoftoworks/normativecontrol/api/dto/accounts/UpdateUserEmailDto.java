@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import ru.maeasoftoworks.normativecontrol.api.validation.UniversityEmail;
+import ru.maeasoftoworks.normativecontrol.api.validation.universityEmail.UniversityEmail;
 
 @Getter
 @Setter

@@ -8,18 +8,16 @@ import org.springframework.stereotype.Service;
 import ru.maeasoftoworks.normativecontrol.api.domain.academical.AcademicGroup;
 import ru.maeasoftoworks.normativecontrol.api.domain.auth.RefreshToken;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Normocontroller;
-import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Student;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
 import ru.maeasoftoworks.normativecontrol.api.dto.auth.AuthJwtPair;
 import ru.maeasoftoworks.normativecontrol.api.dto.auth.LoginData;
-import ru.maeasoftoworks.normativecontrol.api.dto.auth.RegisterDto;
+import ru.maeasoftoworks.normativecontrol.api.dto.auth.RegisterNormocontrollerDto;
+import ru.maeasoftoworks.normativecontrol.api.dto.auth.RegisterStudentDto;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.*;
 import ru.maeasoftoworks.normativecontrol.api.repositories.*;
 import ru.maeasoftoworks.normativecontrol.api.utils.hashing.Sha256;
 import ru.maeasoftoworks.normativecontrol.api.utils.jwt.Jwt;
-
-import java.text.MessageFormat;
 
 @Service
 @RequiredArgsConstructor
@@ -70,72 +68,66 @@ public class AuthService {
                 refreshTokenJwt.getCompactToken());
     }
 
-    // TODO: Разделить на 2 метода
     @Transactional
-    public AuthJwtPair register(RegisterDto registerDto) {
-        if (usersRepository.existsUserByEmail(registerDto.getEmail()))
-            throw new UserAlreadyExistsException("User with e-mail " + registerDto.getEmail() + " already exists");
+    public AuthJwtPair registerStudent(RegisterStudentDto registerStudentDto) {
+        if (usersRepository.existsUserByEmail(registerStudentDto.getEmail()))
+            throw new UserAlreadyExistsException("User with e-mail " + registerStudentDto.getEmail() + " already exists");
 
-        log.info(registerDto.toString());
+        AcademicGroup academicGroup = academicGroupsRepository.findAcademicGroupById(registerStudentDto.getAcademicGroupId());
 
-        if (registerDto.getRole() == Role.STUDENT) {
-            AcademicGroup academicGroup = academicGroupsRepository.findAcademicGroupById(registerDto.getAcademicGroupId());
+        Student student = Student.builder()
+                .email(registerStudentDto.getEmail())
+                .fullName(registerStudentDto.getFullName())
+                .academicGroup(academicGroup)
+                .password(Sha256.getStringSha256(registerStudentDto.getPassword()))
+                .isVerified(false)
+                .documentsLimit(5)
+                .build();
 
-            Student student = Student.builder()
-                    .email(registerDto.getEmail())
-                    .fullName(registerDto.getFullName())
-                    .academicGroup(academicGroup)
-                    .password(Sha256.getStringSha256(registerDto.getPassword()))
-                    .isVerified(false)
-                    .documentsLimit(5)
-                    .build();
+        studentsRepository.save(student);
 
-            log.info(student.toString());
+        Jwt accessTokenJwt = jwtService.generateAccessTokenForUser(student);
+        Jwt refreshTokenJwt = jwtService.generateRefreshTokenForUser(student);
 
-            studentsRepository.save(student);
+        RefreshToken newRefreshToken = RefreshToken.builder()
+                .user(refreshTokenJwt.getUser())
+                .token(refreshTokenJwt.getCompactToken())
+                .createdAt(refreshTokenJwt.getJws().getPayload().getIssuedAt())
+                .expiresAt(refreshTokenJwt.getJws().getPayload().getExpiration())
+                .build();
+        refreshTokensRepository.save(newRefreshToken);
 
-            Jwt accessTokenJwt = jwtService.generateAccessTokenForUser(student);
-            Jwt refreshTokenJwt = jwtService.generateRefreshTokenForUser(student);
+        return new AuthJwtPair(accessTokenJwt.getCompactToken(),
+                accessTokenJwt.getCompactToken());
 
-            RefreshToken newRefreshToken = RefreshToken.builder()
-                    .user(refreshTokenJwt.getUser())
-                    .token(refreshTokenJwt.getCompactToken())
-                    .createdAt(refreshTokenJwt.getJws().getPayload().getIssuedAt())
-                    .expiresAt(refreshTokenJwt.getJws().getPayload().getExpiration())
-                    .build();
-            refreshTokensRepository.save(newRefreshToken);
+    }
 
-            return new AuthJwtPair(accessTokenJwt.getCompactToken(),
-                    accessTokenJwt.getCompactToken());
-        }
+    @Transactional
+    public AuthJwtPair registerNormocontroller(RegisterNormocontrollerDto registerNormocontrollerDto) {
+        if (usersRepository.existsUserByEmail(registerNormocontrollerDto.getEmail()))
+            throw new UserAlreadyExistsException("User with e-mail " + registerNormocontrollerDto.getEmail() + " already exists");
 
-        if (registerDto.getRole() == Role.NORMOCONTROLLER) {
+        Normocontroller normocontroller = Normocontroller.builder()
+                .email(registerNormocontrollerDto.getEmail())
+                .password(Sha256.getStringSha256(registerNormocontrollerDto.getPassword()))
+                .fullName(registerNormocontrollerDto.getFullName())
+                .isVerified(false)
+                .build();
+        normocontrollersRepository.save(normocontroller);
 
-            Normocontroller normocontroller = Normocontroller.builder()
-                    .email(registerDto.getEmail())
-                    .password(Sha256.getStringSha256(registerDto.getPassword()))
-                    .fullName(registerDto.getFullName())
-                    .isVerified(false)
-                    .build();
-            log.info(normocontroller.toString());
-            normocontrollersRepository.save(normocontroller);
+        Jwt accessTokenJwt = jwtService.generateAccessTokenForUser(normocontroller);
+        Jwt refreshTokenJwt = jwtService.generateRefreshTokenForUser(normocontroller);
 
-            Jwt accessTokenJwt = jwtService.generateAccessTokenForUser(normocontroller);
-            Jwt refreshTokenJwt = jwtService.generateRefreshTokenForUser(normocontroller);
+        RefreshToken newRefreshToken = RefreshToken.builder()
+                .user(refreshTokenJwt.getUser())
+                .token(refreshTokenJwt.getCompactToken())
+                .createdAt(refreshTokenJwt.getJws().getPayload().getIssuedAt())
+                .expiresAt(refreshTokenJwt.getJws().getPayload().getExpiration())
+                .build();
+        refreshTokensRepository.save(newRefreshToken);
 
-            RefreshToken newRefreshToken = RefreshToken.builder()
-                    .user(refreshTokenJwt.getUser())
-                    .token(refreshTokenJwt.getCompactToken())
-                    .createdAt(refreshTokenJwt.getJws().getPayload().getIssuedAt())
-                    .expiresAt(refreshTokenJwt.getJws().getPayload().getExpiration())
-                    .build();
-            refreshTokensRepository.save(newRefreshToken);
-
-            return new AuthJwtPair(accessTokenJwt.getCompactToken(),
-                    accessTokenJwt.getCompactToken());
-        }
-
-        throw new RuntimeException("Registration failed");
+        return new AuthJwtPair(accessTokenJwt.getCompactToken(),
+                accessTokenJwt.getCompactToken());
     }
 
     @Transactional
@@ -148,7 +140,7 @@ public class AuthService {
 
         RefreshToken previousRefreshToken = refreshTokensRepository.findRefreshTokenByUserId(user.getId());
         if (previousRefreshToken == null || !previousRefreshToken.getToken().equals(refreshToken)) {
-            throw new UnauthorizedException("Refresh token not allowed. Try to login again");
+            throw new UnauthorizedException("Refresh token invalid. Try to login again");
         }
 
         Jwt accessTokenJwt = jwtService.generateAccessTokenForUser(user);

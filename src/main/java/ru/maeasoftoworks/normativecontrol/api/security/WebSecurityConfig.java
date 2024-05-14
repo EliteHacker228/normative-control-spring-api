@@ -74,6 +74,10 @@ public class WebSecurityConfig {
                         .requestMatchers("/academical/groups/{group_id}/students").hasAnyRole(Role.NORMOCONTROLLER.name(), Role.ADMIN.name())
                         .requestMatchers("/academical/**").permitAll()
 
+                        .requestMatchers(HttpMethod.GET, "/v3/api-docs/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/swagger-ui/**").permitAll()
+
+
                         .requestMatchers(HttpMethod.GET, "/invites").permitAll()
                         .requestMatchers(HttpMethod.POST, "/invites").access(invitesCreationAccessRule)
                         .requestMatchers(HttpMethod.GET, "/invites/{invite_id}").permitAll()
