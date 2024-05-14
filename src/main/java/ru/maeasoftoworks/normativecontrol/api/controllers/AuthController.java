@@ -17,11 +17,11 @@ import ru.maeasoftoworks.normativecontrol.api.services.AuthService;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@Tag(name = "Auth", description = "Отвечает за вход, регистрацию, и обновление токенов")
 public class AuthController {
 
     private final AuthService authService;
 
-    @Tag(name = "Auth", description = "Отвечает за вход, регистрацию, и обновление токенов")
     @Operation(
             summary = "Вход в существующую учётную запись",
             description = "Позволяет войти в учётную запись. В ответ возвращает токены обновления и доступа для пользователя.",
@@ -34,7 +34,6 @@ public class AuthController {
         return authService.login(loginData);
     }
 
-    @Tag(name = "Auth", description = "Отвечает за вход, регистрацию, и обновление токенов")
     @Operation(
             summary = "Регистрация учётной записи студента",
             description = "Позволяет создать учётную запись студента. E-mail должен принадлежать доменной зоне @urfu.me, @urfu.ru или @at.urfu.ru. fullName должно быть валидным ФИО, состоящим из имени, фамилии (опционально - отчества), записанными кириллицей.",
@@ -48,7 +47,6 @@ public class AuthController {
         return authService.registerStudent(registerStudentDto);
     }
 
-    @Tag(name = "Auth", description = "Отвечает за вход, регистрацию, и обновление токенов")
     @Operation(
             summary = "Регистрация учётной записи нормоконтроёлра",
             description = "Позволяет создать учётную запись студента. E-mail должен принадлежать доменной зоне @urfu.me, @urfu.ru или @at.urfu.ru. fullName должно быть валидным ФИО, состоящим из имени, фамилии (опционально - отчества), записанными кириллицей.",
@@ -63,7 +61,6 @@ public class AuthController {
         return authService.registerNormocontroller(registerNormocontrollerDto);
     }
 
-    @Tag(name = "Auth", description = "Отвечает за вход, регистрацию, и обновление токенов")
     @Operation(
             summary = "Обновление токенов",
             description = "Позволяет получить новые токены обновления и доступа для пользователя, используя его токен обновления. При этом, используемый токен обновления будет инвалидирован",
