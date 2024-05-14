@@ -130,13 +130,14 @@ public class DocumentsController {
         return documentsService.createDocument(student, createDocumentDto);
     }
 
+    @Hidden
     @Operation(
             summary = "Удаление администратором документа из сервиса",
             description = """
                     Позволяет администратору удалить документ из сервиса по его ID.
                     """,
             responses = {
-                    @ApiResponse(description = "Документы удалён успешно", responseCode = "200", content = @Content(mediaType = "application/json")),
+                    @ApiResponse(description = "Документ удалён успешно", responseCode = "200", content = @Content(mediaType = "application/json")),
                     @ApiResponse(description = "Документ с указанным ID не найден", responseCode = "404", content = @Content(mediaType = "application/json")),
                     @ApiResponse(description = "Вы не имеет доступ к данному ресурсу", responseCode = "403", content = @Content(mediaType = "application/json")),
                     @ApiResponse(description = "В запросе указаны некорректные данные", responseCode = "400", content = @Content(mediaType = "application/json")),
