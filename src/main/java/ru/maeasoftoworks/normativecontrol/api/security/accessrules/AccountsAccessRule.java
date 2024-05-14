@@ -8,6 +8,7 @@ import org.springframework.security.web.access.intercept.RequestAuthorizationCon
 import org.springframework.stereotype.Component;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
+import ru.maeasoftoworks.normativecontrol.api.repositories.UsersRepository;
 import ru.maeasoftoworks.normativecontrol.api.services.JwtService;
 import ru.maeasoftoworks.normativecontrol.api.utils.jwt.Jwt;
 
@@ -19,6 +20,7 @@ import java.util.function.Supplier;
 public class AccountsAccessRule implements AccessRule {
 
     private final JwtService jwtService;
+    private final UsersRepository usersRepository;
 
     @Override
     public AuthorizationDecision check(Supplier<Authentication> authentication, RequestAuthorizationContext ctx) {
@@ -34,7 +36,11 @@ public class AccountsAccessRule implements AccessRule {
         String accessToken = ctx.getRequest().getHeader("Authorization").substring(("Bearer ").length());
         Jwt jwt = jwtService.getJwtFromAccessTokenString(accessToken);
         User user = jwt.getUser();
-        if (user.getRole() == Role.ADMIN)
+
+        User targetUser = usersRepository.findUsersById(accountId);
+        if (user.getRole() == Role.ADMIN && targetUser != null && targetUser.getRole() != Role.ADMIN)
+            return new AuthorizationDecision(true);
+        if (user.getRole() == Role.ADMIN && targetUser != null && targetUser.getRole() == Role.ADMIN && user.getId() == accountId)
             return new AuthorizationDecision(true);
         if (user.getId() == accountId)
             return new AuthorizationDecision(true);
