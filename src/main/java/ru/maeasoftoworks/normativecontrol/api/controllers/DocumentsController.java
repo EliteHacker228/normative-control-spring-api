@@ -150,7 +150,7 @@ public class DocumentsController {
     @SecurityRequirement(name = "JWT")
     @DeleteMapping("/{document_id}")
     public ResponseEntity<JSONObject> deleteDocument(@Parameter(hidden = true) @RequestHeader("Authorization") String bearerToken,
-                                                     @PathVariable("document_id") Long documentId) {
+                                                     @PathVariable("document_id") @Parameter(description = "Идентификатор документа") Long documentId) {
         Admin admin = (Admin) jwtService.getUserFromAuthorizationHeader(bearerToken);
         documentsService.deleteDocument(admin, documentId);
         JSONObject response = new JSONObject();
@@ -178,7 +178,7 @@ public class DocumentsController {
     @GetMapping("/{document_id}")
     @SneakyThrows
     public ResponseEntity getDocument(@Parameter(hidden = true) @RequestHeader("Authorization") String bearerToken,
-                                      @PathVariable("document_id") Long documentId,
+                                      @PathVariable("document_id") @Parameter(description = "Идентификатор документа") Long documentId,
                                       @RequestParam(name = "type") @Parameter(description = "Тип документа: docx, html, node") String documentType) {
 
         User user = jwtService.getUserFromAuthorizationHeader(bearerToken);
@@ -206,7 +206,7 @@ public class DocumentsController {
     @SecurityRequirement(name = "JWT")
     @GetMapping("/{document_id}/status")
     public Result getDocumentVerificationStatus(@Parameter(hidden = true) @RequestHeader("Authorization") String bearerToken,
-                                                @PathVariable("document_id") Long documentId) {
+                                                @PathVariable("document_id") @Parameter(description = "Идентификатор документа") Long documentId) {
         return documentsService.getDocumentVerificationStatus(documentId);
     }
 
@@ -223,7 +223,7 @@ public class DocumentsController {
     @SecurityRequirement(name = "JWT")
     @PostMapping("/{document_id}/report")
     public Document reportOnDocument(@Parameter(hidden = true) @RequestHeader("Authorization") String bearerToken,
-                                     @PathVariable("document_id") Long documentId,
+                                     @PathVariable("document_id") @Parameter(description = "Идентификатор документа") Long documentId,
                                      @RequestBody @Valid DocumentReportDto documentReportDto) {
         return documentsService.reportOnDocument(documentId, documentReportDto);
     }
@@ -240,7 +240,7 @@ public class DocumentsController {
     @SecurityRequirement(name = "JWT")
     @DeleteMapping("/{document_id}/report")
     public Document unreportOnDocument(@Parameter(hidden = true) @RequestHeader("Authorization") String bearerToken,
-                                       @PathVariable("document_id") Long documentId,
+                                       @PathVariable("document_id") @Parameter(description = "Идентификатор документа") Long documentId,
                                        @RequestBody @Valid DocumentReportDto documentReportDto) {
         return documentsService.unreportOnDocument(documentId, documentReportDto);
     }
@@ -257,7 +257,7 @@ public class DocumentsController {
     @SecurityRequirement(name = "JWT")
     @PostMapping("/{document_id}/verdict")
     public Document makeVerdict(@Parameter(hidden = true) @RequestHeader("Authorization") String bearerToken,
-                                @PathVariable("document_id") Long documentId,
+                                @PathVariable("document_id") @Parameter(description = "Идентификатор документа") Long documentId,
                                 @RequestBody @Valid DocumentVerdictDto documentVerdictDto) {
         return documentsService.makeVerdictOnDocument(documentId, documentVerdictDto);
     }
