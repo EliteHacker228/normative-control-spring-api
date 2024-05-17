@@ -38,7 +38,7 @@ public class Result {
     private String description = "";
 
     @Column(name = "mistake_count")
-    private int mistakeCount;
+    private Integer mistakeCount;
 
     public VerificationStatus getVerificationStatus(){
         return VerificationStatus.valueOf(this.verificationStatus);
