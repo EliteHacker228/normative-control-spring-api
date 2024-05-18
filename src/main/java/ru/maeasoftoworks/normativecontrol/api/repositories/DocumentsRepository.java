@@ -9,6 +9,8 @@ import java.util.List;
 public interface DocumentsRepository extends JpaRepository<Document, Long> {
     List<Document> findDocumentsByStudent(Student student);
 
+    List<Document> findDocumentsByStudentId(Long studentId);
+
     Document findTopByStudentIdOrderByVerificationDateDesc(Long studentId);
 
     Document findDocumentById(Long documentId);

@@ -258,4 +258,22 @@ public class DocumentsController {
                                 @RequestBody @Valid DocumentVerdictDto documentVerdictDto) {
         return documentsService.makeVerdictOnDocument(documentId, documentVerdictDto);
     }
+
+
+    @Operation(summary = "Получение списка работ студента самим студентом, нормоконтролером и администратором",
+            description = """
+                   Позволяет студенту, нормоконтролеру и администратору получить список работ, загруженных студентом.
+                   Студент может получить только свои работы, нормоконтролер - работы любого студента из всех приписанных ему групп,
+                   администратор - работы любого студенты""",
+            responses = {
+                    @ApiResponse(description = "Список работ получен успешно", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Document.class))),
+                    @ApiResponse(description = "Студент с указанным ID не найден", responseCode = "404", content = @Content(mediaType = "application/json")),
+                    @ApiResponse(description = "Вы не имеет доступ к данному ресурсу", responseCode = "403", content = @Content(mediaType = "application/json")),
+                    @ApiResponse(description = "В запросе указаны некорректные данные", responseCode = "400", content = @Content(mediaType = "application/json")),
+            })
+    @SecurityRequirement(name = "JWT")
+    @GetMapping("/students/{student_id}")
+    public List<Document> getDocumentsByStudentId(@PathVariable("student_id") @Parameter(description = "Идентификатор студента") Long studentId){
+        return documentsService.getDocumentsByStudentId(studentId);
+    }
 }

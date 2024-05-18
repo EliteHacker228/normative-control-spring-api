@@ -214,6 +214,15 @@ public class DocumentsService {
         return document;
     }
 
+    public List<Document> getDocumentsByStudentId(Long studentId){
+        List<Document> documents = documentsRepository.findDocumentsByStudentId(studentId);
+        if (!studentsRepository.existsById(studentId)){
+            String message = MessageFormat.format("Student with id {0} not found", studentId);
+            throw new ResourceNotFoundException(message);
+        }
+        return documents;
+    }
+
     private String normalizeFileName(String fileName) {
         if (fileName.endsWith(".docx"))
             return fileName;

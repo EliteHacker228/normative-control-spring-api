@@ -43,6 +43,7 @@ public class WebSecurityConfig {
     private final DocumentPatchAccessRule documentPatchAccessRule;
     private final DocumentReportAccessRule documentReportAccessRule;
     private final DocumentVerdictAccessRule documentVerdictAccessRule;
+    private final DocumentStudentAccessRule documentStudentAccessRule;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -90,6 +91,7 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/documents/csv").hasAnyRole(Role.NORMOCONTROLLER.name(), Role.ADMIN.name())
                         .requestMatchers(HttpMethod.POST, "/documents").hasRole(Role.STUDENT.name())
                         .requestMatchers(HttpMethod.GET, "/documents").hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/documents/students/{student_id}").access(documentStudentAccessRule)
                         .requestMatchers(HttpMethod.GET, "/documents/{document_id}").access(documentAccessRule)
                         .requestMatchers(HttpMethod.DELETE, "/documents/{document_id}").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.GET, "/documents/{document_id}/status").access(documentAccessRule)
