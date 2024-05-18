@@ -112,7 +112,6 @@ public class AcademicGroupsController {
         return academicalService.updateAcademicGroupById(academicGroupId, updateAcademicGroupDto);
     }
 
-    @Hidden
     @DeleteMapping("/groups/{group_id}")
     public ResponseEntity<JSONObject> deleteAcademicGroup(@RequestHeader("Authorization") String authorizationHeader,
                                                           @PathVariable("group_id") Long academicGroupId) {

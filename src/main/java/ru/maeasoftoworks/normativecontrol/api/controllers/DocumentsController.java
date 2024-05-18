@@ -130,7 +130,6 @@ public class DocumentsController {
         return documentsService.createDocument(student, createDocumentDto);
     }
 
-    @Hidden
     @Operation(
             summary = "Удаление администратором документа из сервиса",
             description = """

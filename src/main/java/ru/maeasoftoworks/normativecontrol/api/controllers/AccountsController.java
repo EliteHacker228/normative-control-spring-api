@@ -86,7 +86,6 @@ public class AccountsController {
         return accountsService.updateUserById(userId, updateUserDto);
     }
 
-    @Hidden
     @Operation(
             summary = "Удаление учётной записи по ID",
             description = """
