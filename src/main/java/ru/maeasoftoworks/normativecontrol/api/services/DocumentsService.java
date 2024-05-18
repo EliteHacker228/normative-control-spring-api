@@ -158,6 +158,22 @@ public class DocumentsService {
         }
     }
 
+    @SneakyThrows
+    public byte[] getResultDirectionally(Long documentId, String resultType) {
+        Document targetDocument = documentsRepository.findDocumentById(documentId);
+        Student targetStudent = targetDocument.getStudent();
+        String documentPath;
+        if(resultType.equals("source")){
+            documentPath = targetStudent.getId() + "/" + documentId + "/source.docx";
+        }else {
+            documentPath = targetStudent.getId() + "/" + documentId + "/result." + resultType;
+        }
+        try (ByteArrayOutputStream resultBytes = s3.getObject(documentPath)) {
+            byte[] bytes = resultBytes.toByteArray();
+            return bytes;
+        }
+    }
+
     public Document getDocumentNode(Long documentId) {
         Document targetDocument = documentsRepository.findDocumentById(documentId);
         return targetDocument;

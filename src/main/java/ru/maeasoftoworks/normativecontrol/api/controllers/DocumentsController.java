@@ -20,6 +20,7 @@ import ru.maeasoftoworks.normativecontrol.api.domain.users.*;
 import ru.maeasoftoworks.normativecontrol.api.dto.documents.CreateDocumentDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.documents.DocumentReportDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.documents.DocumentVerdictDto;
+import ru.maeasoftoworks.normativecontrol.api.exceptions.UnauthorizedException;
 import ru.maeasoftoworks.normativecontrol.api.services.DocumentsService;
 import ru.maeasoftoworks.normativecontrol.api.services.JwtService;
 
@@ -176,13 +177,23 @@ public class DocumentsController {
     @SneakyThrows
     public ResponseEntity getDocumentByType(@Parameter(hidden = true) @RequestHeader("Authorization") String bearerToken,
                                             @PathVariable("document_id") @Parameter(description = "Идентификатор документа") Long documentId,
-                                            @RequestParam(name = "type") @Parameter(description = "Тип документа: docx, html, node, source") String documentType) {
+                                            @RequestParam(name = "type") @Parameter(description = "Тип документа: docx, html, node, source") String documentType,
+                                            @RequestParam(name = "direct", defaultValue = "false") @Parameter(description = "Качать результат напрямую из S3 (true, только для админов) или нет (false)") Boolean direct) {
 
         if (documentType.equals("node"))
             return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(documentsService.getDocumentNode(documentId));
 
         byte[] documentBytes;
-        documentBytes = documentsService.getResult(documentId, documentType);
+        if (direct) {
+            User user = jwtService.getUserFromAuthorizationHeader(bearerToken);
+            if (user.getRole() != Role.ADMIN) {
+                throw new UnauthorizedException("You can not get resources directionally");
+            }
+            documentBytes = documentsService.getResultDirectionally(documentId, documentType);
+        }else{
+            documentBytes = documentsService.getResult(documentId, documentType);
+        }
+
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(documentBytes);
     }
 
@@ -209,8 +220,8 @@ public class DocumentsController {
 
     @Operation(summary = "Пометка ошибки в работе студентом как сомнительной",
             description = """
-                   Позволяет студенту доложить о сомнительной ошибке в документе по его ID. В случае, если об ошибке
-                   уже доложение - ничего не произойдёт. При успешном выполнении запроса возвращается запись о самом документе.""",
+                    Позволяет студенту доложить о сомнительной ошибке в документе по его ID. В случае, если об ошибке
+                    уже доложение - ничего не произойдёт. При успешном выполнении запроса возвращается запись о самом документе.""",
             responses = {
                     @ApiResponse(description = "Ошибка в документе отмечена успешно", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Document.class))),
                     @ApiResponse(description = "Документ с указанным ID не найден", responseCode = "404", content = @Content(mediaType = "application/json")),
@@ -227,7 +238,7 @@ public class DocumentsController {
 
     @Operation(summary = "Отмена пометки ошибки в работе студентом как сомнительной",
             description = """
-                   Позволяет студенту отменить пометку о сомнительной ошибке в документе по его ID. При успешном выполнении запроса возвращается запись о самом документе.""",
+                    Позволяет студенту отменить пометку о сомнительной ошибке в документе по его ID. При успешном выполнении запроса возвращается запись о самом документе.""",
             responses = {
                     @ApiResponse(description = "Ошибка в документе отмечена успешно", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Document.class))),
                     @ApiResponse(description = "Документ с указанным ID не найден", responseCode = "404", content = @Content(mediaType = "application/json")),
@@ -244,7 +255,7 @@ public class DocumentsController {
 
     @Operation(summary = "Вынесение вердикта о работе нормоконтролёром",
             description = """
-                   Позволяет  нормоконтролёру принять или отклонить работу, спороводив её комментарием (комментарий опционален)""",
+                    Позволяет  нормоконтролёру принять или отклонить работу, спороводив её комментарием (комментарий опционален)""",
             responses = {
                     @ApiResponse(description = "Вердикт сохранён успешно", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Document.class))),
                     @ApiResponse(description = "Документ с указанным ID не найден", responseCode = "404", content = @Content(mediaType = "application/json")),
@@ -262,9 +273,9 @@ public class DocumentsController {
 
     @Operation(summary = "Получение списка работ студента самим студентом, нормоконтролером и администратором",
             description = """
-                   Позволяет студенту, нормоконтролеру и администратору получить список работ, загруженных студентом.
-                   Студент может получить только свои работы, нормоконтролер - работы любого студента из всех приписанных ему групп,
-                   администратор - работы любого студенты""",
+                    Позволяет студенту, нормоконтролеру и администратору получить список работ, загруженных студентом.
+                    Студент может получить только свои работы, нормоконтролер - работы любого студента из всех приписанных ему групп,
+                    администратор - работы любого студенты""",
             responses = {
                     @ApiResponse(description = "Список работ получен успешно", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Document.class))),
                     @ApiResponse(description = "Студент с указанным ID не найден", responseCode = "404", content = @Content(mediaType = "application/json")),
@@ -273,7 +284,7 @@ public class DocumentsController {
             })
     @SecurityRequirement(name = "JWT")
     @GetMapping("/students/{student_id}")
-    public List<Document> getDocumentsByStudentId(@PathVariable("student_id") @Parameter(description = "Идентификатор студента") Long studentId){
+    public List<Document> getDocumentsByStudentId(@PathVariable("student_id") @Parameter(description = "Идентификатор студента") Long studentId) {
         return documentsService.getDocumentsByStudentId(studentId);
     }
 }
