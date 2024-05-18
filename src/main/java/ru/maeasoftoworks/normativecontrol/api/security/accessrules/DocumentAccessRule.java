@@ -40,7 +40,7 @@ public class DocumentAccessRule implements AccessRule {
         Jwt jwt = jwtService.getJwtFromAccessTokenString(accessToken);
         User user = jwt.getUser();
 
-        Document document = documentsService.getDocumentNode(user, documentId);
+        Document document = documentsService.getDocumentNode(documentId);
 
         if (user.getRole() == Role.ADMIN)
             return new AuthorizationDecision(true);

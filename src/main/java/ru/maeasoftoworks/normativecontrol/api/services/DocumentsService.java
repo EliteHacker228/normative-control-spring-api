@@ -12,6 +12,7 @@ import ru.maeasoftoworks.normativecontrol.api.dto.documents.CreateDocumentDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.documents.DocumentReportDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.documents.DocumentVerdictDto;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.ResourceNotFoundException;
+import ru.maeasoftoworks.normativecontrol.api.exceptions.UnknownDocumentTypeException;
 import ru.maeasoftoworks.normativecontrol.api.mq.Message;
 import ru.maeasoftoworks.normativecontrol.api.mq.MqPublisher;
 import ru.maeasoftoworks.normativecontrol.api.repositories.*;
@@ -137,22 +138,27 @@ public class DocumentsService {
     }
 
     @SneakyThrows
-    public byte[] getDocument(User user, Long documentId, String documentType) {
+    public byte[] getResult(Long documentId, String resultType) {
         Document targetDocument = documentsRepository.findDocumentById(documentId);
         Result result = resultsRepository.findResultByDocument(targetDocument);
         if (result.getVerificationStatus() == VerificationStatus.ERROR) {
             String message = MessageFormat.format("Document with id {0} does not exists", documentId);
             throw new ResourceNotFoundException(message);
         }
-        user = targetDocument.getStudent();
-        String documentPath = user.getId() + "/" + documentId + "/result." + documentType;
+        User user = targetDocument.getStudent();
+        String documentPath;
+        if(resultType.equals("source")){
+            documentPath = user.getId() + "/" + documentId + "/source.docx";
+        }else {
+            documentPath = user.getId() + "/" + documentId + "/result." + resultType;
+        }
         try (ByteArrayOutputStream resultBytes = s3.getObject(documentPath)) {
             byte[] bytes = resultBytes.toByteArray();
             return bytes;
         }
     }
 
-    public Document getDocumentNode(User user, Long documentId) {
+    public Document getDocumentNode(Long documentId) {
         Document targetDocument = documentsRepository.findDocumentById(documentId);
         return targetDocument;
     }

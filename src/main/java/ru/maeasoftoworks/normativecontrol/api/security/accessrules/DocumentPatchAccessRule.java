@@ -38,7 +38,7 @@ public class DocumentPatchAccessRule implements AccessRule {
         Jwt jwt = jwtService.getJwtFromAccessTokenString(accessToken);
         User user = jwt.getUser();
 
-        Document document = documentsService.getDocumentNode(user, documentId);
+        Document document = documentsService.getDocumentNode(documentId);
 
         if (user.getRole() == Role.NORMOCONTROLLER && user.getId() == document.getStudent().getAcademicGroup().getNormocontroller().getId())
             return new AuthorizationDecision(true);

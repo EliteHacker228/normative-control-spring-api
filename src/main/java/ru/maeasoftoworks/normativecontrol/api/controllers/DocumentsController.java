@@ -1,6 +1,5 @@
 package ru.maeasoftoworks.normativecontrol.api.controllers;
 
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -18,11 +17,9 @@ import org.springframework.web.bind.annotation.*;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Document;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Result;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.*;
-import ru.maeasoftoworks.normativecontrol.api.dto.auth.AuthJwtPair;
 import ru.maeasoftoworks.normativecontrol.api.dto.documents.CreateDocumentDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.documents.DocumentReportDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.documents.DocumentVerdictDto;
-import ru.maeasoftoworks.normativecontrol.api.exceptions.UnauthorizedException;
 import ru.maeasoftoworks.normativecontrol.api.services.DocumentsService;
 import ru.maeasoftoworks.normativecontrol.api.services.JwtService;
 
@@ -177,15 +174,15 @@ public class DocumentsController {
     @SecurityRequirement(name = "JWT")
     @GetMapping("/{document_id}")
     @SneakyThrows
-    public ResponseEntity getDocument(@Parameter(hidden = true) @RequestHeader("Authorization") String bearerToken,
-                                      @PathVariable("document_id") @Parameter(description = "Идентификатор документа") Long documentId,
-                                      @RequestParam(name = "type") @Parameter(description = "Тип документа: docx, html, node") String documentType) {
+    public ResponseEntity getDocumentByType(@Parameter(hidden = true) @RequestHeader("Authorization") String bearerToken,
+                                            @PathVariable("document_id") @Parameter(description = "Идентификатор документа") Long documentId,
+                                            @RequestParam(name = "type") @Parameter(description = "Тип документа: docx, html, node, source") String documentType) {
 
-        User user = jwtService.getUserFromAuthorizationHeader(bearerToken);
         if (documentType.equals("node"))
-            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(documentsService.getDocumentNode(user, documentId));
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(documentsService.getDocumentNode(documentId));
 
-        byte[] documentBytes = documentsService.getDocument(user, documentId, documentType);
+        byte[] documentBytes;
+        documentBytes = documentsService.getResult(documentId, documentType);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(documentBytes);
     }
 

@@ -40,7 +40,7 @@ public class DocumentVerdictAccessRule implements AccessRule {
         Jwt jwt = jwtService.getJwtFromAccessTokenString(accessToken);
         User user = jwt.getUser();
 
-        Document document = documentsService.getDocumentNode(user, documentId);
+        Document document = documentsService.getDocumentNode(documentId);
         if (document == null) {
             String message = MessageFormat.format("Document with id {0} not found", documentId);
             throw new ResourceNotFoundException(message);
