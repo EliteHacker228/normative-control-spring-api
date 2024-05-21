@@ -10,9 +10,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Document;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Result;
@@ -29,6 +34,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/documents")
 @RequiredArgsConstructor
+@Slf4j
 @Tag(name = "Documents", description = "Отвечает за вход, загрузку, получение, и удаление документов, а также за доклад о ошибках и вынесение вердикта")
 public class DocumentsController {
     private final DocumentsService documentsService;
@@ -126,6 +132,17 @@ public class DocumentsController {
                                    @ModelAttribute @Valid CreateDocumentDto createDocumentDto) {
         Student student = (Student) jwtService.getUserFromAuthorizationHeader(bearerToken);
         return documentsService.createDocument(student, createDocumentDto);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<JSONObject> handleConstraintViolation(MethodArgumentNotValidException exception) {
+        BindingResult result = exception.getBindingResult();
+        List<FieldError> fieldErrors = result.getFieldErrors();
+        List<String> strings = fieldErrors.stream().map(fieldError -> fieldError.getDefaultMessage()).toList();
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("message", "Error 400 - invalid data in request");
+        jsonObject.put("errors", strings);
+        return new ResponseEntity<JSONObject>(jsonObject, HttpStatus.BAD_REQUEST);
     }
 
     @Operation(

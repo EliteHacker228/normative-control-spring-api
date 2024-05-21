@@ -114,7 +114,7 @@ public class DocumentsService {
     public Document createDocument(Student student, CreateDocumentDto createDocumentDto) {
         Document document = Document.builder()
                 .student(student)
-                .fileName(normalizeFileName(createDocumentDto.getDocumentName()))
+                .fileName(createDocumentDto.getDocument().getOriginalFilename())
                 .isReported(false)
                 .comment(null)
                 .build();
@@ -129,8 +129,6 @@ public class DocumentsService {
         String documentName = student.getId() + "/" + document.getId() + "/source.docx";
         s3.putObject(createDocumentDto.getDocument().getInputStream(), documentName);
 
-        String docxResultName = student.getId() + "/" + document.getId() + "/result.docx";
-        String htmlResultName = student.getId() + "/" + document.getId() + "/result.html";
         Message message = new Message(student.getId(), document.getId());
         mqPublisher.publishToVerify(message.getAsJsonString());
 
@@ -237,12 +235,5 @@ public class DocumentsService {
             throw new ResourceNotFoundException(message);
         }
         return documents;
-    }
-
-    private String normalizeFileName(String fileName) {
-        if (fileName.endsWith(".docx"))
-            return fileName;
-        else
-            return fileName + ".docx";
     }
 }
