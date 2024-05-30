@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -33,7 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public static final String BEARER_PREFIX = "Bearer ";
     public static final String HEADER_NAME = "Authorization";
     private final JwtService jwtService;
-    private final UsersRepository usersRepository;
+    private final UserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(
@@ -41,8 +42,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-
-
         var authHeader = request.getHeader(HEADER_NAME);
         if (StringUtils.isEmpty(authHeader) || !authHeader.toLowerCase().startsWith(BEARER_PREFIX.toLowerCase())) {
 //            FIXME: Сваггер с этим не работает (что?)
@@ -52,19 +51,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String jwt = authHeader.substring(BEARER_PREFIX.length());
-        String username = "";
-        try{
+        String username;
+        try {
             username = jwtService.getClaimsFromAccessTokenString(jwt).getPayload().getSubject();
-        }catch (ExpiredJwtException e){
+        } catch (ExpiredJwtException e) {
             response.setStatus(403);
             filterChain.doFilter(request, response);
             return;
         }
 
-
         if (StringUtils.isNotEmpty(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService()
-                    .loadUserByUsername(username);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
             log.info("Owner of access token is registred in DB");
 
@@ -77,19 +74,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         null,
                         userDetails.getAuthorities()
                 );
-
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                WebAuthenticationDetails webAuthenticationDetails = new WebAuthenticationDetailsSource().buildDetails(request);
+                authToken.setDetails(webAuthenticationDetails);
                 context.setAuthentication(authToken);
                 SecurityContextHolder.setContext(context);
-                log.info(SecurityContextHolder.getContext().toString());
-                log.info(authToken.toString());
-                log.info("Access token passed JwtAuthenticationFilter");
+                log.info("Allowed access to endpoint {} for \"{}\" from IP = {}",
+                        request.getRequestURI(),
+                        userDetails.getUsername(),
+                        webAuthenticationDetails.getRemoteAddress());
             }
         }
 
-        log.info(SecurityContextHolder.getContext().getAuthentication().getName());
+        log.debug(SecurityContextHolder.getContext().getAuthentication().getName());
 
-        if(request.getRequestURI().contains("invites")){
+        if (request.getRequestURI().contains("invites")) {
             CachedBodyHttpServletRequest cachedBodyHttpServletRequest =
                     new CachedBodyHttpServletRequest(request);
 
@@ -98,26 +96,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
-    }
-
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-
-        return (username) -> {
-            log.info("SEARCHING BY: " + username);
-            var user = usersRepository.findUserByEmail(username);
-            if (user == null) {
-                throw new RuntimeException("User not found");
-            }
-            else {
-                log.info("FOUND: " + user);
-                return User.builder()
-                        .username(user.getEmail())
-                        .password(user.getPassword())
-                        .roles(user.getRole().name())
-                        .build();
-            }
-        };
     }
 }

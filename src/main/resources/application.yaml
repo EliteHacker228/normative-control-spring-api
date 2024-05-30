@@ -28,6 +28,12 @@ server:
   servlet:
     context-path: ${API_PREFIX}
 
+logging:
+  level:
+    root: off
+    ru.maeasoftoworks.normativecontrol: info
+    org.springframework.boot.web.embedded.tomcat: info
+
 springdoc:
   swagger-ui:
     operations-sorter: alpha

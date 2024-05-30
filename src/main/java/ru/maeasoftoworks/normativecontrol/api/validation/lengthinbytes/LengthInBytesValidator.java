@@ -17,6 +17,6 @@ public class LengthInBytesValidator implements ConstraintValidator<LengthInBytes
 
     @Override
     public boolean isValid(MultipartFile file, ConstraintValidatorContext constraintValidatorContext) {
-        return file.getSize() <= max && file.getSize() >= min;
+        return file != null && file.getSize() <= max && file.getSize() >= min;
     }
 }

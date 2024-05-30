@@ -8,6 +8,6 @@ import ru.maeasoftoworks.normativecontrol.api.validation.universityEmail.Univers
 public class DocxDocumentValidator implements ConstraintValidator<DocxDocument, MultipartFile>  {
     @Override
     public boolean isValid(MultipartFile file, ConstraintValidatorContext constraintValidatorContext) {
-        return file.getContentType() != null && file.getContentType().equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+        return file != null && file.getContentType() != null && file.getContentType().equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
     }
 }
