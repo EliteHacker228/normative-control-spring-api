@@ -107,6 +107,46 @@ public class NormativeControlApiApplication {
                     .documentsLimit(5)
                     .build();
             studentsRepository.save(student);
+
+            student = Student.builder()
+                    .email("G.T.Bobrov@urfu.me")
+                    .password(Sha256.getStringSha256("student_password"))
+                    .fullName("Бобров Георгий Тимурович")
+                    .isVerified(true)
+                    .academicGroup(RI_400015)
+                    .documentsLimit(5)
+                    .build();
+            studentsRepository.save(student);
+
+            student = Student.builder()
+                    .email("R.V.Sergeev@urfu.me")
+                    .password(Sha256.getStringSha256("student_password"))
+                    .fullName("Сергеев Роман Владимирович")
+                    .isVerified(true)
+                    .academicGroup(RI_400015)
+                    .documentsLimit(5)
+                    .build();
+            studentsRepository.save(student);
+
+            student = Student.builder()
+                    .email("V.M.Kalinin@urfu.me")
+                    .password(Sha256.getStringSha256("student_password"))
+                    .fullName("Калинин Всеволод Михайлович")
+                    .isVerified(true)
+                    .academicGroup(RI_400016)
+                    .documentsLimit(5)
+                    .build();
+            studentsRepository.save(student);
+
+            student = Student.builder()
+                    .email("D.M.Gusev@urfu.me")
+                    .password(Sha256.getStringSha256("student_password"))
+                    .fullName("Гусев Денис Михаилович")
+                    .isVerified(true)
+                    .academicGroup(RI_400016)
+                    .documentsLimit(5)
+                    .build();
+            studentsRepository.save(student);
         }
     }
 }
