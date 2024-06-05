@@ -61,7 +61,7 @@ public class AccountsService {
         if (user.getRole() == Role.STUDENT) {
             Student student = (Student) user;
 
-            if (student.getAcademicGroup().getId() != updateUserDto.getAcademicGroupId()) {
+            if (student.getAcademicGroup() == null || student.getAcademicGroup().getId() != updateUserDto.getAcademicGroupId()) {
                 AcademicGroup academicGroup = academicGroupsRepository.findAcademicGroupById(updateUserDto.getAcademicGroupId());
                 if (academicGroup == null)
                     throw new ResourceNotFoundException("Academic group with id " + updateUserDto.getAcademicGroupId()
