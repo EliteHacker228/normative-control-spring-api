@@ -64,6 +64,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/auth/**").anonymous()
 
                         .requestMatchers("/accounts").hasRole(Role.ADMIN.name())
+                        .requestMatchers("/accounts/normocontrollers").hasRole(Role.ADMIN.name())
                         .requestMatchers("/accounts/*/documents-limit").hasRole(Role.ADMIN.name())
                         .requestMatchers("/accounts/{account_id}/**").access(accountsAccessRule)
                         .requestMatchers("/accounts/**").authenticated()

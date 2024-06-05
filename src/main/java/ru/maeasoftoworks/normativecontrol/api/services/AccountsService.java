@@ -34,6 +34,10 @@ public class AccountsService {
         return usersRepository.findAll();
     }
 
+    public List<Normocontroller> getNormocontrollers() {
+        return normocontrollersRepository.findAll();
+    }
+
     // Доступна админу - для всех аккаунтов
     // Остальным - только для своего
     public User getUserById(Long targetId) {

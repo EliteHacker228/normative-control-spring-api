@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Result;
+import ru.maeasoftoworks.normativecontrol.api.domain.users.Normocontroller;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
 import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserDocumentsLimitDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserDto;
@@ -49,6 +50,20 @@ public class AccountsController {
     @GetMapping
     public List<User> getAllUsers() {
         return accountsService.getUsers();
+    }
+
+    @Operation(
+            summary = "Получение списка всех нормоконтролеров администратором",
+            description = """
+                    Позволяет администратору получить список всех нормоконтролеров, зарегистрированных в сервисе.""",
+            responses = {
+                    @ApiResponse(description = "Список получен успешно", responseCode = "200", content = @Content(mediaType = "application/json")),
+                    @ApiResponse(description = "Вы не имеет доступа к данному методу", responseCode = "403", content = @Content(mediaType = "application/json")),
+            })
+    @SecurityRequirement(name = "JWT")
+    @GetMapping("/normocontrollers")
+    public List<Normocontroller> getAllNormocontrollers(){
+        return accountsService.getNormocontrollers();
     }
 
     // Администратор может получить данные о любом аккаунте
