@@ -14,4 +14,7 @@ public class CreateAcademicGroupDto {
     @NotEmpty(message = "Academic group name can not be empty")
     @Length(min = 1, max = 255, message = "Academic group length can not be less than 1 or bigger than 255")
     private String name;
+
+    @Schema(description = "ID нормоконтролера создаваемой академической групы (опционально)")
+    private Long normocontrollerId;
 }

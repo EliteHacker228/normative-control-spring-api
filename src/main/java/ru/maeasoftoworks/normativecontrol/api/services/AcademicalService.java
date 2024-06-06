@@ -9,6 +9,7 @@ import ru.maeasoftoworks.normativecontrol.api.domain.users.Student;
 import ru.maeasoftoworks.normativecontrol.api.dto.universities.CreateAcademicGroupDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.universities.UpdateAcademicGroupDto;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.ResourceNotFoundException;
+import ru.maeasoftoworks.normativecontrol.api.exceptions.ResourceAlreadyExistsException;
 import ru.maeasoftoworks.normativecontrol.api.repositories.AcademicGroupsRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.NormocontrollersRepository;
 import ru.maeasoftoworks.normativecontrol.api.repositories.StudentsRepository;
@@ -46,7 +47,15 @@ public class AcademicalService {
     // Доступна админам
     @Transactional
     public AcademicGroup createAcademicGroup(CreateAcademicGroupDto createAcademicGroupDto) {
-        AcademicGroup academicGroup = new AcademicGroup(createAcademicGroupDto.getName());
+        String academicGroupName = createAcademicGroupDto.getName();
+        if (academicGroupsRepository.existsAcademicGroupsByName(academicGroupName))
+            throw new ResourceAlreadyExistsException("Academic group with name " + academicGroupName + " already exists");
+
+        AcademicGroup academicGroup = new AcademicGroup(academicGroupName);
+        Long normocontrollerId = createAcademicGroupDto.getNormocontrollerId();
+        if (normocontrollerId != null && normocontrollersRepository.existsById(normocontrollerId)) {
+            academicGroup.setNormocontroller(normocontrollersRepository.findNormocontrollerById(normocontrollerId));
+        }
         academicGroupsRepository.save(academicGroup);
         return academicGroup;
     }

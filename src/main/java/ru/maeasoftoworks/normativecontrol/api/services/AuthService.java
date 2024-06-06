@@ -71,7 +71,7 @@ public class AuthService {
     @Transactional
     public AuthJwtPair registerStudent(RegisterStudentDto registerStudentDto) {
         if (usersRepository.existsUserByEmail(registerStudentDto.getEmail()))
-            throw new UserAlreadyExistsException("User with e-mail " + registerStudentDto.getEmail() + " already exists");
+            throw new ResourceAlreadyExistsException("User with e-mail " + registerStudentDto.getEmail() + " already exists");
 
         AcademicGroup academicGroup = academicGroupsRepository.findAcademicGroupById(registerStudentDto.getAcademicGroupId());
 
@@ -105,7 +105,7 @@ public class AuthService {
     @Transactional
     public AuthJwtPair registerNormocontroller(RegisterNormocontrollerDto registerNormocontrollerDto) {
         if (usersRepository.existsUserByEmail(registerNormocontrollerDto.getEmail()))
-            throw new UserAlreadyExistsException("User with e-mail " + registerNormocontrollerDto.getEmail() + " already exists");
+            throw new ResourceAlreadyExistsException("User with e-mail " + registerNormocontrollerDto.getEmail() + " already exists");
 
         Normocontroller normocontroller = Normocontroller.builder()
                 .email(registerNormocontrollerDto.getEmail())
