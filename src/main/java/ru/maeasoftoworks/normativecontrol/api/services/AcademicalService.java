@@ -73,6 +73,9 @@ public class AcademicalService {
             String message = MessageFormat.format("Normocontroller with id {0} not found", updateAcademicGroupDto.getNormocontrollerId());
             throw new ResourceNotFoundException(message);
         }
+        String academicGroupNewName = updateAcademicGroupDto.getName();
+        if (academicGroupsRepository.existsAcademicGroupsByName(academicGroupNewName) && academicGroupsRepository.findAcademicGroupByName(academicGroupNewName).getId() != academicGroupId)
+            throw new ResourceAlreadyExistsException("Academic group with name " + academicGroupNewName + " already exists");
         academicGroup.setName(updateAcademicGroupDto.getName());
         academicGroup.setNormocontroller(normocontroller);
         academicGroupsRepository.save(academicGroup);

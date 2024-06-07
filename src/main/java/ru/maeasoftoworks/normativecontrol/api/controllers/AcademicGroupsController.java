@@ -74,6 +74,7 @@ public class AcademicGroupsController {
                     @ApiResponse(description = "Группа создана успешно", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = AcademicGroup.class))),
                     @ApiResponse(description = "В запросе указаны некорректные данные", responseCode = "400", content = @Content(mediaType = "application/json")),
                     @ApiResponse(description = "Вы не имеет доступа к данному ресурсу", responseCode = "403", content = @Content(mediaType = "application/json")),
+                    @ApiResponse(description = "Группа с указанным названием уже существует", responseCode = "409", content = @Content(mediaType = "application/json")),
             })
     @SecurityRequirement(name = "JWT")
     @PostMapping("/groups")
@@ -104,6 +105,7 @@ public class AcademicGroupsController {
                     @ApiResponse(description = "Данные изменены успешно", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = AcademicGroup.class))),
                     @ApiResponse(description = "В запросе указаны некорректные данные", responseCode = "400", content = @Content(mediaType = "application/json")),
                     @ApiResponse(description = "Вы не имеет доступа к данному ресурсу", responseCode = "403", content = @Content(mediaType = "application/json")),
+                    @ApiResponse(description = "Группа с указанным названием уже существует", responseCode = "409", content = @Content(mediaType = "application/json")),
             })
     @SecurityRequirement(name = "JWT")
     @PatchMapping("/groups/{group_id}")

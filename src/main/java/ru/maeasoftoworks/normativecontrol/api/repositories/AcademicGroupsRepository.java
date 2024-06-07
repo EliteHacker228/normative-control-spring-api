@@ -8,5 +8,6 @@ import java.util.List;
 public interface AcademicGroupsRepository extends JpaRepository<AcademicGroup, Long> {
     AcademicGroup findAcademicGroupById(Long id);
     List<AcademicGroup> findAcademicGroupsByNormocontrollerId(Long normocontrolerId);
+    AcademicGroup findAcademicGroupByName(String academicalGroupName);
     Boolean existsAcademicGroupsByName(String name);
 }
