@@ -4,6 +4,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.maeasoftoworks.normativecontrol.api.domain.academical.AcademicGroup;
+import ru.maeasoftoworks.normativecontrol.api.domain.documents.Document;
+import ru.maeasoftoworks.normativecontrol.api.domain.documents.Result;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.*;
 import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserDocumentsLimitDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserDto;
@@ -13,9 +15,7 @@ import ru.maeasoftoworks.normativecontrol.api.dto.auth.AuthJwtPair;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.FieldNotPresents;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.PasswordsMismatchException;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.ResourceNotFoundException;
-import ru.maeasoftoworks.normativecontrol.api.repositories.AcademicGroupsRepository;
-import ru.maeasoftoworks.normativecontrol.api.repositories.NormocontrollersRepository;
-import ru.maeasoftoworks.normativecontrol.api.repositories.UsersRepository;
+import ru.maeasoftoworks.normativecontrol.api.repositories.*;
 import ru.maeasoftoworks.normativecontrol.api.utils.hashing.Sha256;
 
 import java.text.MessageFormat;
@@ -26,6 +26,8 @@ import java.util.List;
 public class AccountsService {
     private final UsersRepository usersRepository;
     private final AcademicGroupsRepository academicGroupsRepository;
+    private final DocumentsRepository documentsRepository;
+    private final ResultsRepository resultsRepository;
     private final NormocontrollersRepository normocontrollersRepository;
     private final JwtService jwtService;
 
@@ -90,6 +92,13 @@ public class AccountsService {
                 academicGroup.setNormocontroller(null);
                 academicGroupsRepository.save(academicGroup);
             }
+        }
+
+        if (user.getRole() == Role.STUDENT) {
+            List<Document> documents = documentsRepository.findDocumentsByStudentId(user.getId());
+            List<Result> results = resultsRepository.findResultsByDocument_StudentId(user.getId());
+            documentsRepository.deleteAll(documents);
+            resultsRepository.deleteAll(results);
         }
 
         usersRepository.delete(user);
