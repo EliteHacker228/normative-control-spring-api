@@ -84,6 +84,14 @@ public class AccountsService {
             throw new ResourceNotFoundException(message);
         }
 
+        if (user.getRole() == Role.NORMOCONTROLLER) {
+            List<AcademicGroup> academicGroups = academicGroupsRepository.findAcademicGroupsByNormocontrollerId(user.getId());
+            for (AcademicGroup academicGroup : academicGroups) {
+                academicGroup.setNormocontroller(null);
+                academicGroupsRepository.save(academicGroup);
+            }
+        }
+
         usersRepository.delete(user);
     }
 
