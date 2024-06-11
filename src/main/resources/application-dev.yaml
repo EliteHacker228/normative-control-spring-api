@@ -30,7 +30,7 @@ server:
 
 logging:
   level:
-    root: off
+    root: info
     ru.maeasoftoworks.normativecontrol: info
     org.springframework.boot.web.embedded.tomcat: info
 
