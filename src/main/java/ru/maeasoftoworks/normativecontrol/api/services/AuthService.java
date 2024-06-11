@@ -73,7 +73,9 @@ public class AuthService {
         if (usersRepository.existsUserByEmail(registerStudentDto.getEmail()))
             throw new ResourceAlreadyExistsException("User with e-mail " + registerStudentDto.getEmail() + " already exists");
 
-        AcademicGroup academicGroup = academicGroupsRepository.findAcademicGroupById(registerStudentDto.getAcademicGroupId());
+        AcademicGroup academicGroup = null;
+        if(registerStudentDto.getAcademicGroupId() != null)
+            academicGroup = academicGroupsRepository.findAcademicGroupById(registerStudentDto.getAcademicGroupId());
 
         Student student = Student.builder()
                 .email(registerStudentDto.getEmail())

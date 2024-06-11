@@ -35,6 +35,5 @@ public class RegisterStudentDto {
     private String fullName;
 
     @Schema(description = "ID академической группы, к которой будет приписана учётная запись", example = "5")
-    @NotNull(message = "academicGroupIsMissing")
     private Long academicGroupId;
 }
