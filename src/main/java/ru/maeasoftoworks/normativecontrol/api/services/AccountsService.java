@@ -1,7 +1,13 @@
 package ru.maeasoftoworks.normativecontrol.api.services;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 import ru.maeasoftoworks.normativecontrol.api.domain.academical.AcademicGroup;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Document;
@@ -14,12 +20,14 @@ import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserPasswordDto
 import ru.maeasoftoworks.normativecontrol.api.dto.auth.AuthJwtPair;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.FieldNotPresents;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.PasswordsMismatchException;
+import ru.maeasoftoworks.normativecontrol.api.exceptions.ResourceAlreadyExistsException;
 import ru.maeasoftoworks.normativecontrol.api.exceptions.ResourceNotFoundException;
 import ru.maeasoftoworks.normativecontrol.api.repositories.*;
 import ru.maeasoftoworks.normativecontrol.api.utils.hashing.Sha256;
 
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -111,6 +119,10 @@ public class AccountsService {
             String message = MessageFormat.format("User with id {0} not found", userId);
             throw new ResourceNotFoundException(message);
         }
+        if (usersRepository.existsUserByEmail(updateUserEmailDto.getEmail())) {
+            String message = MessageFormat.format("User with email {0} already exists", updateUserEmailDto.getEmail());
+            throw new ResourceAlreadyExistsException(message);
+        }
         user.setEmail(updateUserEmailDto.getEmail());
         usersRepository.save(user);
         return new AuthJwtPair(jwtService.generateAccessTokenForUser(user).getCompactToken(),
@@ -126,6 +138,18 @@ public class AccountsService {
         }
         if (!user.getPassword().equals(Sha256.getStringSha256(updateUserPasswordDto.getOldPassword()))) {
             throw new PasswordsMismatchException("Old password is wrong");
+        }
+        user.setPassword(Sha256.getStringSha256(updateUserPasswordDto.getNewPassword()));
+        usersRepository.save(user);
+        return user;
+    }
+
+    @Transactional
+    public User updateUserPasswordByIdAsAdmin(Long userId, UpdateUserPasswordDto updateUserPasswordDto) {
+        User user = usersRepository.findUsersById(userId);
+        if (user == null) {
+            String message = MessageFormat.format("User with id {0} not found", userId);
+            throw new ResourceNotFoundException(message);
         }
         user.setPassword(Sha256.getStringSha256(updateUserPasswordDto.getNewPassword()));
         usersRepository.save(user);

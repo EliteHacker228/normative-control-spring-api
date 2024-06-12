@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.maeasoftoworks.normativecontrol.api.domain.documents.Result;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.Normocontroller;
+import ru.maeasoftoworks.normativecontrol.api.domain.users.Role;
 import ru.maeasoftoworks.normativecontrol.api.domain.users.User;
 import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserDocumentsLimitDto;
 import ru.maeasoftoworks.normativecontrol.api.dto.accounts.UpdateUserDto;
@@ -147,9 +148,13 @@ public class AccountsController {
             })
     @SecurityRequirement(name = "JWT")
     @PatchMapping("/{user_id}/password")
-    public User updateUserEmail(@PathVariable("user_id") @Parameter(description = "Идентификатор пользователя") Long userId,
+    public User updateUserEmail(@Parameter(hidden = true) @RequestHeader("Authorization") String authorizationHeader, @PathVariable("user_id") @Parameter(description = "Идентификатор пользователя") Long userId,
                                 @RequestBody @Valid UpdateUserPasswordDto updateUserPasswordDto) {
-        return accountsService.updateUserPasswordById(userId, updateUserPasswordDto);
+        User user = jwtService.getUserFromAuthorizationHeader(authorizationHeader);
+        if(user.getRole() == Role.ADMIN)
+            return accountsService.updateUserPasswordByIdAsAdmin(userId, updateUserPasswordDto);
+        else
+            return accountsService.updateUserPasswordById(userId, updateUserPasswordDto);
     }
 
     @Operation(
